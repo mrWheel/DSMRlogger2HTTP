@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html charset="UTF-8">
+  <head>
+    <meta name="viewport">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" title="main">
+    
+    <title>ESP-DSMR Slimme Meter Logger</title>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <h1>ESP-DSMR Slimme Meter Logger</h1>
+      <ul class="nav nav-tabs" id="tab">
+        <li>               <a href="#tab_Actual"data-toggle="tab">Actueel Verbruik</a></li>
+        <li>               <a href="#tab_Week"  data-toggle="tab">Afgelopen Week</a></li>
+        <li class="active"><a href="#tab_Hour"  data-toggle="tab">Afgelopen 24 Uur</a></li>
+        <li>               <a href="#tab_MeterInfo"data-toggle="tab">Meter Info</a></li>
+      </ul>
+      <div class="tab-content">
+        
+        <!-- START OF TAB id="tab_Actual" -->
+        <div class="tab-pane fade" id="tab_Actual"> 
+          <h2>ESP-DSMR Actueel Verbruik</h2>
+          <div class="row">
+          	<div class="col-sm-3">	<!-- left column -->
+          		<ul class="nav nav-pills">
+          			<li class="active"><a style="width:250px" href="#">
+          				<div class="span badge pull-right" id="DSMRenergyDelivered">??</div>Energy Delivered (kWh)</a>
+          			</li>
+          		</ul>
+          		<ul class="nav nav-pills">
+          			<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRenergyReturned">-</div>Energy Returned (kWh)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+               	<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRgasDelivered">-</div>Gas Delivered (m3)</a>
+                </li>
+              </ul>
+            </div>									<!-- end left column -->
+            <div class="col-sm-3">	<!-- start middle column -->
+            	<ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRenergyDeliveredTariff1">??</div>Energy Delivered Tarief 1</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+              	<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRenergyDeliveredTariff2">??</div>Energy Delivered Tarief 2</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+              	<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRenergyReturnedTariff1">??</div>Energy Returned Tarief 1</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+              	<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRenergyReturnedTariff2">??</div>Energy Returned Tarief 2</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+             		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRpowerDelivered">??</div>Power Delivered (kW)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRpowerReturned">??</div>Power Returned (kW)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRvoltage_l1">??</div>Voltage L1 (Volt)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRcurrent_l1">??</div>Current L1 (Amp.)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRvoltage_l2">??</div>Voltage L2 (Volt)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRcurrent_l2">??</div>Current L2 (Amp.)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRvoltage_l3">??</div>Voltage L3 (Volt)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRcurrent_l3">??</div>Current L3 (Amp.)</a>
+                </li>
+              </ul>
+            </div>									<!-- end middle column -->
+          	<div class="col-sm-3">	<!-- right column -->
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRpowerDelivered_l1">??</div>Power Delivered L1 (kW)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRpowerReturned_l1">??</div>Power Returned L1 (kW)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRpowerDelivered_l2">??</div>Power Delivered L2 (kW)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRpowerReturned_l2">??</div>Power Returned L2 (kW)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRpowerDelivered_l3">??</div>Power Delivered L3 (kW)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRpowerReturned_l3">??</div>Power Returned L3 (kW)</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills">
+            		<li class="active"><a style="width:250px" href="#">
+                	<div class="span badge pull-right" id="DSMRtimestamp">??</div>Timestamp</a>
+                </li>
+              </ul>
+            </div>			<!-- end right column -->
+          </div> <!-- end row -->
+          <br>
+          <div id="DSMRstatusLong">-</div>
+          <div id="DSMRlastLogLine1">-</div>
+          <div id="DSMRlastLogLine2">-</div>
+          <div id="DSMRlastLogLine3">-</div>
+        </div>
+        <!-- END OFF id="tab_Actual" -->
+        
+        <!-- START OF TAB id="tab_Week" -->
+        <div class="tab-pane fade" id="tab_Week">
+          <h2>ESP-DSMR Verbruik Afgelopen Week</h2>
+          <br>
+          <div id="DSMRstatusLong">-</div>
+          </ul>
+          <br>
+          <table id="table_Week" data-toggle="table" data-show-colunns="true">
+            <thead>
+              <tr>
+                <th data-field="WeekDay" data-align="left" data-sortable="false">WeekDay</th>
+                <th data-field="EnergyDelivered" data-align="left" data-sortable="false">Energy Delivered (kWh)</th>
+                <th data-field="EnergyReturned" data-align="left" data-sortable="false">Energy Returned (kWh)</th>
+                <th data-field="GasDelivered" data-align="left" data-sortable="false">Gas Delivered (m3)</th>
+              </tr>
+            </thead>
+          </table>        
+        </div>
+        <!-- END OF TAB id="tab_Week" -->
+
+        <!-- START OF TAB id="tab_Hour" -->
+        <!-- <div class="tab-pane fade in active" id="tab_Hour">   -->     
+        <div class="tab-pane fade in active" id="tab_Hour">        
+          <h2>Verbruik Afgelopen 24 Uur</h2>
+          <br>
+          <table id="table_Hours" data-toggle="table" data-show-colunns="true">
+            <thead>
+              <tr>
+                <th data-field="Hour" data-align="left" data-sortable="false">Hour</th>
+                <th data-field="EnergyDelivered" data-align="left" data-sortable="false">Energy Delivered (Wh)</th>
+                <th data-field="EnergyReturned" data-align="left" data-sortable="false">Energy Returned (Wh)</th>
+                <th data-field="GasDelivered" data-align="left" data-sortable="false">Gas Delivered (m3)</th>
+              </tr>
+            </thead>
+          </table>        
+        </div>	
+        <!-- END OF TAB id="tab_Hour" -->       
+        
+        <!-- START OF TAB id="tab_MeterInfo" -->
+        <div class="tab-pane fade" id="tab_MeterInfo"> 
+          <h2>ESP-DSMR Meter Info</h2>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="MIidentification">??</div>Identification</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="MIp1_Version">??</div>P1 version</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="MIelectricityTariff">??</div>Electriciteit Tarief</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="MIequipmentId">??</div>Eguipment ID</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="MIgasDeviceType">??</div>Gas Device Type</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="MIgasEquipmentId">??</div>Gas Equipment ID</a>
+            </li>
+          </ul>
+          <br>
+          <div id="MIstatusLong">-</div>
+          <div id="MIlastLogLine1">-</div>
+          <div id="MIlastLogLine2">-</div>
+          <div id="MIlastLogLine3">-</div>
+
+        </div>
+        <!-- END OFF id="tab_MeterInfo" -->
+        
+      </div>
+    </div>
+    <!-- this button will be hidden by $(document).ready() but is absolutly -->
+    <!-- necessary to get #tab_Actual refressed every x seconds!! Leave it!  -->
+    <a class="next btn btn-default" id="hiddenButton" href="#">Refress</a>
+
+    <!--script(src='js/script.js')-->
+    <script>
+              
+
+      $(document).ready(function(){
+        console.log("document.ready() and loaded..");
+        // hide the button
+        $('#hiddenButton').hide();
+        // set the pane to load if button is clicked
+      	$('.next').click(function(){
+      	      $('.nav-tabs a[href="#tab_Actual"]').tab('show');
+        });
+        // now trigger a click on the buttun
+        $('.next').trigger('click');
+      });
+
+      var tab_pane;
+      // Force DSMRState first launch
+      var Timer_updateDSMR;
+      var firstDSMR = true;
+      var Timer_updateWeek;
+      var firstWeek  = true;
+      var Timer_updateHours;
+      var firstHour  = true;
+      var Timer_updateMeterInfo;
+      var firstMeterInfo  = true;
+   
+
+	  $('a[data-toggle=\"tab\"]').on('shown.bs.tab', function (e) {   
+	  	console.log("data-toggle.on('shown.bs.tab' ....");
+        // remove all the timers when we change tabs
+        clearInterval(Timer_updateDSMR);  
+        clearTimeout(Timer_updateWeek);  
+        clearTimeout(Timer_updateHours);  
+        clearTimeout(Timer_updateMeterInfo);  
+        tab_pane = $(e.target).attr("href")  
+        console.log('activated ' + tab_pane );  
+      
+        // IE10, Firefox, Chrome, etc.
+        if (history.pushState) 
+        	window.history.pushState(null, null, tab_pane);
+        else 
+           window.location.hash = tab_pane;
+           
+        if (tab_pane=='#tab_Actual') {	//-- || tab_pane=='') {
+          console.log('new pane is #tab_Actual');
+          firstDSMR = true;
+          updateDSMRactual();
+          console.log("setInterval(updateDSMRactual, 10000)");
+          Timer_updateDSMR = setInterval(updateDSMRactual, 10000); 	// 10000 MS == 10 seconden
+        }
+	    
+        if (tab_pane=='#tab_Week')  {
+          console.log('new pane is #tab_Week');
+          $('#table_Week').bootstrapTable('refresh',{silent:true, url:'/getTableWeek.json'}); 
+          firstWeek = true;
+          updateWeek();
+          Timer_updateWeek = setInterval(updateWeek, 60000); 		// 60000 MS == 1 minuut
+        }  
+	    
+        if (tab_pane=='#tab_Hour')  {
+          console.log('new pane is #tab_Hour');
+          $('#table_Hours').bootstrapTable('refresh',{silent:true, url:'/getTableHours.json'}); 
+          firstHour = true;
+          Timer_updateHours = setInterval(updateHours, 20000); 		// 20000 MS == 20 seconden
+        }  
+	    
+        if (tab_pane=='#tab_MeterInfo')  {
+          console.log('new pane is #tab_MeterInfo');
+          firstMeterInfo = true;
+          updateMeterInfo();
+          console.log("setInterval(updateMeterInfo, 60000)");
+          Timer_updateMeterInfo = setInterval(updateMeterInfo, 60000); 		// 60000 MS == 1 minuut
+        }  
+        
+      });	// $('a[data-toggle=\"tab\"]') ..
+
+      
+      function updateDSMRactual(){
+        // only if chart panel is active
+        if (tab_pane=='#tab_Actual' | firstDSMR ){
+          if (firstDSMR) {
+          	console.log("updateDSMRactual() for the first time");
+          }
+          firstDSMR = false;
+          $.getJSON('/getActual.json', function(data){
+          	console.log("updateDSMRactual : " + JSON.stringify(data) );
+            $('#DSMRtimestamp').html(data.Timestamp);
+            $('#DSMRenergyDelivered').html(data.EnergyDelivered);
+            $('#DSMRenergyReturned').html(data.EnergyReturned);
+            $('#DSMRgasDelivered').html(data.GasDelivered);
+            $('#DSMRenergyDeliveredTariff1').html(data.Energy_Delivered_Tariff1);
+            $('#DSMRenergyDeliveredTariff2').html(data.Energy_Delivered_Tariff2);
+            $('#DSMRenergyReturnedTariff1').html(data.Energy_Returned_Tariff1);
+            $('#DSMRenergyReturnedTariff2').html(data.Energy_Returned_Tariff2);
+            $('#DSMRpowerDelivered').html(data.Power_Delivered);
+            $('#DSMRpowerReturned').html(data.Power_Returned);
+            $('#DSMRvoltage_l1').html(data.Voltage_l1);
+            $('#DSMRcurrent_l1').html(data.Current_l1);
+            $('#DSMRvoltage_l2').html(data.Voltage_l2);
+            $('#DSMRcurrent_l2').html(data.Current_l2);
+            $('#DSMRvoltage_l3').html(data.Voltage_l3);
+            $('#DSMRcurrent_l3').html(data.Current_l3);
+            $('#DSMRpowerDelivered_l1').html(data.Power_Delivered_l1);
+            $('#DSMRpowerReturned_l1').html(data.Power_Returned_l1);
+            $('#DSMRpowerDelivered_l2').html(data.Power_Delivered_l2);
+            $('#DSMRpowerReturned_l2').html(data.Power_Returned_l2);
+            $('#DSMRpowerDelivered_l3').html(data.Power_Delivered_l3);
+            $('#DSMRpowerReturned_l3').html(data.Power_Returned_l3);
+            $('#DSMRstatusLong').html(data.StatusLong);
+            $('#DSMRlastLogLine1').html(data.lastLogLine1);
+            $('#DSMRlastLogLine2').html(data.lastLogLine2);
+            $('#DSMRlastLogLine3').html(data.lastLogLine3);
+          }).fail(function(err){
+            console.log("err getJSON getActual.json "+JSON.stringify(err));
+          });
+        }
+      };
+      
+      function updateWeek(){
+        // only if chart panel is active
+        if (tab_pane=='#tab_Week' | firstWeek ){
+          if (firstWeek) {
+          	console.log("updateWeek() for the first time");
+          }
+          updateTableWeek();
+          firstWeek = false;
+        }
+      };
+
+      function updateTableWeek(){
+        // only if chart panel is active
+        $('#table_Week').bootstrapTable('refresh',{silent: true, showLoading: false, url: '/getTableWeek.json'});
+      };
+
+      function updateHours(){
+        // only if chart panel is active
+        if (tab_pane=='#tab_Hour' | firstHour ){
+          if (firstHour) {
+          	console.log("updateActual() for the first time");
+          }
+          updateTableHours();
+          firstHour = false;
+        }
+      };
+
+      function updateTableHours(){
+        // only if chart panel is active
+        $('#table_Hours').bootstrapTable('refresh',{silent: true, showLoading: false, url: '/getTableHours.json'});
+      };
+
+      
+      function updateMeterInfo(){
+        // only if chart panel is active
+        if (tab_pane=='#tab_MeterInfo' | firstMeterInfo ){
+          if (firstMeterInfo) {
+          	console.log("updateMeterInfo() for the first time");
+          }
+          firstMeterInfo = false;
+          $.getJSON('/getMeterInfo.json', function(data){
+          	console.log("updateMeterInfo : " + JSON.stringify(data) );
+            $('#MIidentification').html(data.Identification);
+            $('#MIp1_Version').html(data.P1_Version);
+            $('#MIelectricityTariff').html(data.Electricity_Tariff);
+            $('#MIequipmentId').html(data.Equipment_Id);
+            $('#MIgasDeviceType').html(data.Gas_Device_Type);
+            $('#MIgasEquipmentId').html(data.Gas_Equipment_Id);
+            $('#MIstatusLong').html(data.StatusLong);
+            $('#MIlastLogLine1').html(data.lastLogLine1);
+            $('#MIlastLogLine2').html(data.lastLogLine2);
+            $('#MIlastLogLine3').html(data.lastLogLine3);
+          }).fail(function(err){
+            console.log("err getJSON getMeterInfo.json "+JSON.stringify(err));
+          });
+        }
+      };
+
+    </script>
+  </body>
+</html>
