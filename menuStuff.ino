@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : menuStuff, part of DSMRlogger2HTTP
-**  Version  : v4.0
+**  Version  : v5.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -16,7 +16,7 @@ void displayDaysHist(bool Telnet=true) {
   int thisDay = weekday(unixTimestamp) - 1;
   int Label;
 
-  if (Telnet) TelnetStream.println("\r");
+  if (Telnet) TelnetStream.println("\n======== WeekDay History ==========\r\n");
 //else        writeLogFile(" ");
   for (int i=0; i<7; i++) {
     if (i == thisDay) today = '*';
@@ -40,9 +40,9 @@ void displayHoursHist(bool Telnet=true) {
   int thisHour = HourFromTimestamp(pTimestamp);
   int Label;
   
-  if (Telnet) TelnetStream.println("\r");
+  if (Telnet) TelnetStream.println("\n======== Hours History ==========\r\n");
 //else        writeLogFile(" ");
-  for (int i=0; i<24; i++) {
+  for (int i=1; i<=8; i++) {
     if (i == thisHour)  hour = '*';
     else                hour = ' '; 
     Label = hoursDat[i].Label;
@@ -56,6 +56,30 @@ void displayHoursHist(bool Telnet=true) {
   }
 
 } // displayHoursHist()
+
+
+//===========================================================================================
+void displayMonthsHist(bool Telnet=true) {
+//===========================================================================================
+  char ED[20], ER[20], GD[20], signal;
+  int thisMonth = MonthFromTimestamp(pTimestamp);
+  int thisYear  = YearFromTimestamp(pTimestamp);
+  int Label;
+  
+  if (Telnet) TelnetStream.println("\n======== Months History ==========\r\n");
+//else        writeLogFile(" ");
+  for (int i=1; i<=24; i++) {
+    Label = monthsDat[i].Label;
+    dtostrf(monthsDat[i].EnergyDelivered, 9, 3, ED);
+    dtostrf(monthsDat[i].EnergyReturned, 9, 3, ER);
+    dtostrf(monthsDat[i].GasDelivered, 8, 2, GD);
+    sprintf(cMsg, "[%02d][%04d] Energy Del.[%s], Ret.[%s], Gas Del.[%s]\r", i, Label
+                                                                          , ED, ER, GD);
+    if (Telnet) TelnetStream.println(cMsg);
+
+  }
+
+} // displayMonthsHist()
 
 
 //===========================================================================================
@@ -125,6 +149,7 @@ void handleKeyInput() {
       case 'd':
       case 'D':     displayDaysHist(true);
                     displayHoursHist(true);
+                    displayMonthsHist(true);
                     break;
       case 'F':     TelnetStream.printf("\r\nConnect to AP [%s] and go to ip address shown in the AP-name\r\n", APname);
                     TelnetStream.flush();
@@ -144,6 +169,7 @@ void handleKeyInput() {
                       TelnetStream.println("Error readHourData() ..   \r");
                       TelnetStream.flush();
                     }
+                    readMonthData();
                     break;
       case 'i':
       case 'I':     for(int I=0; I<10; I++) {
@@ -153,6 +179,14 @@ void handleKeyInput() {
                     break;
       case 'l':
       case 'L':     readLogFile();
+                    break;
+      case 'm':
+      case 'M':     thisMonth++;
+                    if (thisMonth > 12) {
+                      thisMonth = 1;
+                      thisYear++;
+                    }
+                    shiftDownMonthData(thisYear, thisMonth);
                     break;
       case 'P':     TelnetStream.println("Purging logfile ..\r");
                     rotateLogFile("logFile purged at user request!");
@@ -170,9 +204,10 @@ void handleKeyInput() {
                     TelnetStream.printf("\r\nAvailable SPIFFS space [%ld]\r\n\n", freeSpace());
                     break;
       case 'U':     saveWeekDayData();
-                    if(!saveHourData()) {
+                    if(!saveHourData(9)) {
                       writeLogFile("Error writing hourData (Zero Value) ..");
                     }
+                    saveMonthData(thisYear, thisMonth);
                     break;
       case 'v':
       case 'V':     if (Verbose) {
@@ -185,7 +220,13 @@ void handleKeyInput() {
                     TelnetStream.flush();
                     break;
       case 'w':
-      case 'W':     waitForOTAupload();
+      case 'W':     if (waitForATOupdate > millis()) {
+                        OTAinProgress = false;
+                        waitForATOupdate = millis();
+                    } else {
+                        OTAinProgress = true;
+                        waitForATOupdate = millis() + 30000;  // wait for 30 seconds
+                    }
                     break;
       default:      TelnetStream.println("\nCommando's zijn:\r\n");
                     TelnetStream.println("   B - Board Type\r");
@@ -199,7 +240,11 @@ void handleKeyInput() {
                     TelnetStream.println("   S - SPIFFS space available\r");
                     TelnetStream.println("  *U - Update SPIFFS (save Data-files)\r");
                     TelnetStream.println("   V - Tockle Verbose\r");
-                    TelnetStream.println("   W - Wait for OTA upload, then reboot\r");
+                    if (waitForATOupdate > millis()) {
+                      TelnetStream.println("   W - Cancel Wait for ATO update\r");
+                    } else {
+                      TelnetStream.println("   W - Wait for OTA upload \r");
+                    }
                     TelnetStream.println("\r");
 
     } // switch()

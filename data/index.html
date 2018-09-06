@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html charset="UTF-8">
   <head>
+<!--
+***************************************************************************  
+**  Program  : index.html, part of DSMRlogger2HTTP
+**  Version  : v5.0
+**
+**  Copyright (c) 2018 Willem Aandewiel
+**
+**  TERMS OF USE: MIT License. See bottom of file.                                                            
+***************************************************************************      
+-->
     <meta name="viewport">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -14,10 +24,11 @@
     <div class="container-fluid">
       <h1>ESP-DSMR Slimme Meter Logger</h1>
       <ul class="nav nav-tabs" id="tab">
-        <li>               <a href="#tab_Actual"data-toggle="tab">Actueel Verbruik</a></li>
-        <li>               <a href="#tab_Week"  data-toggle="tab">Afgelopen Week</a></li>
-        <li class="active"><a href="#tab_Hour"  data-toggle="tab">Afgelopen 24 Uur</a></li>
-        <li>               <a href="#tab_MeterInfo"data-toggle="tab">Meter Info</a></li>
+        <li>               <a href="#tab_Actual"    data-toggle="tab">Actueel Verbruik</a></li>
+        <li>               <a href="#tab_Week"      data-toggle="tab">Afgelopen Week</a></li>
+        <li class="active"><a href="#tab_Hour"      data-toggle="tab">Afgelopen 24 Uur</a></li>
+        <li>               <a href="#tab_Month"     data-toggle="tab">Afgelopen 24 Maanden</a></li>
+        <li>               <a href="#tab_MeterInfo" data-toggle="tab">Meter Info</a></li>
       </ul>
       <div class="tab-content">
         
@@ -171,7 +182,6 @@
         <!-- END OF TAB id="tab_Week" -->
 
         <!-- START OF TAB id="tab_Hour" -->
-        <!-- <div class="tab-pane fade in active" id="tab_Hour">   -->     
         <div class="tab-pane fade in active" id="tab_Hour">        
           <h2>Verbruik Afgelopen 24 Uur</h2>
           <br>
@@ -187,6 +197,23 @@
           </table>        
         </div>	
         <!-- END OF TAB id="tab_Hour" -->       
+
+        <!-- START OF TAB id="tab_Month" -->
+        <div class="tab-pane fade in active" id="tab_Month">        
+          <h2>Verbruik Afgelopen 24 Maanden</h2>
+          <br>
+          <table id="table_Months" data-toggle="table" data-show-colunns="true">
+            <thead>
+              <tr>
+                <th data-field="YearMonth" data-align="left" data-sortable="false">Year/Month</th>
+                <th data-field="EnergyDelivered" data-align="left" data-sortable="false">Energy Delivered (kWh)</th>
+                <th data-field="EnergyReturned" data-align="left" data-sortable="false">Energy Returned (kWh)</th>
+                <th data-field="GasDelivered" data-align="left" data-sortable="false">Gas Delivered (m3)</th>
+              </tr>
+            </thead>
+          </table>        
+        </div>	
+        <!-- END OF TAB id="tab_Month" -->       
         
         <!-- START OF TAB id="tab_MeterInfo" -->
         <div class="tab-pane fade" id="tab_MeterInfo"> 
@@ -237,9 +264,7 @@
     <a class="next btn btn-default" id="hiddenButton" href="#">Refress</a>
 
     <!--script(src='js/script.js')-->
-    <script>
-              
-
+    <script>    		
       $(document).ready(function(){
         console.log("document.ready() and loaded..");
         // hide the button
@@ -252,7 +277,7 @@
         $('.next').trigger('click');
       });
 
-      var tab_pane;
+			var tab_pane;
       // Force DSMRState first launch
       var Timer_updateDSMR;
       var firstDSMR = true;
@@ -260,6 +285,8 @@
       var firstWeek  = true;
       var Timer_updateHours;
       var firstHour  = true;
+      var Timer_updateMonths;
+      var firstMonth = true;
       var Timer_updateMeterInfo;
       var firstMeterInfo  = true;
    
@@ -270,6 +297,7 @@
         clearInterval(Timer_updateDSMR);  
         clearTimeout(Timer_updateWeek);  
         clearTimeout(Timer_updateHours);  
+        clearTimeout(Timer_updateMonths);  
         clearTimeout(Timer_updateMeterInfo);  
         tab_pane = $(e.target).attr("href")  
         console.log('activated ' + tab_pane );  
@@ -301,6 +329,13 @@
           $('#table_Hours').bootstrapTable('refresh',{silent:true, url:'/getTableHours.json'}); 
           firstHour = true;
           Timer_updateHours = setInterval(updateHours, 20000); 		// 20000 MS == 20 seconden
+        }  
+	    
+        if (tab_pane=='#tab_Month')  {
+          console.log('new pane is #tab_Month');
+          $('#table_Months').bootstrapTable('refresh',{silent:true, url:'/getTableMonths.json'}); 
+          firstMonth = true;
+          Timer_updateMonths = setInterval(updateMonths, 30000); 		// 30000 MS == 30 seconden
         }  
 	    
         if (tab_pane=='#tab_MeterInfo')  {
@@ -375,7 +410,7 @@
         // only if chart panel is active
         if (tab_pane=='#tab_Hour' | firstHour ){
           if (firstHour) {
-          	console.log("updateActual() for the first time");
+          	console.log("updateHours() for the first time");
           }
           updateTableHours();
           firstHour = false;
@@ -385,6 +420,22 @@
       function updateTableHours(){
         // only if chart panel is active
         $('#table_Hours').bootstrapTable('refresh',{silent: true, showLoading: false, url: '/getTableHours.json'});
+      };
+
+      function updateMonths(){
+        // only if chart panel is active
+        if (tab_pane=='#tab_Month' | firstMonth ){
+          if (firstMonth) {
+          	console.log("updateMonths() for the first time");
+          }
+          updateTableMonths();
+          firstMonth = false;
+        }
+      };
+
+      function updateTableMonths(){
+        // only if chart panel is active
+        $('#table_Months').bootstrapTable('refresh',{silent: true, showLoading: false, url: '/getTableMonths.json'});
       };
 
       
@@ -414,5 +465,29 @@
       };
 
     </script>
-  </body>
+    </body>
 </html>
+<!--
+***************************************************************************
+*
+* Permission is hereby granted, free of charge, to any person obtaining a
+* copy of this software and associated documentation files (the
+* "Software"), to deal in the Software without restriction, including
+* without limitation the rights to use, copy, modify, merge, publish,
+* distribute, sublicense, and/or sell copies of the Software, and to permit
+* persons to whom the Software is furnished to do so, subject to the
+* following conditions:
+*
+* The above copyright notice and this permission notice shall be included
+* in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
+* OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+* THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+***************************************************************************
+-->

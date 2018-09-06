@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : UpdateHTML, part of DSMRlogger2HTTM
-**  Version  : v4.0
+**  Version  : v5.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -11,6 +11,7 @@
 
 //=======================================================================
 void sendDataMeterInfo() {
+//=======================================================================
 
 //-Meter Info----------------------------------------------------------
   jsonString  = "{";
@@ -32,6 +33,7 @@ void sendDataMeterInfo() {
 
 //=======================================================================
 void sendDataActual() {
+//=======================================================================
 
 #ifdef HASS_NO_METER
   hoursDat[0].EnergyDelivered += 0.33;
@@ -77,8 +79,48 @@ void sendDataActual() {
 
 } // sendDataActual()
 
+
+//=======================================================================
+void sendTableMonths() {
+//=======================================================================
+  String  sKomma = "";
+  char    cYearMonth[30];
+  int8_t  nextSlot, slot;
+  
+  jsonString    = "[";
+  for ( int16_t slot = 1; slot <= 24; slot++ ) {
+    nextSlot = slot + 1;
+    if (nextSlot > 23) nextSlot = 23; 
+    if (Verbose) TelnetStream.printf("sendTableMonths(): slotMonth[%02d], slot[%02d], nextSlot[%02d] \r\n"
+                                                       , (monthsDat[slot].Label % 100), slot, nextSlot);
+
+    sprintf(cYearMonth, "20%02d-%02d", (monthsDat[slot].Label / 100), (monthsDat[slot].Label % 100));
+    
+    if (slot < 24) {
+      jsonString +=  sKomma + "{\"YearMonth\":\"" + cYearMonth + "\""; 
+      jsonString +=  ",\"EnergyDelivered\":\"" + String(( monthsDat[slot].EnergyDelivered - monthsDat[nextSlot].EnergyDelivered), 3) + "\"";
+      jsonString +=  ",\"EnergyReturned\":\""  + String(( monthsDat[slot].EnergyReturned  - monthsDat[nextSlot].EnergyReturned), 3) + "\"";
+      jsonString +=  ",\"GasDelivered\":\""    + String(( monthsDat[slot].GasDelivered    - monthsDat[nextSlot].GasDelivered), 2) + "\"";
+      jsonString += "}";
+    } else {
+      jsonString +=  sKomma + "{\"YearMonth\":\"Up Till " + cYearMonth + "\""; 
+      jsonString +=  ",\"EnergyDelivered\":\"" + String(monthsDat[slot].EnergyDelivered, 3) + "\"";
+      jsonString +=  ",\"EnergyReturned\":\""  + String(monthsDat[slot].EnergyReturned, 3)  + "\"";
+      jsonString +=  ",\"GasDelivered\":\""    + String(monthsDat[slot].GasDelivered, 2)    + "\"";
+      jsonString += "}";
+    }
+    sKomma      = ",";
+  }
+  jsonString   += "]";
+
+  server.send(200, "application/json", jsonString);
+  TelnetStream.println("sendTableMonths(): Send data\r");
+
+} // sendTableMonths()
+
 //=======================================================================
 void sendTableWeek() {
+//=======================================================================
   int8_t  slot, prevSlot;
   String sKomma = "";
   
@@ -113,25 +155,35 @@ void sendTableWeek() {
 
 //=======================================================================
 void sendTableHours() {
+//=======================================================================
   String  sKomma = "";
-  char    cHour[10];
-  int8_t  prevSlot, slot, thisMinute;
+  char    cHour[30];
+  int8_t  thisPrev, prevSlot, thisSlot, slot, thisMinute;
 
   
   jsonString    = "[";
-  for ( int16_t r = 24; r >= 1; r-- ) {
-    slot = r + thisHour + 1;  // I want to start with the next hour
-    if (slot > 23) slot -= 24;
-    if (r == 24) {
-      thisMinute = MinuteFromTimestamp(pTimestamp);
-      sprintf(cHour, "%02d:%02d", thisHour, thisMinute);
-    } else {
-      thisMinute = 0;
-      sprintf(cHour, "%02d:%02d", slot, thisMinute);
+  for ( int16_t r = 8; r >= 1; r-- ) {
+    int8_t thisNext;
+    hourToSlot(thisHour, thisSlot, thisNext, thisPrev);
+    slot = r + thisSlot;  // I want to start with this hour
+    if (slot > 8) slot -= 8;
+    prevSlot = r + thisPrev;
+    if (prevSlot > 8)       prevSlot -= 8;
+
+    switch(slot) {
+      case 1: sprintf(cHour, "00:00 - 02:59"); break;
+      case 2: sprintf(cHour, "03:00 - 05:59"); break;
+      case 3: sprintf(cHour, "06:00 - 08:59"); break;
+      case 4: sprintf(cHour, "09:00 - 11:59"); break;
+      case 5: sprintf(cHour, "12:00 - 14:59"); break;
+      case 6: sprintf(cHour, "15:00 - 17:59"); break;
+      case 7: sprintf(cHour, "18:00 - 20:59"); break;
+      case 8: sprintf(cHour, "21:00 - 02:59"); break;
     }
-    prevSlot = slot - 1;
-    if (prevSlot < 0) prevSlot = 23; 
-    if (Verbose) TelnetStream.printf("r[%02d], thisHour[%02d], slot[%02d], prevSlot[%02d] \r\n", r, thisHour, slot, prevSlot);
+
+    if (Verbose) TelnetStream.printf("sendTableHours(): r[%02d], thisHour[%02d], slot[%02d], prevSlot[%02d] \r\n"
+                                                      , r, thisHour, slot, prevSlot);
+    
     if (r != 1) {
       jsonString +=  sKomma + "{\"Hour\":\"" + cHour + "\""; 
       jsonString +=  ",\"EnergyDelivered\":\"" + String(((hoursDat[slot].EnergyDelivered - hoursDat[prevSlot].EnergyDelivered) * 1000.0), 0) + "\"";
@@ -139,7 +191,7 @@ void sendTableHours() {
       jsonString +=  ",\"GasDelivered\":\""    + String(( hoursDat[slot].GasDelivered    - hoursDat[prevSlot].GasDelivered), 2) + "\"";
       jsonString += "}";
     } else {
-      jsonString +=  sKomma + "{\"Hour\":\"Up Till " + cHour + "\""; 
+      jsonString +=  sKomma + "{\"Hour\":\"Up Till " + String(cHour).substring(7) + "\""; 
       jsonString +=  ",\"EnergyDelivered\":\"" + String(hoursDat[slot].EnergyDelivered, 3) + " (kWh)\"";
       jsonString +=  ",\"EnergyReturned\":\""  + String(hoursDat[slot].EnergyReturned, 3)  + " (kWh)\"";
       jsonString +=  ",\"GasDelivered\":\""    + String(hoursDat[slot].GasDelivered, 2)    + "\"";
