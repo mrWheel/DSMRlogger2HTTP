@@ -1,7 +1,7 @@
 # DSMRlogger2HTTP
 This repository contains the software for the *Draadloze Slimme Meter Uitlezer*.
 
-![GitHub Logo](/images/DSMRlogger_Casing.jpg)
+![GitHub Logo](/images/DSMRlogger_Casing.jpg | width=48)
 
 Almost all households in the Netherlands are equipped with such a Smart Meter.
 
