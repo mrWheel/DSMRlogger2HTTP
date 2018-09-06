@@ -36,3 +36,6 @@ Arduino-IDE settings for ESP01 (black):
 </code>
 
 For more information see: “https://willem.aandewiel.nl/index.php/slimme-meter-uitlezer/”
+
+![Actual](/images/DSMRactual.png)
+
