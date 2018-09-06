@@ -14,7 +14,7 @@ Unzip the file into your Arduino Projects directory.
 A map "**DSMRlogger2HTML**" will be created with in it all the files necessary to program an ESP01
 to function as a “*Slimme Meter Uitlezer*”.
 
-If you use a **ESP01 black** (recommended) than you should set the board to:
+If you use an **ESP01 black** (recommended) than you should set the board to:
 
 <code>
 Arduino-IDE settings for ESP01 (black):
