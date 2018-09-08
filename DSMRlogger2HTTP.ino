@@ -22,7 +22,7 @@
     - Buildin Led: "1"  // GPIO01 - Pin 2
     - Upload Speed: "115200"
     - Erase Flash: "Only Sketch"
-    - Port: "ESP2RFlink at <-- IP address -->"
+    - Port: "ESP01-DSMR at <-- IP address -->"
 */
 #include <ESP8266WiFi.h>        // version 1.0.0
 #include <ESP8266WebServer.h>   // Version 1.0.0

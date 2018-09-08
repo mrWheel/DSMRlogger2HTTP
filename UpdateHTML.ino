@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : UpdateHTML, part of DSMRlogger2HTTM
-**  Version  : v5.0
+**  Version  : v4.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -178,7 +178,7 @@ void sendTableHours() {
       case 5: sprintf(cHour, "12:00 - 14:59"); break;
       case 6: sprintf(cHour, "15:00 - 17:59"); break;
       case 7: sprintf(cHour, "18:00 - 20:59"); break;
-      case 8: sprintf(cHour, "21:00 - 02:59"); break;
+      case 8: sprintf(cHour, "21:00 - 23:59"); break;
     }
 
     if (Verbose) TelnetStream.printf("sendTableHours(): r[%02d], thisHour[%02d], slot[%02d], prevSlot[%02d] \r\n"
