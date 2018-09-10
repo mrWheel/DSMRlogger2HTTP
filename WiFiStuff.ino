@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : WiFiStuff, part of DSMRlogger2HTTP
-**  Version  : v5.0
+**  Version  : v4.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -72,7 +72,7 @@ byte    mac[6];
         writeLogFile("startConfigPortal(): Failed to connect and hit timeout");
         delay(1000);
         //reset and try again, or maybe put it to deep sleep
-        ESP.restart();
+        ESP.reset();
         delay(1000);
       } 
     } else {
@@ -80,7 +80,7 @@ byte    mac[6];
          writeLogFile("autoConnect(): Failed to connect and hit timeout");
          delay(1000);
          //reset and try again, or maybe put it to deep sleep
-         ESP.restart();
+         ESP.reset();
          delay(1000);
       }
     }

@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : menuStuff, part of DSMRlogger2HTTP
-**  Version  : v5.0
+**  Version  : v4.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -128,7 +128,7 @@ void waitForOTAupload() {
   writeLogFile("Reboot after OTA update ....");
   TelnetStream.println("now Rebooting.\r");
   TelnetStream.flush();
-  ESP.restart();
+  ESP.reset();
     
 } // waitForOTAupload()
 
@@ -157,7 +157,7 @@ void handleKeyInput() {
                     delay(1000);
                     WiFi.disconnect();  // deletes credentials !
                     //setupWiFi(true);
-                    ESP.restart();
+                    ESP.reset();
                     break;
       case 'G':     if (!readWeekDayData()) {
                       writeLogFile("Error readWeekDayData() ..");
@@ -197,7 +197,7 @@ void handleKeyInput() {
                     writeLogFile("Reboot requested by operator..");
                     TelnetStream.println("now Rebooting.                      \r");
                     TelnetStream.flush();
-                    ESP.restart();
+                    ESP.reset();
                     break;
       case 's':
       case 'S':     listSPIFFS();
@@ -228,7 +228,7 @@ void handleKeyInput() {
                         waitForATOupdate = millis() + 30000;  // wait for 30 seconds
                     }
                     break;
-      default:      TelnetStream.println("\nCommando's zijn:\r\n");
+      default:      TelnetStream.println("\nCommands are:\r\n");
                     TelnetStream.println("   B - Board Type\r");
                     TelnetStream.println("   D - Display WeekDay and Hours from memory\r");
                     TelnetStream.println("  *F - Force Re-Config WiFi\r");
