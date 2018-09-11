@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : WiFiStuff, part of DSMRlogger2HTTP
-**  Version  : v4.0
+**  Version  : v5.1
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -43,7 +43,7 @@ byte    mac[6];
     //WiFiManager
     //Local intialization. Once its business is done, there is no need to keep it around
     WiFiManager wifiManager;
-    wifiManager.setDebugOutput(false);
+    wifiManager.setDebugOutput(true);
     noConnectWiFi = 30;
 
     if (forceAP) {
@@ -92,9 +92,11 @@ byte    mac[6];
     writeLogFile("connected to WiFi!");
 
     // WiFi connexion is OK
-    if (debug) Serial.println ( "" );
-    if (debug) Serial.print ( "Connected to " ); TelnetStream.println ( WiFi.SSID() );
-    if (debug) Serial.print ( "IP address: " );  TelnetStream.println ( WiFi.localIP() );
+    if (debug) {
+      Serial.println ( "" );
+      Serial.print ( "Connected to " ); Serial.println ( WiFi.SSID() );
+      Serial.print ( "IP address: " );  Serial.println ( WiFi.localIP() );
+    }
     TelnetStream.println ( "" );
     TelnetStream.print ( "Connected to " ); TelnetStream.println ( WiFi.SSID() );
     TelnetStream.print ( "IP address: " );  TelnetStream.println ( WiFi.localIP() );

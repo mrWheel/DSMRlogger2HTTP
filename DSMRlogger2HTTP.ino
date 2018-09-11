@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
-**  Version  : v5.0
+**  Version  : v5.2
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -17,6 +17,7 @@
     - IwIP Variant: "v2 Lower Memory"
     - Reset Method: "nodemcu"
     - Crystal Frequency: "26 MHz" (otherwise Serial output is garbidge)
+    - VTables: "Flash"
     - Flash Frequency: "40MHz"
     - CPU Frequency: "80 MHz"
     - Buildin Led: "1"  // GPIO01 - Pin 2
@@ -74,7 +75,7 @@ typedef struct {
 
 static    dataStruct hoursDat[10];     // 0 + 1-8
 static    dataStruct weekDayDat[9];   // 0 - 6 (0=sunday)
-static    dataStruct monthsDat[26];   // 0 + year1 1 t/m 12 + year2 1 t/m 12
+static    dataStruct monthsDat[27];   // 0 + year1 1 t/m 12 + year2 1 t/m 12
 
 /**
 struct FSInfo {
@@ -101,7 +102,7 @@ WiFiClient      wifiClient;
 ESP8266WebServer server ( 80 );
 FtpServer ftpSrv;   //set #define FTP_DEBUG in ESP8266FtpServer.h to see ftp verbose on serial
 
-uint32_t  waitLoop, telegramCount, waitForATOupdate;
+uint32_t  waitLoop, noMeterWait, telegramCount, waitForATOupdate;
 char      cMsg[100], fChar[10];
 char      APname[50], MAChex[13]; //n1n2n3n4n5n6\0
 //byte      mac[6];
@@ -566,29 +567,32 @@ void setup() {
 
 #ifdef HASS_NO_METER
   for (int s=1; s<=8; s++) {
-    hoursDat[s].Label           = s;
+    hoursDat[s].Label             = s;
     hoursDat[s].EnergyDelivered   = 0.0;
     hoursDat[s].EnergyReturned    = 0.0;
     hoursDat[s].GasDelivered      = 0.0;
   }
+  saveHourData(3);
   for (int s=0; s<=6; s++) {
     weekDayDat[s].Label           = s;
     weekDayDat[s].EnergyDelivered = 0.0;
     weekDayDat[s].EnergyReturned  = 0.0;
     weekDayDat[s].GasDelivered    = 0.0;
   }
-  for (int s=24; s>=1; s--) {
-    sprintf(cMsg, "18%02d", s);
+  saveWeekDayData();
+  for (int s=1; s<=24; s++) {
+    if (s>12)    sprintf(cMsg, "15%02d", (25 - s));
+    else         sprintf(cMsg, "16%02d", (13 - s));
     monthsDat[s].Label           = String(cMsg).toInt();
     monthsDat[s].EnergyDelivered = 0.0;
     monthsDat[s].EnergyReturned  = 0.0;
     monthsDat[s].GasDelivered    = 0.0;
   }
-  randomSeed(analogRead(0));
+  saveMonthData(16, 12);
 #endif
-  telegramCount   =  0;
 
-    
+  telegramCount   =  0;
+  
   server.on("/getMeterInfo.json", sendDataMeterInfo);
   server.on("/getActual.json", sendDataActual);
   server.on("/getTableWeek.json", sendTableWeek);
@@ -621,7 +625,8 @@ void setup() {
   delay(100);
   reader.enable(true);
 
-  waitLoop = millis() + 5000;
+  waitLoop    = millis() + 5000;
+  noMeterWait = millis() + 5000;
   
 } // setup()
 
@@ -655,43 +660,48 @@ void loop () {
   }
   
 #ifdef HASS_NO_METER
+  // ---- create some dummy data for testing without a Slimme Meter connected (HASS_NO_METER is defined)
   static  MyData    DSMRdata;
-  static uint8_t sMinute = 1, sHour = 20, sDay = 27, sMonth = -1, sYear;
-  if (sMonth < 0) sMonth = getLastMonth();
-  EnergyDelivered  += (float)(random(1, 50) / 15.0);
-  EnergyReturned   += (float)(random(1, 40) / 55.0);
-  GasDelivered     += (float)(random(1, 30) / 100.0);
-  sMinute += 57;
-  if (sMinute >= 60) {
-    sMinute -= 59;
-    sHour++;
-  }
-  if (sHour >= 24) {  // 0 .. 23
-    sHour = 0;
-    sDay += 9;
-  }
-  if (sDay >= 30) {
-    sDay = (sDay % 30 ) + 1;
-    sMonth++;
-  }
-  if (sMonth <  1) sMonth = 1;
-  if (sMonth > 12) {
-    sMonth = 1;
-    sYear++;
-  }
+  static uint8_t sMinute = 1, sHour = 20, sDay = 27, sMonth = 12, sYear = 16;
+  if (millis() > noMeterWait) {
+    noMeterWait += 2000;
 
-  telegramCount++;
-  sprintf(cMsg, "18%02d%02d%02d%02d15S", sMonth, sDay, sHour, sMinute);
-  pTimestamp = String(cMsg);
-  if (Verbose) TelnetStream.printf("pTimestamp [%s] sMonth[%02d] sDay[%02d] sHour[%02d] sMinute[%02d]\r\n"
-                                  , pTimestamp.c_str(), sMonth,  sDay,      sHour,      sMinute);
-  if (!OTAinProgress) {
-    digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
-    processData(DSMRdata);
-    delay(1000);
-  }
+    EnergyDelivered  += (float)(random(1, 50) / 15.0);
+    EnergyReturned   += (float)(random(1, 40) / 55.0);
+    GasDelivered     += (float)(random(1, 30) / 100.0);
+    sMinute += 37;
+    if (sMinute >= 60) {
+      sMinute -= 59;
+      sHour++;
+    }
+    if (sHour >= 24) {  // 0 .. 23
+      sHour = 0;
+      sDay += 3;
+    }
+    if (sDay >= 30) {
+      sDay = (sDay % 30 ) + 1;
+      sMonth++;
+    }
+    if (sMonth <  1) sMonth = 1;
+    if (sMonth > 12) {
+      sMonth = 1;
+      sYear++;
+    }
+
+    telegramCount++;
+    sprintf(cMsg, "%02d%02d%02d%02d%02d15S", sYear, sMonth, sDay, sHour, sMinute);
+    pTimestamp = String(cMsg);
+    if (Verbose) TelnetStream.printf("pTimestamp [%s] sYear[%02d] sMonth[%02d] sDay[%02d] sHour[%02d] sMinute[%02d]\r\n"
+                                    , pTimestamp.c_str(), sYear,  sMonth,      sDay,      sHour,      sMinute);
+    if (!OTAinProgress) {
+      digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
+      processData(DSMRdata);
+    }
+
+} // noMeterWait > millis()
 
 #else
+  //---- this part is only processed when HASS_NO_METER is not defined!
   if (!OTAinProgress) {
     if (reader.available()) {
       ArduinoOTA.handle();
@@ -722,6 +732,7 @@ void loop () {
 #endif
 
 } // loop()
+
 
 
 /***************************************************************************
