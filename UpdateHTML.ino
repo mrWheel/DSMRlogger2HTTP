@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : UpdateHTML, part of DSMRlogger2HTTM
-**  Version  : v4.0
+**  Version  : v4.1
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -21,6 +21,7 @@ void sendDataMeterInfo() {
   jsonString += ",\"Electricity_Tariff\":\"" + String(Electricity_Tariff) + "\"";
   jsonString += ",\"Gas_Device_Type\":\"" + String(Gas_Device_Type) + "\"";
   jsonString += ",\"Gas_Equipment_Id\":\"" + String(Gas_Equipment_Id) + "\"";
+  jsonString += ",\"SWversion\":\"" + String(_SW_VERSION) +"\"" ;
   jsonString += ",\"StatusLong\":\"" + lastStartup + ",  telegrams Processed: <b>" + String(telegramCount) + "</b>\"";
   for(int l = 0; l < NUMLASTLOG; l++) {
     jsonString += ",\"lastLogLine" + String((l+1)) + "\":\"[" + String(l) + "]lastLogLine: <b>" + String(lastLogLine[l]) + "</b>\"";

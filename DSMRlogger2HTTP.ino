@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
-**  Version  : v5.2
+**  Version  : v5.3
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -25,14 +25,33 @@
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->"
 */
+#define _SW_VERSION "v5.3 " __DATE__
+
+//  part of https://github.com/esp8266/Arduino
 #include <ESP8266WiFi.h>        // version 1.0.0
+
+//  part of https://github.com/esp8266/Arduino
 #include <ESP8266WebServer.h>   // Version 1.0.0
-#include <WiFiManager.h>        // version 0.14.0 https://github.com/tzapu/WiFiManager
+
+//  https://github.com/tzapu/WiFiManager
+#include <WiFiManager.h>        // version 0.14.0
+
+//  part of https://github.com/esp8266/Arduino
 #include <ArduinoOTA.h>         // Version 1.0.0
+
+//  https://github.com/jandrassy/TelnetStream
 #include <TelnetStream.h>       // Version 0.0.1
+
+//  thanks to David Paiva
 #include "FTPserver.h"          // Version "FTP-2017-10-18"
+
+//  part of https://github.com/esp8266/Arduino
 #include <FS.h>
+
+//  https://github.com/PaulStoffregen/Time
 #include <TimeLib.h>
+
+//  https://github.com/matthijskooijman/arduino-dsmr
 #include <dsmr.h>               // Version 0.1.0
 
 //#define HASS_NO_METER       // define if No Meter is attached
@@ -410,10 +429,10 @@ void processData(MyData DSMRdata) {
      
 //================= handle Day change ======================================================
     if (thisWeekDay != weekday(unixTimestamp)) {
-      // weekday() from unixTimestamp is from 1 (sunday) to 7 (saterday)
+      // weekday() from unixTimestamp is from 1 (sunday) to 7 (saturday)
       if (thisWeekDay != -1) rotateLogFile("Daily rotate");
       thisWeekDay = weekday(unixTimestamp);
-      // in our weekDayDat[] table we have to subtract "1" to get 0 (sunday) to 6 (saterday)
+      // in our weekDayDat[] table we have to subtract "1" to get 0 (sunday) to 6 (saturday)
       slot = thisWeekDay - 1;
       if (slot < 0) slot = 6;
       TelnetStream.printf("Saving data for WeekDay[%02d] in slot[%02d]\n", thisWeekDay, slot);
@@ -424,7 +443,7 @@ void processData(MyData DSMRdata) {
       saveWeekDayData(); 
     }
     slot = weekday(unixTimestamp);
-    // in our weekDayDat[] table we have to subtract "1" to get 0 (sunday) to 6 (saterday)
+    // in our weekDayDat[] table we have to subtract "1" to get 0 (sunday) to 6 (saturday)
     slot -= 1;
     if (slot < 0) slot = 6;
     weekDayDat[slot].EnergyDelivered = EnergyDelivered;

@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : menuStuff, part of DSMRlogger2HTTP
-**  Version  : v5.1
+**  Version  : v5.2
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -86,6 +86,10 @@ void displayMonthsHist(bool Telnet=true) {
 void displayBoardInfo() {
 //===========================================================================================
   TelnetStream.println("\r\n===================================================\r");
+  TelnetStream.print("\r\n SW Version [");  TelnetStream.print( _SW_VERSION );
+  TelnetStream.println("]\r");
+
+  TelnetStream.println("===================================================\r");
   TelnetStream.print(" Board type [");
 #ifdef ARDUINO_ESP8266_NODEMCU
     TelnetStream.print("ESP8266_NODEMCU");

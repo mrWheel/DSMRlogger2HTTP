@@ -4,7 +4,7 @@
 <!--
 ***************************************************************************  
 **  Program  : index.html, part of DSMRlogger2HTTP
-**  Version  : v5.0
+**  Version  : v5.1
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -249,6 +249,12 @@
             </li>
           </ul>
           <br>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="MISWversion">??</div>DSMR-logger SW version</a>
+            </li>
+          </ul>
+          <br>
           <div id="MIstatusLong">-</div>
           <div id="MIlastLogLine1">-</div>
           <div id="MIlastLogLine2">-</div>
@@ -454,6 +460,7 @@
             $('#MIequipmentId').html(data.Equipment_Id);
             $('#MIgasDeviceType').html(data.Gas_Device_Type);
             $('#MIgasEquipmentId').html(data.Gas_Equipment_Id);
+            $('#MISWversion').html(data.SWversion);
             $('#MIstatusLong').html(data.StatusLong);
             $('#MIlastLogLine1').html(data.lastLogLine1);
             $('#MIlastLogLine2').html(data.lastLogLine2);
