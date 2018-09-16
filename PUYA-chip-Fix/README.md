@@ -22,7 +22,7 @@ but there are more. Luckely @igrr has fixed the SPIFFS read problem with the PUY
 I have provided a patched version of the file Esp.cpp. This file will work with all types of Flash
 chips so just do the following:
 
-## Install patched version Esp.cpp
+### Install patched version Esp.cpp
 Find the ```esp8266/hardware/esp8266/2.4.2/cores/esp8266``` map on your computer. On my iMac it is:
 
 ```   .../Arduino15/packages/esp8266/hardware/esp8266/2.4.2/cores/esp8266 ```
@@ -45,7 +45,7 @@ or
 
 And now restart the Arduino-IDE and your good to program (also) boards with a PUYA Flash chip!
 
-# Nederlands
+## Nederlands
 Er zijn een heleboel ESP-01 bordjes in omloop die een Flash chip van PUYA hebben.
 Deze Flash chip is niet compatibel met de gewoonlijk aanwezige Flash chips.
 
@@ -64,7 +64,7 @@ maar er zijn er meer. Gelukkig heeft @igrr een oplossing voor het SPIFFS lees pr
 Ik heb in deze repository een gepatched bestand Esp.cpp opgenomen. Deze versie van Esp.cpp werkt met 
 alle bekende versies Flash chips (dus niet alleen voor de PUYA chip!).
 
-## Installeren van het gepatchte Esp.cpp bestand
+### Installeren van het gepatchte Esp.cpp bestand
 Zoek de ```esp8266/hardware/esp8266/2.4.2/cores/esp8266``` directory op jouw computer. Op mijn iMac staat die hier:
 ```
    .../Arduino15/packages/esp8266/hardware/esp8266/2.4.2/cores/esp8266 
