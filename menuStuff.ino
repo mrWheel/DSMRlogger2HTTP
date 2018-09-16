@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : menuStuff, part of DSMRlogger2HTTP
-**  Version  : v5.2
+**  Version  : v5.3
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -85,12 +85,27 @@ void displayMonthsHist(bool Telnet=true) {
 //===========================================================================================
 void displayBoardInfo() {
 //===========================================================================================
-  TelnetStream.println("\r\n===================================================\r");
-  TelnetStream.print("\r\n SW Version [");  TelnetStream.print( _SW_VERSION );
+  TelnetStream.println("\r\n==================================================================\r");
+  TelnetStream.print(" \r\n          (c)2018 by [Willem Aandewiel (www.aandewiel.nl)");
+  TelnetStream.print("]\r\n          SW Version [");  TelnetStream.print( _SW_VERSION );
+  TelnetStream.print("]\r\n            Compiled [");  TelnetStream.print( __DATE__ ); 
+                                                      TelnetStream.print( "  " );
+                                                      TelnetStream.print( __TIME__ );
+  TelnetStream.print("]\r\n            FreeHeap [");  TelnetStream.print( ESP.getFreeHeap() );
+  TelnetStream.print("]\r\n             Chip ID [");  TelnetStream.print( ESP.getChipId() );
+  TelnetStream.print("]\r\n        Core Version [");  TelnetStream.print( ESP.getCoreVersion() );
+  TelnetStream.print("]\r\n         SDK Version [");  TelnetStream.print( ESP.getSdkVersion() );
+  TelnetStream.print("]\r\n      CPU Freq (MHz) [");  TelnetStream.print( ESP.getCpuFreqMHz() );
+  TelnetStream.print("]\r\n         Sketch Size [");  TelnetStream.print( ESP.getSketchSize() );
+  TelnetStream.print("]\r\n   Free Sketch Space [");  TelnetStream.print( ESP.getFreeSketchSpace() );
+  TelnetStream.print("]\r\n       Flash Chip ID [");  TelnetStream.print( ESP.getFlashChipId() );
+  TelnetStream.print("]\r\n     Flash Chip Size [");  TelnetStream.print( ESP.getFlashChipSize() );
+  TelnetStream.print("]\r\nFlash Chip Real Size [");  TelnetStream.print( ESP.getFlashChipRealSize() );
+  TelnetStream.print("]\r\n    Flash Chip Speed [");  TelnetStream.print( ESP.getFlashChipSpeed() );
   TelnetStream.println("]\r");
 
-  TelnetStream.println("===================================================\r");
-  TelnetStream.print(" Board type [");
+  TelnetStream.println("==================================================================");
+  TelnetStream.print(" \r\n          Board type [");
 #ifdef ARDUINO_ESP8266_NODEMCU
     TelnetStream.print("ESP8266_NODEMCU");
 #endif
@@ -103,15 +118,13 @@ void displayBoardInfo() {
 #ifdef ESP8266_ESP12
     TelnetStream.print("ESP8266_ESP12");
 #endif
-  TelnetStream.print("]\r\n       SSID [");  TelnetStream.print( WiFi.SSID() );
-  TelnetStream.print("]\r\n    PSK key [");  TelnetStream.print( WiFi.psk() );
-  TelnetStream.print("]\r\n IP Address [");  TelnetStream.print( WiFi.localIP() );
-  TelnetStream.print("]\r\n ESP ChipID [");  TelnetStream.print( ESP.getChipId() );
-  TelnetStream.print("]\r\n   Hostname [");  TelnetStream.print( HOSTNAME );
-
-  TelnetStream.print("]\r\n   FreeHeap [");  TelnetStream.print( ESP.getFreeHeap() );
+  TelnetStream.print("]\r\n                SSID [");  TelnetStream.print( WiFi.SSID() );
+//TelnetStream.print("]\r\n             PSK key [");  TelnetStream.print( WiFi.psk() );
+  TelnetStream.print("]\r\n          IP Address [");  TelnetStream.print( WiFi.localIP() );
+  TelnetStream.print("]\r\n          ESP ChipID [");  TelnetStream.print( ESP.getChipId() );
+  TelnetStream.print("]\r\n            Hostname [");  TelnetStream.print( HOSTNAME );
   TelnetStream.println("]\r");
-  TelnetStream.println("===================================================\r\n");
+  TelnetStream.println("==================================================================\r\n");
 
 } // displayBoardInfo()
 

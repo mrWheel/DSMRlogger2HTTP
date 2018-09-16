@@ -25,7 +25,7 @@
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->"
 */
-#define _SW_VERSION "v5.3 " __DATE__
+#define _SW_VERSION "v5.3 (Sept 16 2018)"
 
 //  part of https://github.com/esp8266/Arduino
 #include <ESP8266WiFi.h>        // version 1.0.0
