@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
-**  Version  : v5.3
+**  Version  : v6.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
