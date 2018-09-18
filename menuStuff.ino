@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : menuStuff, part of DSMRlogger2HTTP
-**  Version  : v5.3
+**  Version  : v6.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -17,7 +17,7 @@ void displayDaysHist(bool Telnet=true) {
   int Label;
 
   if (Telnet) TelnetStream.println("\n======== WeekDay History ==========\r\n");
-//else        writeLogFile(" ");
+//else        writeLogFile("======== WeekDay History ==========");
   for (int i=0; i<7; i++) {
     if (i == thisDay) today = '*';
     else              today = ' ';
@@ -28,7 +28,9 @@ void displayDaysHist(bool Telnet=true) {
     sprintf(cMsg, "[%02d][%02d]%c Energy Del.[%s], Ret.[%s], Gas Del.[%s]\r", i, Label, today
                                                                             , ED, ER, GD);
     if (Telnet) TelnetStream.println(cMsg);
+  //else        writeLogFile(cMsg);
   }
+  TelnetStream.flush();
   
 } // displayDaysHist()
 
@@ -41,7 +43,7 @@ void displayHoursHist(bool Telnet=true) {
   int Label;
   
   if (Telnet) TelnetStream.println("\n======== Hours History ==========\r\n");
-//else        writeLogFile(" ");
+//else        writeLogFile("======== Hours History ==========");
   for (int i=1; i<=8; i++) {
     if (i == thisHour)  hour = '*';
     else                hour = ' '; 
@@ -52,8 +54,10 @@ void displayHoursHist(bool Telnet=true) {
     sprintf(cMsg, "[%02d][%02d]%c Energy Del.[%s], Ret.[%s], Gas Del.[%s]\r", i, Label, hour
                                                                           , ED, ER, GD);
     if (Telnet) TelnetStream.println(cMsg);
+  //else        writeLogFile(cMsg);
 
   }
+  TelnetStream.flush();
 
 } // displayHoursHist()
 
@@ -67,7 +71,7 @@ void displayMonthsHist(bool Telnet=true) {
   int Label;
   
   if (Telnet) TelnetStream.println("\n======== Months History ==========\r\n");
-//else        writeLogFile(" ");
+  else        writeLogFile("======== Months History ==========");
   for (int i=1; i<=24; i++) {
     Label = monthsDat[i].Label;
     dtostrf(monthsDat[i].EnergyDelivered, 9, 3, ED);
@@ -76,8 +80,10 @@ void displayMonthsHist(bool Telnet=true) {
     sprintf(cMsg, "[%02d][%04d] Energy Del.[%s], Ret.[%s], Gas Del.[%s]\r", i, Label
                                                                           , ED, ER, GD);
     if (Telnet) TelnetStream.println(cMsg);
+    else        writeLogFile(cMsg);
 
   }
+  TelnetStream.flush();
 
 } // displayMonthsHist()
 
@@ -87,10 +93,12 @@ void displayBoardInfo() {
 //===========================================================================================
   TelnetStream.println("\r\n==================================================================\r");
   TelnetStream.print(" \r\n          (c)2018 by [Willem Aandewiel (www.aandewiel.nl)");
-  TelnetStream.print("]\r\n          SW Version [");  TelnetStream.print( _SW_VERSION );
+  TelnetStream.print("]\r\n    Firmware Version [");  TelnetStream.print( _SW_VERSION );
   TelnetStream.print("]\r\n            Compiled [");  TelnetStream.print( __DATE__ ); 
                                                       TelnetStream.print( "  " );
                                                       TelnetStream.print( __TIME__ );
+  TelnetStream.print("]\r\n Telegrams Processed [");  TelnetStream.print( telegramCount );
+  TelnetStream.print("]\r\n        With eErrors [");  TelnetStream.print( telegramErrors );
   TelnetStream.print("]\r\n            FreeHeap [");  TelnetStream.print( ESP.getFreeHeap() );
   TelnetStream.print("]\r\n             Chip ID [");  TelnetStream.print( ESP.getChipId() );
   TelnetStream.print("]\r\n        Core Version [");  TelnetStream.print( ESP.getCoreVersion() );
@@ -121,10 +129,10 @@ void displayBoardInfo() {
   TelnetStream.print("]\r\n                SSID [");  TelnetStream.print( WiFi.SSID() );
 //TelnetStream.print("]\r\n             PSK key [");  TelnetStream.print( WiFi.psk() );
   TelnetStream.print("]\r\n          IP Address [");  TelnetStream.print( WiFi.localIP() );
-  TelnetStream.print("]\r\n          ESP ChipID [");  TelnetStream.print( ESP.getChipId() );
   TelnetStream.print("]\r\n            Hostname [");  TelnetStream.print( HOSTNAME );
   TelnetStream.println("]\r");
   TelnetStream.println("==================================================================\r\n");
+  TelnetStream.flush();
 
 } // displayBoardInfo()
 
@@ -158,7 +166,7 @@ void handleKeyInput() {
   while (TelnetStream.available() > 0) {
     yield();
     inChar = (char)TelnetStream.read();
-
+    
     switch(inChar) {
       case 'b':
       case 'B':     displayBoardInfo();
@@ -170,23 +178,15 @@ void handleKeyInput() {
                     break;
       case 'F':     TelnetStream.printf("\r\nConnect to AP [%s] and go to ip address shown in the AP-name\r\n", APname);
                     TelnetStream.flush();
-                    writeLogFile("Force reset WiFi credentials ..");
+                    writeLogFile("handleKeyInput(): Force reset WiFi credentials ..");
                     delay(1000);
                     WiFi.disconnect();  // deletes credentials !
                     //setupWiFi(true);
                     ESP.reset();
                     break;
-      case 'G':     if (!readWeekDayData()) {
-                      writeLogFile("Error readWeekDayData() ..");
-                      TelnetStream.println("Error readWeekDayData() ..\r");
-                      TelnetStream.flush();
-                    }
-                    if (!readHourData()) {
-                      writeLogFile("Error readHourData() ..");
-                      TelnetStream.println("Error readHourData() ..   \r");
-                      TelnetStream.flush();
-                    }
-                    readMonthData();
+      case 'G':     if (!readWeekDayData()) TelnetStream.println("handleKeyInput(): error readWeekDayData()!");
+                    if (!readHourData())    TelnetStream.println("handleKeyInput(): error readHourData()!");
+                    if (!readMonthData())   TelnetStream.println("handleKeyInput(): error readMonthData()!");
                     break;
       case 'i':
       case 'I':     for(int I=0; I<10; I++) {
@@ -197,21 +197,23 @@ void handleKeyInput() {
       case 'l':
       case 'L':     readLogFile();
                     break;
+#ifdef HAS_NO_METER
+      case 'Z':     createDummyData();
+                    break;
       case 'm':
-      case 'M':     thisMonth++;
-                    if (thisMonth > 12) {
-                      thisMonth = 1;
-                      thisYear++;
-                    }
-                    shiftDownMonthData(thisYear, thisMonth);
+      case 'M':     testMonth++;
+                    break;
+#endif
+      case 'n':
+      case 'M':     showRaw = !showRaw;
                     break;
       case 'P':     TelnetStream.println("Purging logfile ..\r");
-                    rotateLogFile("logFile purged at user request!");
+                    rotateLogFile("handleKeyInput(): logFile purged at user request!");
                     break;
       case 'R':     TelnetStream.print("Reboot in 3 seconds ... \r");
                     TelnetStream.flush();
                     delay(3000);
-                    writeLogFile("Reboot requested by operator..");
+                    writeLogFile("handleKeyInput(): Reboot requested by operator..");
                     TelnetStream.println("now Rebooting.                      \r");
                     TelnetStream.flush();
                     ESP.reset();
@@ -220,11 +222,18 @@ void handleKeyInput() {
       case 'S':     listSPIFFS();
                     TelnetStream.printf("\r\nAvailable SPIFFS space [%ld]\r\n\n", freeSpace());
                     break;
-      case 'U':     saveWeekDayData();
-                    if(!saveHourData(9)) {
-                      writeLogFile("Error writing hourData (Zero Value) ..");
+      case 'T':     if (SPIFFS.exists(TEST_LOCK_FILE)) {
+                      SPIFFS.remove(TEST_LOCK_FILE);
+                      writeLogFile("handleKeyInput(): remove LOCK_FILE");
+                    } else {
+                      File lockFile = SPIFFS.open(TEST_LOCK_FILE, "w");
+                      lockFile.close();
+                      writeLogFile("handleKeyInput(): create LOCK_FILE");
                     }
-                    saveMonthData(thisYear, thisMonth);
+                    break;
+      case 'U':     saveWeekDayData();
+                    saveHourData(9);
+                    saveThisMonth(thisYear, thisMonth, false);
                     break;
       case 'v':
       case 'V':     if (Verbose) {
@@ -252,9 +261,25 @@ void handleKeyInput() {
                     TelnetStream.println("  *G - Get from SPIFFS (read Data-files)\r");
                     TelnetStream.printf ("   I - Identify by blinking LED on GPIO[%02d]\r\n", BUILTIN_LED);
                     TelnetStream.println("   L - read LogFile\r");
+#ifdef HAS_NO_METER
+                    TelnetStream.println("  *Z - create Dummy Data\r");
+                    TelnetStream.println("   m - force next Month\r");
+#endif
+                    if (showRaw) {
+                      TelnetStream.println("   N - Start Parsing again\r");
+                    } else {
+                      TelnetStream.println("   N - No Parsing (show RAW data from Smart Meter)\r");
+                    }
                     TelnetStream.println("  *P - Purge LogFile\r");
                     TelnetStream.println("  *R - Reboot\r");
                     TelnetStream.println("   S - SPIFFS space available\r");
+#ifndef HAS_NO_METER
+                    if (SPIFFS.exists(TEST_LOCK_FILE)) {
+                      TelnetStream.println("  *T - Tockle (Remove) LOCK_FILE\r");
+                    } else {
+                      TelnetStream.println("  *T - Tockle (Create) LOCK_FILE\r");
+                    }
+#endif
                     TelnetStream.println("  *U - Update SPIFFS (save Data-files)\r");
                     TelnetStream.println("   V - Tockle Verbose\r");
                     if (waitForATOupdate > millis()) {
