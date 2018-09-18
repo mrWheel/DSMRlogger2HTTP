@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
-**  Version  : v6.0
+**  Version  : v6.1
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -724,7 +724,7 @@ void loop () {
         //-- in every itteration (don't know how else)
         MyData    DSMRdata;
         String    DSMRerror;
-    
+
         TelnetStream.println("\n==================================================================\r");
         TelnetStream.printf("read telegram [%d]\r\n", ++telegramCount);
         Serial.printf("read telegram [%d]\n", ++telegramCount);
@@ -740,6 +740,7 @@ void loop () {
           TelnetStream.printf("Parse error %s\r\n", DSMRerror.c_str());
           telegramErrors++;
         }
+        
       } // if (reader.available()) 
     }
   } // if (!OTAinProgress) 
