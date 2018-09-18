@@ -1,6 +1,6 @@
 /*
 ***************************************************************************  
-**  Program  : menuStuff, part of DSMRlogger2HTTP
+**  Program  : MenuStuff, part of DSMRlogger2HTTP
 **  Version  : v6.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
