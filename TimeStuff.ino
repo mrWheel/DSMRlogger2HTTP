@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : TimeStuff, part of DSMRlogger2HTTP
-**  Version  : v5.0
+**  Version  : v6.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -35,8 +35,8 @@ String weekDayName(int weekDayNr) {
     case 2:   dayName = "Tuesday";    break;
     case 3:   dayName = "Wednesday";  break;
     case 4:   dayName = "Thursday";   break;
-    case 5:   dayName = "Fryday";     break;
-    case 6:   dayName = "Saterday";   break;
+    case 5:   dayName = "Friday";     break;
+    case 6:   dayName = "Saturday";   break;
     default:  dayName = "unKnown";
   }
   

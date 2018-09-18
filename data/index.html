@@ -4,7 +4,7 @@
 <!--
 ***************************************************************************  
 **  Program  : index.html, part of DSMRlogger2HTTP
-**  Version  : v5.1
+**  Version  : v6.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -28,7 +28,7 @@
         <li>               <a href="#tab_Week"      data-toggle="tab">Afgelopen Week</a></li>
         <li class="active"><a href="#tab_Hour"      data-toggle="tab">Afgelopen 24 Uur</a></li>
         <li>               <a href="#tab_Month"     data-toggle="tab">Afgelopen 24 Maanden</a></li>
-        <li>               <a href="#tab_MeterInfo" data-toggle="tab">Meter Info</a></li>
+        <li>               <a href="#tab_DeviceInfo" data-toggle="tab">Device Info</a></li>
       </ul>
       <div class="tab-content">
         
@@ -205,63 +205,190 @@
           <table id="table_Months" data-toggle="table" data-show-colunns="true">
             <thead>
               <tr>
-                <th data-field="YearMonth" data-align="left" data-sortable="false">Year/Month</th>
-                <th data-field="EnergyDelivered" data-align="left" data-sortable="false">Energy Delivered (kWh)</th>
-                <th data-field="EnergyReturned" data-align="left" data-sortable="false">Energy Returned (kWh)</th>
-                <th data-field="GasDelivered" data-align="left" data-sortable="false">Gas Delivered (m3)</th>
+                <th colspan=1 data-align="center" data-sortable="false"> </th>
+                <th colspan=4 data-align="center" data-sortable="false">Energy Delivered</th>
+                <th colspan=1 data-align="center" data-sortable="false"> </th>
+                <th colspan=4 data-align="center" data-sortable="false">Energy Delivered</th>
+                <th colspan=1 data-align="center" data-sortable="false"> </th>
+                <th colspan=4 data-align="center" data-sortable="false">Gas Delivered</th>
+              </tr>
+              <tr>
+                <th data-field="Month" data-align="center" data-sortable="false">Month</th>
+                <th data-field="ED1_Year" data-align="center" data-sortable="false">Year</th>
+                <th data-field="EnergyDelivered1" data-align="right" data-sortable="false">(kWh)</th>
+                <th data-field="ED2_Year" data-align="center" data-sortable="false">Year</th>
+                <th data-field="EnergyDelivered2" data-align="right" data-sortable="false">(kWh)</th>
+                <th width=2 data-align="center" data-sortable="false">|</th>
+                <th data-field="ER1_Year" data-align="center" data-sortable="false">Year</th>
+                <th data-field="EnergyReturned1" data-align="right" data-sortable="false">(kWh)</th>
+                <th data-field="ER2_Year" data-align="center" data-sortable="false">Year</th>
+                <th data-field="EnergyReturned2" data-align="right" data-sortable="false">(kWh)</th>
+                <th width=2 data-align="center" data-sortable="false">|</th>
+                <th data-field="GD1_Year" data-align="center" data-sortable="false">Year</th>
+                <th data-field="GasDelivered1" data-align="right" data-sortable="false">(m3)</th>
+                <th data-field="GD2_Year" data-align="center" data-sortable="false">Year</th>
+                <th data-field="GasDelivered2" data-align="right" data-sortable="false">(m3)</th>
               </tr>
             </thead>
           </table>        
         </div>	
         <!-- END OF TAB id="tab_Month" -->       
         
-        <!-- START OF TAB id="tab_MeterInfo" -->
-        <div class="tab-pane fade" id="tab_MeterInfo"> 
+        <!-- START OF TAB id="tab_DeviceInfo" -->
+        <div class="tab-pane fade" id="tab_DeviceInfo"> 
           <h2>ESP-DSMR Meter Info</h2>
           <ul class="nav nav-pills">
             <li class="active"><a style="width:410px" href="#">
-                <div class="span badge pull-right" id="MIidentification">??</div>Identification</a>
+                <div class="span badge pull-right" id="D_identification">??</div>Identification</a>
             </li>
           </ul>
           <ul class="nav nav-pills">
             <li class="active"><a style="width:410px" href="#">
-                <div class="span badge pull-right" id="MIp1_Version">??</div>P1 version</a>
+                <div class="span badge pull-right" id="D_p1_Version">??</div>P1 version</a>
             </li>
           </ul>
           <ul class="nav nav-pills">
             <li class="active"><a style="width:410px" href="#">
-                <div class="span badge pull-right" id="MIelectricityTariff">??</div>Electriciteit Tarief</a>
+                <div class="span badge pull-right" id="D_electricityTariff">??</div>Electriciteit Tarief</a>
             </li>
           </ul>
           <ul class="nav nav-pills">
             <li class="active"><a style="width:410px" href="#">
-                <div class="span badge pull-right" id="MIequipmentId">??</div>Eguipment ID</a>
+                <div class="span badge pull-right" id="D_equipmentId">??</div>Eguipment ID</a>
             </li>
           </ul>
           <ul class="nav nav-pills">
             <li class="active"><a style="width:410px" href="#">
-                <div class="span badge pull-right" id="MIgasDeviceType">??</div>Gas Device Type</a>
+                <div class="span badge pull-right" id="D_gasDeviceType">??</div>Gas Device Type</a>
             </li>
           </ul>
           <ul class="nav nav-pills">
             <li class="active"><a style="width:410px" href="#">
-                <div class="span badge pull-right" id="MIgasEquipmentId">??</div>Gas Equipment ID</a>
+                <div class="span badge pull-right" id="D_gasEquipmentId">??</div>Gas Equipment ID</a>
             </li>
           </ul>
           <br>
           <ul class="nav nav-pills">
             <li class="active"><a style="width:410px" href="#">
-                <div class="span badge pull-right" id="MISWversion">??</div>DSMR-logger SW version</a>
+                <div class="span badge pull-right" id="D_Author">??</div>DSMR Author</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_SwVersion">??</div>DSMR Firmware Version</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_Hostname">??</div>DSMR Hostname</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_Compiled">??</div>DSMR Compiled</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_FreeHeap">??</div>DSMR FreeHeap</a>
             </li>
           </ul>
           <br>
-          <div id="MIstatusLong">-</div>
-          <div id="MIlastLogLine1">-</div>
-          <div id="MIlastLogLine2">-</div>
-          <div id="MIlastLogLine3">-</div>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_SSID">??</div>WiFi SSID</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_PskKey">??</div>WiFi PSK Key</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_IpAddress">??</div>WiFi IP Address</a>
+            </li>
+          </ul>
+          <br>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_ChipID">??</div>ESP Chip ID</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_CoreVersion">??</div>ESP Core Version</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_SdkVersion">??</div>ESP SdkVersion</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_CpuFreqMHz">??</div>ESP CPY Freq. (MHz)</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_SketchSize">??</div>ESP Sketch Size</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_FreeSketchSpace">??</div>ESP Free Sketch Space</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_FlashChipID">??</div>ESP Flash Chip IDn</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_FlashChipSize">??</div>ESP Flash Chip Size</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_FlashChipRealSize">??</div>ESP Flash Chip Real Size</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_FlashChipSpeed">??</div>ESP Flash Chip Speed</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_BoardType">??</div>ESP Board Type</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_EspChipID">??</div>ESP Chip ID</a>
+            </li>
+          </ul>
+          <br>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_TelegramCount">??</div>Telegrams Processed</a>
+            </li>
+          </ul>
+          <ul class="nav nav-pills">
+            <li class="active"><a style="width:410px" href="#">
+                <div class="span badge pull-right" id="D_TelegramErrors">??</div>Telegrams Errors</a>
+            </li>
+          </ul>
+          <br>
+          <div id="D_statusLong">-</div>
+          <div id="D_lastLogLine1">-</div>
+          <div id="D_lastLogLine2">-</div>
+          <div id="D_lastLogLine3">-</div>
 
         </div>
-        <!-- END OFF id="tab_MeterInfo" -->
+        <!-- END OFF id="tab_DeviceInfo" -->
         
       </div>
     </div>
@@ -269,209 +396,7 @@
     <!-- necessary to get #tab_Actual refressed every x seconds!! Leave it!  -->
     <a class="next btn btn-default" id="hiddenButton" href="#">Refress</a>
 
-    <!--script(src='js/script.js')-->
-    <script>    		
-      $(document).ready(function(){
-        console.log("document.ready() and loaded..");
-        // hide the button
-        $('#hiddenButton').hide();
-        // set the pane to load if button is clicked
-      	$('.next').click(function(){
-      	      $('.nav-tabs a[href="#tab_Actual"]').tab('show');
-        });
-        // now trigger a click on the buttun
-        $('.next').trigger('click');
-      });
-
-			var tab_pane;
-      // Force DSMRState first launch
-      var Timer_updateDSMR;
-      var firstDSMR = true;
-      var Timer_updateWeek;
-      var firstWeek  = true;
-      var Timer_updateHours;
-      var firstHour  = true;
-      var Timer_updateMonths;
-      var firstMonth = true;
-      var Timer_updateMeterInfo;
-      var firstMeterInfo  = true;
-   
-
-	  $('a[data-toggle=\"tab\"]').on('shown.bs.tab', function (e) {   
-	  	console.log("data-toggle.on('shown.bs.tab' ....");
-        // remove all the timers when we change tabs
-        clearInterval(Timer_updateDSMR);  
-        clearTimeout(Timer_updateWeek);  
-        clearTimeout(Timer_updateHours);  
-        clearTimeout(Timer_updateMonths);  
-        clearTimeout(Timer_updateMeterInfo);  
-        tab_pane = $(e.target).attr("href")  
-        console.log('activated ' + tab_pane );  
-      
-        // IE10, Firefox, Chrome, etc.
-        if (history.pushState) 
-        	window.history.pushState(null, null, tab_pane);
-        else 
-           window.location.hash = tab_pane;
-           
-        if (tab_pane=='#tab_Actual') {	//-- || tab_pane=='') {
-          console.log('new pane is #tab_Actual');
-          firstDSMR = true;
-          updateDSMRactual();
-          console.log("setInterval(updateDSMRactual, 10000)");
-          Timer_updateDSMR = setInterval(updateDSMRactual, 10000); 	// 10000 MS == 10 seconden
-        }
-	    
-        if (tab_pane=='#tab_Week')  {
-          console.log('new pane is #tab_Week');
-          $('#table_Week').bootstrapTable('refresh',{silent:true, url:'/getTableWeek.json'}); 
-          firstWeek = true;
-          updateWeek();
-          Timer_updateWeek = setInterval(updateWeek, 60000); 		// 60000 MS == 1 minuut
-        }  
-	    
-        if (tab_pane=='#tab_Hour')  {
-          console.log('new pane is #tab_Hour');
-          $('#table_Hours').bootstrapTable('refresh',{silent:true, url:'/getTableHours.json'}); 
-          firstHour = true;
-          Timer_updateHours = setInterval(updateHours, 20000); 		// 20000 MS == 20 seconden
-        }  
-	    
-        if (tab_pane=='#tab_Month')  {
-          console.log('new pane is #tab_Month');
-          $('#table_Months').bootstrapTable('refresh',{silent:true, url:'/getTableMonths.json'}); 
-          firstMonth = true;
-          Timer_updateMonths = setInterval(updateMonths, 30000); 		// 30000 MS == 30 seconden
-        }  
-	    
-        if (tab_pane=='#tab_MeterInfo')  {
-          console.log('new pane is #tab_MeterInfo');
-          firstMeterInfo = true;
-          updateMeterInfo();
-          console.log("setInterval(updateMeterInfo, 60000)");
-          Timer_updateMeterInfo = setInterval(updateMeterInfo, 60000); 		// 60000 MS == 1 minuut
-        }  
-        
-      });	// $('a[data-toggle=\"tab\"]') ..
-
-      
-      function updateDSMRactual(){
-        // only if chart panel is active
-        if (tab_pane=='#tab_Actual' | firstDSMR ){
-          if (firstDSMR) {
-          	console.log("updateDSMRactual() for the first time");
-          }
-          firstDSMR = false;
-          $.getJSON('/getActual.json', function(data){
-          	console.log("updateDSMRactual : " + JSON.stringify(data) );
-            $('#DSMRtimestamp').html(data.Timestamp);
-            $('#DSMRenergyDelivered').html(data.EnergyDelivered);
-            $('#DSMRenergyReturned').html(data.EnergyReturned);
-            $('#DSMRgasDelivered').html(data.GasDelivered);
-            $('#DSMRenergyDeliveredTariff1').html(data.Energy_Delivered_Tariff1);
-            $('#DSMRenergyDeliveredTariff2').html(data.Energy_Delivered_Tariff2);
-            $('#DSMRenergyReturnedTariff1').html(data.Energy_Returned_Tariff1);
-            $('#DSMRenergyReturnedTariff2').html(data.Energy_Returned_Tariff2);
-            $('#DSMRpowerDelivered').html(data.Power_Delivered);
-            $('#DSMRpowerReturned').html(data.Power_Returned);
-            $('#DSMRvoltage_l1').html(data.Voltage_l1);
-            $('#DSMRcurrent_l1').html(data.Current_l1);
-            $('#DSMRvoltage_l2').html(data.Voltage_l2);
-            $('#DSMRcurrent_l2').html(data.Current_l2);
-            $('#DSMRvoltage_l3').html(data.Voltage_l3);
-            $('#DSMRcurrent_l3').html(data.Current_l3);
-            $('#DSMRpowerDelivered_l1').html(data.Power_Delivered_l1);
-            $('#DSMRpowerReturned_l1').html(data.Power_Returned_l1);
-            $('#DSMRpowerDelivered_l2').html(data.Power_Delivered_l2);
-            $('#DSMRpowerReturned_l2').html(data.Power_Returned_l2);
-            $('#DSMRpowerDelivered_l3').html(data.Power_Delivered_l3);
-            $('#DSMRpowerReturned_l3').html(data.Power_Returned_l3);
-            $('#DSMRstatusLong').html(data.StatusLong);
-            $('#DSMRlastLogLine1').html(data.lastLogLine1);
-            $('#DSMRlastLogLine2').html(data.lastLogLine2);
-            $('#DSMRlastLogLine3').html(data.lastLogLine3);
-          }).fail(function(err){
-            console.log("err getJSON getActual.json "+JSON.stringify(err));
-          });
-        }
-      };
-      
-      function updateWeek(){
-        // only if chart panel is active
-        if (tab_pane=='#tab_Week' | firstWeek ){
-          if (firstWeek) {
-          	console.log("updateWeek() for the first time");
-          }
-          updateTableWeek();
-          firstWeek = false;
-        }
-      };
-
-      function updateTableWeek(){
-        // only if chart panel is active
-        $('#table_Week').bootstrapTable('refresh',{silent: true, showLoading: false, url: '/getTableWeek.json'});
-      };
-
-      function updateHours(){
-        // only if chart panel is active
-        if (tab_pane=='#tab_Hour' | firstHour ){
-          if (firstHour) {
-          	console.log("updateHours() for the first time");
-          }
-          updateTableHours();
-          firstHour = false;
-        }
-      };
-
-      function updateTableHours(){
-        // only if chart panel is active
-        $('#table_Hours').bootstrapTable('refresh',{silent: true, showLoading: false, url: '/getTableHours.json'});
-      };
-
-      function updateMonths(){
-        // only if chart panel is active
-        if (tab_pane=='#tab_Month' | firstMonth ){
-          if (firstMonth) {
-          	console.log("updateMonths() for the first time");
-          }
-          updateTableMonths();
-          firstMonth = false;
-        }
-      };
-
-      function updateTableMonths(){
-        // only if chart panel is active
-        $('#table_Months').bootstrapTable('refresh',{silent: true, showLoading: false, url: '/getTableMonths.json'});
-      };
-
-      
-      function updateMeterInfo(){
-        // only if chart panel is active
-        if (tab_pane=='#tab_MeterInfo' | firstMeterInfo ){
-          if (firstMeterInfo) {
-          	console.log("updateMeterInfo() for the first time");
-          }
-          firstMeterInfo = false;
-          $.getJSON('/getMeterInfo.json', function(data){
-          	console.log("updateMeterInfo : " + JSON.stringify(data) );
-            $('#MIidentification').html(data.Identification);
-            $('#MIp1_Version').html(data.P1_Version);
-            $('#MIelectricityTariff').html(data.Electricity_Tariff);
-            $('#MIequipmentId').html(data.Equipment_Id);
-            $('#MIgasDeviceType').html(data.Gas_Device_Type);
-            $('#MIgasEquipmentId').html(data.Gas_Equipment_Id);
-            $('#MISWversion').html(data.SWversion);
-            $('#MIstatusLong').html(data.StatusLong);
-            $('#MIlastLogLine1').html(data.lastLogLine1);
-            $('#MIlastLogLine2').html(data.lastLogLine2);
-            $('#MIlastLogLine3').html(data.lastLogLine3);
-          }).fail(function(err){
-            console.log("err getJSON getMeterInfo.json "+JSON.stringify(err));
-          });
-        }
-      };
-
-    </script>
+    <script src="/index.js"></script>
     </body>
 </html>
 <!--

@@ -25,7 +25,7 @@
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->"
 */
-#define _SW_VERSION "v5.3 (Sept 16 2018)"
+#define _SW_VERSION "v6.0 (Sept 17 2018)"
 
 //  part of https://github.com/esp8266/Arduino
 #include <ESP8266WiFi.h>        // version 1.0.0
@@ -54,28 +54,29 @@
 //  https://github.com/matthijskooijman/arduino-dsmr
 #include <dsmr.h>               // Version 0.1.0
 
-//#define HASS_NO_METER       // define if No Meter is attached
+//#define HAS_NO_METER       // define if No Meter is attached
 
 #ifdef ARDUINO_ESP8266_NODEMCU
-  #define VCC_ENABLE   14   // D3 = GPIO0, D5 = GPIO14, D6 = GPIO12
-  #ifndef HASS_NO_METER
-    #define HOSTNAME     "NODEMCU-DSMR"
-  #else
+  #define VCC_ENABLE   14       // D3 = GPIO0, D5 = GPIO14, D6 = GPIO12
+  #ifdef HAS_NO_METER
     #define HOSTNAME     "TEST-DSMR"
+  #else
+    #define HOSTNAME     "NODEMCU-DSMR"
   #endif
 #endif
 #ifdef ARDUINO_ESP8266_GENERIC
-  #ifndef HASS_NO_METER
-    #define HOSTNAME     "ESP01-DSMR"
-  #else
+  #ifdef HAS_NO_METER
     #define HOSTNAME     "TEST-DSMR"
+  #else
+    #define HOSTNAME     "ESP01-DSMR"
   #endif
-  //#define VCC_ENABLE    0   // GPIO02 Pin 5
-  //#define VCC_ENABLE    1   // TxD -> GPIO01 Pin 1
+  //#define VCC_ENABLE    0     // GPIO02 Pin 5
+  //#define VCC_ENABLE    1     // TxD -> GPIO01 Pin 1
 #endif
 #define HOURS_FILE        "/hours.csv"
 #define WEEKDAY_FILE      "/weekDay.csv"
 #define MONTHS_FILE       "/months.csv"
+#define TEST_LOCK_FILE    "/TEST_LOCK"
 #define MONTHS_CSV_HEADER "YYMM;   Energy Del;   Energy Ret;    Gas Del;\n"
 #define HOURS_CSV_HEADER  "HR; Energy Del; Energy Ret;    Gas Del;\n"
 #define LOG_FILE          "/logger.txt"
@@ -92,7 +93,7 @@ typedef struct {
     float     GasDelivered;
 } dataStruct;
 
-static    dataStruct hoursDat[10];     // 0 + 1-8
+static    dataStruct hoursDat[10];    // 0 + 1-8
 static    dataStruct weekDayDat[9];   // 0 - 6 (0=sunday)
 static    dataStruct monthsDat[27];   // 0 + year1 1 t/m 12 + year2 1 t/m 12
 
@@ -121,7 +122,7 @@ WiFiClient      wifiClient;
 ESP8266WebServer server ( 80 );
 FtpServer ftpSrv;   //set #define FTP_DEBUG in ESP8266FtpServer.h to see ftp verbose on serial
 
-uint32_t  waitLoop, noMeterWait, telegramCount, waitForATOupdate;
+uint32_t  waitLoop, noMeterWait, telegramCount, telegramErrors, waitForATOupdate;
 char      cMsg[100], fChar[10];
 char      APname[50], MAChex[13]; //n1n2n3n4n5n6\0
 //byte      mac[6];
@@ -140,9 +141,10 @@ int       Gas_Device_Type;
 
 String    lastReset   = "", lastStartup = "";
 String    lastLogLine[NUMLASTLOG + 1]; 
-bool      debug = true, OTAinProgress = false, Verbose = false, SPIFFSmounted = false;
+bool      debug = true, OTAinProgress = false, Verbose = false, showRaw = false, SPIFFSmounted = false;
 String    dateTime;
 int8_t    thisHour = -1, thisWeekDay = -1, thisMonth = -1, lastMonth, thisYear = 15;
+int8_t    testMonth = 0;
 int8_t    tries;
 uint32_t  unixTimestamp;
 IPAddress ipDNS, ipGateWay, ipSubnet;
@@ -225,7 +227,7 @@ struct showValues {
 };
  
 //===========================================================================================
-void displayHoursHist(bool);  // prototype (see handleMenu tab)
+void displayHoursHist(bool);  // prototype (see MenuStuff tab)
 void displayDaysHist(bool);   // prototype
 void displayMonthsHist(bool); // prototype
 //===========================================================================================
@@ -340,7 +342,7 @@ void processData(MyData DSMRdata) {
 //===========================================================================================
   int8_t slot, nextSlot, prevSlot;
   
-#ifndef HASS_NO_METER
+#ifndef HAS_NO_METER
     EnergyDelivered     = (float)(  DSMRdata.energy_delivered_tariff1 
                                   + DSMRdata.energy_delivered_tariff2);
     EnergyReturned      = (float)(  DSMRdata.energy_returned_tariff1 
@@ -409,11 +411,7 @@ void processData(MyData DSMRdata) {
         hoursDat[slot].EnergyDelivered = EnergyDelivered;
         hoursDat[slot].EnergyReturned  = EnergyReturned;
         hoursDat[slot].GasDelivered    = GasDelivered;
-        if(!saveHourData(slot)) {
-          TelnetStream.println("Error writing hourData ..(zero value)");
-          writeLogFile("Error writing hourData ..(zero value)");
-          delay(500);
-        }
+        saveHourData(slot);
       }
 
     } // if (thisHour != HourFromTimestamp(pTimestamp)) 
@@ -440,7 +438,7 @@ void processData(MyData DSMRdata) {
       weekDayDat[slot].EnergyDelivered = EnergyDelivered;
       weekDayDat[slot].EnergyReturned  = EnergyReturned;
       weekDayDat[slot].GasDelivered    = GasDelivered;
-      saveWeekDayData(); 
+      saveWeekDayData();
     }
     slot = weekday(unixTimestamp);
     // in our weekDayDat[] table we have to subtract "1" to get 0 (sunday) to 6 (saturday)
@@ -454,7 +452,7 @@ void processData(MyData DSMRdata) {
     if (thisMonth != MonthFromTimestamp(pTimestamp)) {
       thisMonth = MonthFromTimestamp(pTimestamp);
       thisYear  = YearFromTimestamp(pTimestamp);
-      if (Verbose) TelnetStream.printf("processData(): thisYear[%02d] => thisMonth[%02d]\r\n", thisYear, thisMonth);
+      if (Verbose) TelnetStream.printf("processData(): thisYear[20%02d] => thisMonth[%02d]\r\n", thisYear, thisMonth);
       TelnetStream.flush();
       if (   (EnergyDelivered == 0.0) 
           || (EnergyReturned  == 0.0)
@@ -464,33 +462,37 @@ void processData(MyData DSMRdata) {
             thisMonth = -2;
       } else {
         lastMonth = getLastMonth();
+        TelnetStream.printf("processData(): lastMonth[%02d] - thisYear[20%02d] => thisMonth[%02d]\r\n"
+                                            , lastMonth, thisYear, thisMonth);
         if (lastMonth != thisMonth) {
           if (Verbose) TelnetStream.printf("processData(): lastMonth[%02d]; thisYear[%02d] => thisMonth[%02d]\r\n"
                                                           ,lastMonth,       thisYear,         thisMonth);
-          TelnetStream.println("Move thisMonth one slot up");
+          TelnetStream.println("processData(): Move thisMonth one slot up");
           TelnetStream.flush();
-          Serial.println("Move thisMonth one slot up");
-          writeLogFile("Move thisMonth one slot up!");
+          Serial.println("processData(): Move thisMonth one slot up");
+          writeLogFile("processData(): Move thisMonth one slot up!");
           shiftDownMonthData(thisYear, thisMonth);
+          if (Verbose) TelnetStream.println("processData(): months shifted down!");
+          TelnetStream.flush();
         }
-        TelnetStream.printf("Saving data for thisMonth[%02d-%02d] in slot[01]\n", thisYear, thisMonth);
-        Serial.printf("Saving data for thisMonth[%02d-%02d] in slot[01]\n", thisYear, thisMonth);
+        TelnetStream.printf("processData(): Saving data for thisMonth[20%02d-%02d] in slot[01]\n", thisYear, thisMonth);
+        TelnetStream.flush();
+        Serial.printf("processData(): Saving data for thisMonth[20%02d-%02d] in slot[01]\n", thisYear, thisMonth);
         sprintf(cMsg, "%02d%02d", thisYear, thisMonth);
         monthsDat[1].Label           = String(cMsg).toInt();
         monthsDat[1].EnergyDelivered = EnergyDelivered;
         monthsDat[1].EnergyReturned  = EnergyReturned;
         monthsDat[1].GasDelivered    = GasDelivered;
-        if(!saveMonthData(thisYear, thisMonth)) {
-          TelnetStream.println("Error writing monthData ..(zero value)");
-          writeLogFile("Error writing monthData ..(zero value)");
-          delay(500);
-        }
+        saveThisMonth(thisYear, thisMonth, false);
+        if (Verbose) TelnetStream.printf("processData(): monthsDat[1] for [20%04d] saved!\r\n", String(cMsg).toInt());
+        TelnetStream.flush();
       }
 
     } // if (thisMonth != MonthFromTimestamp(pTimestamp)) 
 
     if (Verbose) {
-      TelnetStream.printf("Put data for Month[%02d-%02d] in Slot[01]\n", thisYear, thisMonth);
+      TelnetStream.printf("Put data for Month[20%02d-%02d] in Slot[01]\n", thisYear, thisMonth);
+      TelnetStream.flush();
     }
     monthsDat[1].EnergyDelivered = EnergyDelivered;
     monthsDat[1].EnergyReturned  = EnergyReturned;
@@ -522,11 +524,13 @@ void setup() {
   if (!SPIFFS.begin()) {
     if (debug) Serial.println("SPIFFS Mount failed");   // Serious problem with SPIFFS 
     TelnetStream.println("SPIFFS Mount failed");        // Serious problem with SPIFFS 
+    TelnetStream.flush();
     SPIFFSmounted = false;
     
   } else { 
     if (debug) Serial.println("SPIFFS Mount succesfull");
     TelnetStream.println("SPIFFS Mount succesfull");
+    TelnetStream.flush();
     SPIFFSmounted = true;
     ftpSrv.begin("esp8266","esp8266");    //username, PASSWORD for ftp.  set ports in ESP8266FtpServer.h  (default 21, 50009 for PASV)
     sprintf(cMsg, "Last reset reason: [%s]", ESP.getResetReason().c_str());
@@ -576,52 +580,25 @@ void setup() {
   ArduinoOTA.begin();
   //==============OTA end=====================================
 
-  if (!readHourData()) {
-    writeLogFile("Error readHourData() ..! ");
-  }
-  if (!readWeekDayData()) {
-    writeLogFile("Error readWeekDayData() ..! ");
-  }
-  readMonthData();
+//------ tabellen inlezen ----------------------------
+  if (!readHourData())    TelnetStream.println("setup(): error readHourData()!");
+  if (!readWeekDayData()) TelnetStream.println("setup(): error readWeekDayData()!");
+  if (!readMonthData())   TelnetStream.println("setup(): error readMonthData()!");
+  TelnetStream.flush();
+  thisYear        = getLastYear();
+  thisMonth       = getLastMonth();
 
-#ifdef HASS_NO_METER
-  for (int s=1; s<=8; s++) {
-    hoursDat[s].Label             = s;
-    hoursDat[s].EnergyDelivered   = 0.0;
-    hoursDat[s].EnergyReturned    = 0.0;
-    hoursDat[s].GasDelivered      = 0.0;
-  }
-  saveHourData(3);
-  for (int s=0; s<=6; s++) {
-    weekDayDat[s].Label           = s;
-    weekDayDat[s].EnergyDelivered = 0.0;
-    weekDayDat[s].EnergyReturned  = 0.0;
-    weekDayDat[s].GasDelivered    = 0.0;
-  }
-  saveWeekDayData();
-  for (int s=1; s<=24; s++) {
-    if (s>12)    sprintf(cMsg, "15%02d", (25 - s));
-    else         sprintf(cMsg, "16%02d", (13 - s));
-    monthsDat[s].Label           = String(cMsg).toInt();
-    monthsDat[s].EnergyDelivered = 0.0;
-    monthsDat[s].EnergyReturned  = 0.0;
-    monthsDat[s].GasDelivered    = 0.0;
-  }
-  saveMonthData(16, 12);
-#endif
-
-  telegramCount   =  0;
+  telegramCount   = 0;
+  telegramErrors      = 0;
   
-  server.on("/getMeterInfo.json", sendDataMeterInfo);
+  server.on("/getDeviceInfo.json", sendDataDeviceInfo);
   server.on("/getActual.json", sendDataActual);
   server.on("/getTableWeek.json", sendTableWeek);
   server.on("/getTableHours.json", sendTableHours);
   server.on("/getTableMonths.json", sendTableMonths);
 
-  server.serveStatic("/js", SPIFFS, "/js");
-  server.serveStatic("/css", SPIFFS, "/css");
-  server.serveStatic("/img", SPIFFS, "/img");
   server.serveStatic("/", SPIFFS, "/index.html");
+  server.serveStatic("/index.js", SPIFFS, "/index.js");
 
   server.begin();
   if (debug) Serial.println( "HTTP server started" );
@@ -655,21 +632,25 @@ void loop () {
 //===========================================================================================
   ArduinoOTA.handle();
   server.handleClient();
-  ftpSrv.handleFTP();        //make sure in loop you call handleFTP()!!  
+  ftpSrv.handleFTP();
   handleKeyInput();
+
+  if (!showRaw) {
+    reader.loop();
+  }
   
-  reader.loop();
-
   if (!OTAinProgress) {
-    if (millis() > waitLoop) {
-      waitLoop = millis() + 10000;  // tien seconden?
+    if (!showRaw) {
+      if (millis() > waitLoop) {
+        waitLoop = millis() + 10000;  // tien seconden?
 
-      reader.enable(true);
+        reader.enable(true);
 #ifdef ARDUINO_ESP8266_GENERIC
-      digitalWrite(BUILTIN_LED, LED_ON);
+        digitalWrite(BUILTIN_LED, LED_ON);
 #else
-      digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
+        digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 #endif
+      }
     } 
   } else {  // waiting for ATO-update (or in progress) ...
       if (millis() > waitForATOupdate) {
@@ -678,10 +659,11 @@ void loop () {
       }
   }
   
-#ifdef HASS_NO_METER
-  // ---- create some dummy data for testing without a Slimme Meter connected (HASS_NO_METER is defined)
+#ifdef HAS_NO_METER
+  // ---- create some dummy data for testing without a Slimme Meter connected (HAS_NO_METER is defined)
   static  MyData    DSMRdata;
-  static uint8_t sMinute = 1, sHour = 20, sDay = 27, sMonth = 12, sYear = 16;
+  static  uint8_t   sMinute = 1, sHour = 20, sDay = 27, sMonth = 12, sYear = 16;
+
   if (millis() > noMeterWait) {
     noMeterWait += 2000;
 
@@ -689,6 +671,11 @@ void loop () {
     EnergyReturned   += (float)(random(1, 40) / 55.0);
     GasDelivered     += (float)(random(1, 30) / 100.0);
     sMinute += 37;
+    if (testMonth > 0) {
+      sMonth   += testMonth;    
+      sDay      = 10;
+      testMonth = 0;
+    }
     if (sMinute >= 60) {
       sMinute -= 59;
       sHour++;
@@ -710,43 +697,51 @@ void loop () {
     telegramCount++;
     sprintf(cMsg, "%02d%02d%02d%02d%02d15S", sYear, sMonth, sDay, sHour, sMinute);
     pTimestamp = String(cMsg);
-    if (Verbose) TelnetStream.printf("pTimestamp [%s] sYear[%02d] sMonth[%02d] sDay[%02d] sHour[%02d] sMinute[%02d]\r\n"
-                                    , pTimestamp.c_str(), sYear,  sMonth,      sDay,      sHour,      sMinute);
-    if (!OTAinProgress) {
+    TelnetStream.printf("pTimestamp [%s] sYear[%02d] sMonth[%02d] sDay[%02d] sHour[%02d] sMinute[%02d]\r\n"
+                       , pTimestamp.c_str(), sYear,  sMonth,      sDay,      sHour,      sMinute);
+    TelnetStream.flush();
+    if (!OTAinProgress && !showRaw) {
       digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
       processData(DSMRdata);
     }
 
-} // noMeterWait > millis()
+  } // noMeterWait > millis()
 
 #else
-  //---- this part is only processed when HASS_NO_METER is not defined!
+  //---- this part is only processed when HAS_NO_METER is not defined!
   if (!OTAinProgress) {
-    if (reader.available()) {
-      ArduinoOTA.handle();
-
-      //-- declaration of DSMRdata must be in 
-      //-- if-statement so it will be initialized
-      //-- in every itteration (don't know how else)
-      MyData    DSMRdata;
-      String    DSMRerror;
-    
-      TelnetStream.println("\n==================================================================");
-      TelnetStream.printf("read telegram [%d]\n", ++telegramCount);
-      Serial.printf("read telegram [%d]\n", ++telegramCount);
-
-      if (reader.parse(&DSMRdata, &DSMRerror)) {  // Parse succesful, print result
-        digitalWrite(BUILTIN_LED, LED_OFF);
-        processData(DSMRdata);
-        if (Verbose) {
-          DSMRdata.applyEach(showValues());
-          printData();
-        }
-      } else {                                    // Parser error, print error
-        TelnetStream.printf("Parse error %s\n", DSMRerror.c_str());
+    if (showRaw) {
+      while(Serial.available() > 0) {
+        char rIn = Serial.read();
+        TelnetStream.write((char)rIn);
       }
-    } // if (reader.available()) 
+    } else {
+      if (reader.available()) {
+        ArduinoOTA.handle();
+
+        //-- declaration of DSMRdata must be in 
+        //-- if-statement so it will be initialized
+        //-- in every itteration (don't know how else)
+        MyData    DSMRdata;
+        String    DSMRerror;
     
+        TelnetStream.println("\n==================================================================\r");
+        TelnetStream.printf("read telegram [%d]\r\n", ++telegramCount);
+        Serial.printf("read telegram [%d]\n", ++telegramCount);
+
+        if (reader.parse(&DSMRdata, &DSMRerror)) {  // Parse succesful, print result
+          digitalWrite(BUILTIN_LED, LED_OFF);
+          processData(DSMRdata);
+          if (Verbose) {
+            DSMRdata.applyEach(showValues());
+            printData();
+          }
+        } else {                                    // Parser error, print error
+          TelnetStream.printf("Parse error %s\r\n", DSMRerror.c_str());
+          telegramErrors++;
+        }
+      } // if (reader.available()) 
+    }
   } // if (!OTAinProgress) 
 #endif
 

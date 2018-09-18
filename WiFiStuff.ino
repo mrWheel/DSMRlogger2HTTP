@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : WiFiStuff, part of DSMRlogger2HTTP
-**  Version  : v5.1
+**  Version  : v6.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -69,6 +69,7 @@ byte    mac[6];
       if (!wifiManager.startConfigPortal(APname)) {
         Serial.println("startConfigPortal(): Failed to connect and hit timeout");
         TelnetStream.println("startConfigPortal(): Failed to connect and hit timeout");
+        TelnetStream.flush();
         writeLogFile("startConfigPortal(): Failed to connect and hit timeout");
         delay(1000);
         //reset and try again, or maybe put it to deep sleep

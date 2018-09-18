@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : SPIFFSstuff, part of DSMRlogger2HTTP
-**  Version  : v5.2
+**  Version  : v6.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -33,6 +33,8 @@ void listSPIFFS() {
     TelnetStream.printf("%-15s %ld \r\n", dir.fileName().c_str(), f.size());
     yield();
   }
+  TelnetStream.flush();
+
 } // listSPIFFS()
 
 //===========================================================================================
@@ -45,6 +47,7 @@ void readLogFile() {
 
     if (!SPIFFSmounted) {
       TelnetStream.println("No SPIFFS filesystem..");
+      TelnetStream.flush();
       return;
     }
     // open the file. note that only one file can be open at a time,
@@ -83,6 +86,7 @@ void readLogFile() {
     } // for i ..
     
     TelnetStream.println("\n===END===\r");
+    TelnetStream.flush();
 
 }   // readLogFile()
 
@@ -94,10 +98,11 @@ bool writeLogFile(String logLine) {
 
     if (!SPIFFSmounted) {
       TelnetStream.println("No SPIFFS filesystem..");
+      TelnetStream.flush();
       return false;
     }
 
-    if (freeSpace() < 1000) {
+    if (freeSpace() < 2500) {
       rotateLogFile("rotateLogFile due to space");
     }
     
@@ -105,6 +110,7 @@ bool writeLogFile(String logLine) {
         newLogFile = false;
     } else {
         TelnetStream.println("writeLogFile(): new logfile\r");
+        TelnetStream.flush();
         newLogFile = true;
     }
 
@@ -154,32 +160,41 @@ void rotateLogFile(String reason) {
 
 
 //===========================================================================================
-bool saveHourData(int8_t slot) {
+void saveHourData(int8_t slot) {
 //===========================================================================================
-  bool errorVal = false;
 
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
     
-  sprintf(cMsg, "saveHourData(%d) ...", slot);
+  sprintf(cMsg, "saveHourData(%02d) ...", slot);
   TelnetStream.print(cMsg);
+  TelnetStream.flush();
   Serial.print(cMsg);
   writeLogFile(cMsg);
   displayHoursHist(false);    // log to file
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
-    return true;
+    TelnetStream.flush();
+    return;
   }
-  
+
+#ifdef HAS_NO_METER
+  if (SPIFFS.exists(TEST_LOCK_FILE)) {
+    TelnetStream.println("saveHourData() ==> Lock File Exists -> not overwiting with testdata!.. \r");
+    TelnetStream.flush();
+    return;
+  }
+#endif
+
   if (slot >= 1 && slot <= 8) {
-    if (    (hoursDat[slot].EnergyDelivered == 0.0) 
-         || (hoursDat[slot].EnergyReturned == 0.0)
-         || (hoursDat[slot].GasDelivered == 0.0)) {
+    if (    (hoursDat[1].EnergyDelivered == 0.0) 
+         || (hoursDat[1].EnergyReturned  == 0.0)
+         || (hoursDat[1].GasDelivered    == 0.0)) {
       TelnetStream.println("saveHourData(): Error (Zero value)!!\r");
       TelnetStream.flush();
-      return false;
+      return;
     }
-  }
+}
 
   File hoursFile = SPIFFS.open(HOURS_FILE, "w");
 
@@ -195,20 +210,18 @@ bool saveHourData(int8_t slot) {
                                                 , String(hoursDat[r].EnergyReturned, 3).c_str()
                                                 , String(hoursDat[r].GasDelivered, 2).c_str());
     if (r == slot) {
-      TelnetStream.print(cMsg);
-      Serial.print(cMsg);
+      TelnetStream.printf("saveHourData(%02d): => %s\r\n", r, cMsg);
+      Serial.printf("saveHourData(%02d): => %s\r\n", r, cMsg);
     }
     hoursFile.print(cMsg);
   }
 
   hoursFile.close();  
 
-  TelnetStream.println(" Done\r");
+  TelnetStream.println("saveHourData(): Done\r");
   TelnetStream.flush();
 
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
-
-  return true;
 
 } // saveHourData()
 
@@ -221,11 +234,13 @@ bool readHourData() {
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
   TelnetStream.print("readHourData() ... ");
+  TelnetStream.flush();
   Serial.print("readHourData() ... ");
   writeLogFile("readHourData() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
+    TelnetStream.flush();
     return true;
   }
 
@@ -234,6 +249,7 @@ bool readHourData() {
 
   File hoursFile = SPIFFS.open(HOURS_FILE, "r");
   TelnetStream.printf("%s: size(%d) ", HOURS_FILE, hoursFile.size());
+  TelnetStream.flush();
   Serial.printf("%s: size(%d) \r\n", HOURS_FILE, hoursFile.size());
 
   String header = hoursFile.readStringUntil('\n');  // read CSV Header (rec 0)
@@ -243,6 +259,7 @@ bool readHourData() {
   for(r=1; r <= 8; r++) {
       yield();
       if (Verbose) TelnetStream.printf(" %d", r);
+      TelnetStream.flush();
       hoursDat[r].Label            = (int)hoursFile.readStringUntil(';').toInt();
       hoursDat[r].EnergyDelivered  = (float)hoursFile.readStringUntil(';').toFloat();
       hoursDat[r].EnergyReturned   = (float)hoursFile.readStringUntil(';').toFloat();
@@ -258,14 +275,14 @@ bool readHourData() {
     TelnetStream.printf("readHourData(): ERROR!! ==> read [%d] records\r\n", --r);
     for (r=1; r<=8; r++) {
       TelnetStream.printf("Label[%d] has value [%d]\r\n", r, hoursDat[r].Label);
+      TelnetStream.flush();
       Serial.printf("Label[%d] has value [%d]\r\n", r, hoursDat[r].Label);
     }
-    TelnetStream.flush();
     writeLogFile("Error reading [hours.csv] ...");
     return false;
   }
 
-  TelnetStream.println(" Done\r");
+  TelnetStream.println("readHourData(): Done\r");
   TelnetStream.flush();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
@@ -280,14 +297,24 @@ void saveWeekDayData() {
 
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
-  TelnetStream.print("saveWeekDayData(s) ... ");
+  TelnetStream.print("saveWeekDayData() ... ");
+  TelnetStream.flush();
   Serial.print("saveWeekDayData(s) ... ");
   writeLogFile("saveWeekDayData() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
+    TelnetStream.flush();
     return;
   }
+
+#ifdef HAS_NO_METER
+  if (SPIFFS.exists(TEST_LOCK_FILE)) {
+    TelnetStream.println("saveWeekDayData() ==> Lock File Exists -> not overwiting with testdata!.. \r");
+    TelnetStream.flush();
+    return;
+  }
+#endif
 
   displayDaysHist(false);   // write to log-file
 
@@ -296,6 +323,7 @@ void saveWeekDayData() {
   for (int16_t r=0; r < 7; r++) {
     yield();
     if (Verbose) TelnetStream.printf(" %d", r);
+    TelnetStream.flush();
     weekFile.print(r);  // Label
     weekFile.print(";");
     weekFile.print((float)weekDayDat[r].EnergyDelivered);
@@ -309,7 +337,7 @@ void saveWeekDayData() {
 
   weekFile.close();  
 
-  TelnetStream.println(" Done\r");
+  TelnetStream.println("saveWeekDayData(): Done\r");
   TelnetStream.flush();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   
@@ -323,21 +351,27 @@ bool readWeekDayData() {
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
   TelnetStream.print("readWeekDayData() ... ");
+  TelnetStream.flush();
   Serial.print("readWeekDayData() ... ");
   writeLogFile("readWeekDayData() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
+    TelnetStream.flush();
     return true;
   }
-  
+
   File weekFile = SPIFFS.open(WEEKDAY_FILE, "r");
+  TelnetStream.printf("%s: size(%d) ", WEEKDAY_FILE, weekFile.size());
+  TelnetStream.flush();
+  Serial.printf("%s: size(%d) \r\n", WEEKDAY_FILE, weekFile.size());
 
   r=0;
 //while(weekFile.available() && (r <= 6)) {
   for(r = 0; r<=6; r++) {
       yield();
       if (Verbose) TelnetStream.printf(" %d", r);
+      TelnetStream.flush();
       weekDayDat[r].Label            = (int)weekFile.readStringUntil(';').toInt();
       weekDayDat[r].EnergyDelivered  = (float)weekFile.readStringUntil(';').toFloat();
       weekDayDat[r].EnergyReturned   = (float)weekFile.readStringUntil(';').toFloat();
@@ -356,7 +390,7 @@ bool readWeekDayData() {
     return false;
   }
 
-  TelnetStream.println(" Done\r");
+  TelnetStream.println("readWeekDatData(): Done\r");
   TelnetStream.flush();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
@@ -366,7 +400,7 @@ bool readWeekDayData() {
 
 
 //===========================================================================================
-bool saveMonthData(int8_t thisYear, int8_t thisMonth) {
+void saveThisMonth(int8_t thisYear, int8_t thisMonth, bool force) {
 //===========================================================================================
   bool   errorVal = false;
   int8_t sltYear  = thisYear;
@@ -374,32 +408,47 @@ bool saveMonthData(int8_t thisYear, int8_t thisMonth) {
   File   monthsFile;
   
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
-  TelnetStream.printf("saveMonthData(%02d-%02d) ... ", thisYear, thisMonth);
-  Serial.printf("saveMonthData(%02d-%02d) ... ", thisYear, thisMonth);
-  writeLogFile("saveMonthData() ... ");
+  sprintf(cMsg, "saveThisMonth(20%02d-%02d) acceptZeroVal[%d]... \r\n", thisYear, thisMonth, force);
+  TelnetStream.print(cMsg);
+  TelnetStream.flush();
+  Serial.print(cMsg);
+  writeLogFile(cMsg);
   displayMonthsHist(false);    // log to file
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
-    return true;
+    TelnetStream.flush();
+    return;
   }
   
-  if (    (monthsDat[1].EnergyDelivered == 0.0) 
-       || (monthsDat[1].EnergyReturned == 0.0)
-       || (monthsDat[1].GasDelivered == 0.0)) {
-    TelnetStream.println("saveMonthData(): Error (Zero value)!!\r");
+#ifdef HAS_NO_METER
+  if (SPIFFS.exists(TEST_LOCK_FILE)) {
+    TelnetStream.println("saveThisMonth() ==> Lock File Exists -> not overwiting with testdata!.. \r");
     TelnetStream.flush();
-    return false;
+    return;
+  }
+#endif
+  
+  if (!force) {  
+    if (    (monthsDat[1].EnergyDelivered == 0.0) 
+         || (monthsDat[1].EnergyReturned  == 0.0)
+         || (monthsDat[1].GasDelivered    == 0.0)) {
+      TelnetStream.println("saveThisMonth(): Error (Zero value)!!\r");
+      TelnetStream.flush();
+      return;
+    }
   }
 
   sprintf(cMsg, MONTHS_CSV_HEADER);
   int8_t recLength = String(cMsg).length();
   TelnetStream.printf("Record Length is [%d]\n", recLength);
+  TelnetStream.flush();
   Serial.printf("Record Length is [%d]\n", recLength);
 
   if (!SPIFFS.exists(MONTHS_FILE)) {
-    TelnetStream.println("saveMonthData(): create empty file");
-    writeLogFile("saveMonthData(): create empty file");
+    TelnetStream.println("saveThisMonth(): create empty file");
+    TelnetStream.flush();
+    writeLogFile("saveThisMonth(): create empty file");
     
     monthsFile = SPIFFS.open(MONTHS_FILE, "w");
     monthsFile.print(cMsg);
@@ -413,68 +462,78 @@ bool saveMonthData(int8_t thisYear, int8_t thisMonth) {
                                            , String(monthsDat[1].EnergyDelivered, 3).c_str()
                                            , String(monthsDat[1].EnergyReturned, 3).c_str()
                                            , String(monthsDat[1].GasDelivered, 2).c_str());
-  TelnetStream.print(cMsg);
-  Serial.print(cMsg);
+                                           
+  if (Verbose) TelnetStream.printf("saveThisMonth(): slot[01] => %s\r", cMsg);
+  TelnetStream.flush();
+  Serial.printf("saveThisMonth(): slot[01] => %s\r", cMsg);
+  
   monthsFile.seek(recLength, SeekSet);
   monthsFile.print(cMsg);
 
   monthsFile.close();  
 
-  TelnetStream.println(" Done\r");
+  TelnetStream.println("saveThisMonth(): Done\r");
   TelnetStream.flush();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
-  return true;
-
-} // saveMonthData()
+} // saveThisMonth()
 
 
 //===========================================================================================
-void readMonthData() {
+bool readMonthData() {
 //===========================================================================================
   int8_t  r=1;
 
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   
-  TelnetStream.print("readMonthData() ... ");
-  Serial.print("readMonthData() ... ");
+  TelnetStream.println("readMonthData() ... \r");
+  TelnetStream.flush();
+  Serial.println("readMonthData() ... ");
   writeLogFile("readMonthData() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
-    return;
+    TelnetStream.flush();
+    return false;
   }
 
   sprintf(cMsg, MONTHS_CSV_HEADER);
   int8_t recLength = String(cMsg).length();
 
   File monthsFile = SPIFFS.open(MONTHS_FILE, "r");
+  TelnetStream.printf("%s: size(%d) ", MONTHS_FILE, monthsFile.size());
+  TelnetStream.flush();
+  Serial.printf("%s: size(%d) \r\n", MONTHS_FILE, monthsFile.size());
 //-- seek() gives strange results ..  
 //monthsFile.seek(recLength, SeekSet); // skip header
   String mHeader = monthsFile.readStringUntil('\n');  // skip header
   
-//while(monthsFile.available() && (r < 25)) {
   for(r = 1; r <= 24; r++) {
       yield();
-      if (Verbose) TelnetStream.printf(" %d", r);
       monthsDat[r].Label            = (int)monthsFile.readStringUntil(';').toInt();
-      if (Verbose) TelnetStream.printf("[%02d] YYMM[%04d]\r\n", r, monthsDat[r].Label);
       monthsDat[r].EnergyDelivered  = (float)monthsFile.readStringUntil(';').toFloat();
       monthsDat[r].EnergyReturned   = (float)monthsFile.readStringUntil(';').toFloat();
       monthsDat[r].GasDelivered     = (float)monthsFile.readStringUntil(';').toFloat();
       String n = monthsFile.readStringUntil('\n');
+      if (Verbose) TelnetStream.printf("recNo[%02d] Label[%04d], ED[%s], ER[%s], GD[%s]\r\n"
+                                        , r, monthsDat[r].Label
+                                        ,    String(monthsDat[r].EnergyDelivered, 3).c_str()
+                                        ,    String(monthsDat[r].EnergyReturned, 3).c_str()
+                                        ,    String(monthsDat[r].GasDelivered, 2).c_str() );
+      else TelnetStream.print(".");
+      TelnetStream.flush();
       delay(5);
-      //r++;
   }
   
   monthsFile.close();  
 
-  TelnetStream.println(" Done\r");
+  TelnetStream.println("readMonthData(): Done\r");
   TelnetStream.flush();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
-} // readMonthData()
+  return true;
 
+} // readMonthData()
 
 
 //===========================================================================================
@@ -484,10 +543,59 @@ int8_t getLastMonth() {
   
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   TelnetStream.print("getLastMonth() ... ");
+  TelnetStream.flush();
   Serial.print("getLastMonth() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
+    TelnetStream.flush();
+    return -1;
+  }
+
+  sprintf(cMsg, MONTHS_CSV_HEADER);
+  int8_t recLength = String(cMsg).length();
+
+  File monthsFile = SPIFFS.open(MONTHS_FILE, "r");
+//-- seek() gives strange results ..  
+//monthsFile.seek(recLength, SeekSet); // skip header
+  String mHeader = monthsFile.readStringUntil('\n');  // skip header record
+
+  TelnetStream.printf("getLastMonth(): Header[%s]\r\n", mHeader.c_str());
+  TelnetStream.flush();
+
+  yearMonth = (int)monthsFile.readStringUntil(';').toInt();
+  monthsFile.close();
+  
+  TelnetStream.printf("getLastMonth(): yearMonth[20%04d]\r\n", yearMonth);
+  TelnetStream.flush();
+  lastMonth = (yearMonth % 100);
+  
+  sprintf(cMsg, "getLastMonth() ... ==> [%02d]", lastMonth);
+  TelnetStream.println(cMsg);
+  TelnetStream.flush();
+  Serial.println(cMsg);
+  writeLogFile(cMsg);
+  digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
+
+  return lastMonth;
+
+} // getLastMonth()
+
+
+
+//===========================================================================================
+int8_t getLastYear() {
+//===========================================================================================
+  int16_t yearMonth, lastYear;
+  
+  digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
+  TelnetStream.print("getLastYear() ... ");
+  TelnetStream.flush();
+  Serial.print("getLastYear() ... ");
+
+  if (!SPIFFSmounted) {
+    TelnetStream.println("No SPIFFS filesystem..\r");
+    TelnetStream.flush();
     return -1;
   }
 
@@ -502,16 +610,18 @@ int8_t getLastMonth() {
   yearMonth = (int)monthsFile.readStringUntil(';').toInt();
   monthsFile.close();
   
-  lastMonth = (yearMonth % 100);
+  lastYear = (yearMonth / 100);
   
-  sprintf(cMsg, "getLastMonth() ... ==> [%02d]", lastMonth);
+  sprintf(cMsg, "getLastYear() ... ==> [20%02d]", lastYear);
+  TelnetStream.println(cMsg);
+  TelnetStream.flush();
   Serial.println(cMsg);
   writeLogFile(cMsg);
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
-  return lastMonth;
+  return lastYear;
 
-} // getLastMonth()
+} // getLastYear()
 
 
 //===========================================================================================
@@ -522,59 +632,144 @@ void shiftDownMonthData(int8_t thisYear, int8_t thisMonth) {
 
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
-  TelnetStream.printf("shiftDownMonthData(%02d-%02d) ... \n", thisYear, thisMonth);
-  Serial.printf("shiftDownMonthData(%02d-%02d) ... \n", thisYear, thisMonth);
+  TelnetStream.printf("shiftDownMonthData(20%02d-%02d) ... \n", thisYear, thisMonth);
+  TelnetStream.flush();
+  Serial.printf("shiftDownMonthData(20%02d-%02d) ... \n", thisYear, thisMonth);
   writeLogFile("shiftDownMonthData() ... ");
-  displayMonthsHist(false);    // log to file
+  displayMonthsHist(false);   // log to file
+  displayMonthsHist(true);    // log to TelnetStream
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
+    TelnetStream.flush();
     return;
   }
+
+#ifdef HAS_NO_METER
+  if (SPIFFS.exists(TEST_LOCK_FILE)) {
+    TelnetStream.println("shiftDownMonthData() ==> Lock File Exists -> not overwiting with testdata!.. \r");
+    TelnetStream.flush();
+    return;
+  }
+#endif
 
   monthsFile = SPIFFS.open(MONTHS_FILE, "w");
 
   //--- write header -----
   sprintf(cMsg, MONTHS_CSV_HEADER);
   monthsFile.print(cMsg);
-  TelnetStream.printf("[%02d] => tab[00] %s", recNo, cMsg);
-  Serial.printf("[%02d] => tab[00] %s", recNo, cMsg);
+  if (Verbose) TelnetStream.printf("recNo[%02d] => tab[00] %s", recNo, cMsg);
+  TelnetStream.flush();
+  Serial.printf("recNo[%02d] => tab[00] %s", recNo, cMsg);
   recNo++;
   
   int8_t recLength = String(cMsg).length();
-  TelnetStream.printf("Record Length is [%d]\n", recLength);
+  if (Verbose) TelnetStream.printf("Record Length is [%d]\n", recLength);
+  TelnetStream.flush();
 
   //--- write first record ---------
   sprintf(cMsg, "%02d%02d; %12s; %12s; %10s;\n", thisYear, thisMonth
-                                               , String(monthsDat[1].EnergyDelivered, 3).c_str()
-                                               , String(monthsDat[1].EnergyReturned, 3).c_str()
-                                               , String(monthsDat[1].GasDelivered, 2).c_str());
+                                               , String(0.0, 3).c_str()
+                                               , String(0.0, 3).c_str()
+                                               , String(0.0, 2).c_str());
   monthsFile.print(cMsg);
-  TelnetStream.printf("recNo[%02d] => tab[01] %s", recNo, cMsg);
+  if (Verbose) TelnetStream.printf("recNo[%02d] => tab[01] %s\r", recNo, cMsg);
+  TelnetStream.flush();
   Serial.printf("recNo[%02d] => tab[01] %s", recNo, cMsg);
   recNo++;
   //--- write second, third etc. record ---------
-  for (int8_t ym=2; ym<=24; ym++) {
+  for (int8_t ym=1; ym<=23; ym++) {
       sprintf(cMsg, "%04d; %12s; %12s; %10s;\n", monthsDat[ym].Label
                                                , String(monthsDat[ym].EnergyDelivered, 3).c_str()
                                                , String(monthsDat[ym].EnergyReturned, 3).c_str()
                                                , String(monthsDat[ym].GasDelivered, 2).c_str());
-      TelnetStream.printf("recNo[%02d] => tab[%02d] %s", recNo, ym, cMsg);
-      Serial.printf("recNo[%02d] => tab[%02d] %s\n", recNo, ym, cMsg);
       monthsFile.print(cMsg);
+      if (Verbose) TelnetStream.printf("recNo[%02d] => tab[%02d] %s\r", recNo, ym, cMsg);
+      TelnetStream.flush();
+      Serial.printf("recNo[%02d] => tab[%02d] %s\n", recNo, ym, cMsg);
       recNo++;
   }
   
   monthsFile.close();  
 
-  TelnetStream.println(" Done\r");
+  if (!readMonthData()) TelnetStream.println("shiftDownMonthData(): error readMonthData()!\r");
+  TelnetStream.flush();
+
+  TelnetStream.println("shiftDownMonthData(): Done\r");
   TelnetStream.flush();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
-  readMonthData();
-
 } // shiftDownMonthData()
 
+
+#ifdef HAS_NO_METER
+//===========================================================================================
+void createDummyData() {
+//===========================================================================================
+
+  if (SPIFFS.exists(TEST_LOCK_FILE)) {
+    TelnetStream.println("createDummyData() ==> Lock File Exists -> not overwiting with testdata!.. \r");
+    TelnetStream.flush();
+    return;
+  }
+
+  TelnetStream.println("createDummyData() ==> hoursDat[].. \r");
+  TelnetStream.flush();
+  for (int s=1; s<=8; s++) {
+    hoursDat[s].Label             = s;
+    hoursDat[s].EnergyDelivered   = 0.0;
+    hoursDat[s].EnergyReturned    = 0.0;
+    hoursDat[s].GasDelivered      = 0.0;
+  }
+  saveHourData(9);
+  
+  TelnetStream.println("createDummyData() ==> weekDayDat[].. \r");
+  TelnetStream.flush();
+  for (int s=0; s<=6; s++) {
+    weekDayDat[s].Label           = s;
+    weekDayDat[s].EnergyDelivered = 0.0;
+    weekDayDat[s].EnergyReturned  = 0.0;
+    weekDayDat[s].GasDelivered    = 0.0;
+  }
+  saveWeekDayData();
+  
+  TelnetStream.println("createDummyData() ==> monthsDat[].. \r");
+  TelnetStream.flush();
+  
+  File monthsFile = SPIFFS.open(MONTHS_FILE, "w");
+  //--- write header -----
+  sprintf(cMsg, MONTHS_CSV_HEADER);
+  monthsFile.print(cMsg);
+
+  //--- write zeroes to file ---------
+  char cLabel[10];
+  for (int s=1; s<=24; s++) {
+    if (s>12) {   
+      sprintf(cLabel, "15%02d", (25 - s));
+    } else {
+      sprintf(cLabel, "16%02d", (13 - s));
+    }
+    sprintf(cMsg, "%04d; %12s; %12s; %10s;\n", String(cLabel).toInt()
+                                             , String(0.0, 3).c_str()
+                                             , String(0.0, 3).c_str()
+                                             , String(0.0, 2).c_str());
+      monthsFile.print(cMsg);
+  }
+
+  monthsFile.close();  
+
+  if (!readMonthData()) TelnetStream.println("createDummyData():(): error readMonthData()!\r");
+  TelnetStream.flush();
+  displayMonthsHist(true);  // to TelnetStream
+
+  thisYear  = getLastYear();
+  thisMonth = getLastMonth();
+  
+  TelnetStream.println("createDummyData(): Done\r");
+  TelnetStream.flush();
+
+} // createDummyData()
+#endif
 
 /***************************************************************************
 *
