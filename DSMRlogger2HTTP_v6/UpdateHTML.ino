@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : UpdateHTML, part of DSMRlogger2HTTM
-**  Version  : v0.6.1
+**  Version  : v0.6.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **

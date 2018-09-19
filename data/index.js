@@ -1,7 +1,7 @@
 
 //*************************************************************************  
 //  Program  : index.js, part of DSMRlogger2HTTP
-//  Version  : v6.0
+//  Version  : v0.6.2
 //
 //  Copyright (c) 2018 Willem Aandewiel
 //
@@ -103,9 +103,9 @@
           $.getJSON('/getActual.json', function(data){
           	console.log("updateDSMRactual : " + JSON.stringify(data) );
             $('#DSMRtimestamp').html(data.Timestamp);
-            $('#DSMRenergyDelivered').html(data.EnergyDelivered);
-            $('#DSMRenergyReturned').html(data.EnergyReturned);
-            $('#DSMRgasDelivered').html(data.GasDelivered);
+            $('#DSMRenergyDelivered').html(data.Energy_Delivered);
+            $('#DSMRenergyReturned').html(data.Energy_Returned);
+            $('#DSMRgasDelivered').html(data.Gas_Delivered);
             $('#DSMRenergyDeliveredTariff1').html(data.Energy_Delivered_Tariff1);
             $('#DSMRenergyDeliveredTariff2').html(data.Energy_Delivered_Tariff2);
             $('#DSMRenergyReturnedTariff1').html(data.Energy_Returned_Tariff1);
@@ -124,10 +124,6 @@
             $('#DSMRpowerReturned_l2').html(data.Power_Returned_l2);
             $('#DSMRpowerDelivered_l3').html(data.Power_Delivered_l3);
             $('#DSMRpowerReturned_l3').html(data.Power_Returned_l3);
-            $('#DSMRstatusLong').html(data.StatusLong);
-            $('#DSMRlastLogLine1').html(data.lastLogLine1);
-            $('#DSMRlastLogLine2').html(data.lastLogLine2);
-            $('#DSMRlastLogLine3').html(data.lastLogLine3);
           }).fail(function(err){
             console.log("err getJSON getActual.json "+JSON.stringify(err));
           });
@@ -199,7 +195,7 @@
             $('#D_gasDeviceType').html(data.Gas_Device_Type);
             $('#D_gasEquipmentId').html(data.Gas_Equipment_Id);
             $('#D_Author').html(data.Author);
-            $('#D_SwVersion').html(data.SwVersion);
+            $('#D_FwVersion').html(data.FwVersion);
             $('#D_Compiled').html(data.Compiled);
             $('#D_FreeHeap').html(data.FreeHeap);
             $('#D_ChipID').html(data.ChipID);
@@ -220,7 +216,7 @@
             $('#D_Hostname').html(data.Hostname);
             $('#D_TelegramCount').html(data.TelegramCount);
             $('#D_TelegramErrors').html(data.TelegramErrors);
-            $('#D_statusLong').html(data.StatusLong);
+            $('#D_statusLong').html(data.statusLong);
             $('#D_lastLogLine1').html(data.lastLogLine1);
             $('#D_lastLogLine2').html(data.lastLogLine2);
             $('#D_lastLogLine3').html(data.lastLogLine3);

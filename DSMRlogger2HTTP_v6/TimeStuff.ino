@@ -27,6 +27,18 @@ String buildDateTimeString(String timeStamp) {
 //===========================================================================================
 String getDayName(int weekDayNr) {
 //===========================================================================================
+/**
+  switch(weekDayNr) {
+    case 0:   dayName = "Zondag";     break;
+    case 1:   dayName = "Maandag";     break;
+    case 2:   dayName = "Dinsdag";    break;
+    case 3:   dayName = "Woensdag";  break;
+    case 4:   dayName = "Donderdag";   break;
+    case 5:   dayName = "Vrijdag";     break;
+    case 6:   dayName = "Zaterdag";   break;
+    default:  dayName = "unKnown";
+  }
+**/
   if (weekDayNr >=0 && weekDayNr <= 6)
       return weekDayName[weekDayNr];
       
