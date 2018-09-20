@@ -72,7 +72,7 @@ Selecteer in [**Tools**] de correcte settings voor het ESP-01 board.
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->" of USB poort
 
-Klik nu [**Tools**] -> [**ESP8266 Sketch Data Upload**] aan. Nu wordt het filesysteem, inclusief de benodigde bestanden (met name **index.html** en **index.js**).
+Klik nu [**Tools**] -> [**ESP8266 Sketch Data Upload**] aan. Nu wordt het filesysteem, inclusief de benodigde bestanden (met name **index.html** en **index.js**) in het SPIFFS bestands-systeem gezet!
 
 ## 6)
 Klaar!
