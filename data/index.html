@@ -4,7 +4,7 @@
 <!--
 ***************************************************************************  
 **  Program  : index.html, part of DSMRlogger2HTTP
-**  Version  : v0.6.2
+**  Version  : v0.6.3
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -46,7 +46,7 @@
       <div class="tab-pane fade" id="tab_Actual"> 
           <h2>ESP-DSMR Actueel Verbruik</h2>
           <div class="row">
-          	<div class="col-sm-3">	<!-- left column -->
+          	<div class="col-md-2 col-sm-4">	<!-- left column -->
           		<ul class="nav nav-pills">
           			<li class="active"><a style="width:250px" href="#">
           				<div class="span badge pull-right" id="DSMRenergyDelivered">??</div>Energie Verbruik (kWh)</a>
@@ -62,8 +62,8 @@
                 	<div class="span badge pull-right" id="DSMRgasDelivered">-</div>Gas Verbruik (m3)</a>
                 </li>
               </ul>
-            </div>									<!-- end left column -->
-            <div class="col-sm-3">	<!-- start middle column -->
+            </div>													<!-- end left column -->
+            <div class="col-md-2 col-sm-4">	<!-- start middle column -->
             	<ul class="nav nav-pills">
             		<li class="active"><a style="width:250px" href="#">
                 	<div class="span badge pull-right" id="DSMRenergyDeliveredTariff1">??</div>Energie Verbruik Tarief 1</a>
@@ -124,8 +124,8 @@
                 	<div class="span badge pull-right" id="DSMRcurrent_l3">??</div>Current L3 (Amp.)</a>
                 </li>
               </ul>
-            </div>									<!-- end middle column -->
-          	<div class="col-sm-3">	<!-- right column -->
+            </div>													<!-- end middle column -->
+          	<div class="col-md-2 col-sm-4">	<!-- right column -->
               <ul class="nav nav-pills">
             		<li class="active"><a style="width:250px" href="#">
                 	<div class="span badge pull-right" id="DSMRpowerDelivered_l1">??</div>Verbruik L1 (kW)</a>
@@ -234,9 +234,9 @@
         
         <!-- START OF TAB id="tab_DeviceInfo" -->
         <div class="tab-pane fade" id="tab_DeviceInfo"> 
-          <h2>ESP-DSMR Meter Info</h2>
+          <h2>ESP-DSMR Device Info</h2>
           <div class="row">
-          	<div class="col-sm-4">	<!-- left column -->
+          	<div class="col-md-4 col-sm-6">	<!-- left column -->
           		<ul class="nav nav-pills">
           		<li class="active"><a style="width:410px" href="#">
               	  <div class="span badge pull-right" id="D_identification">??</div>Identification</a>
@@ -309,76 +309,76 @@
                   <div class="span badge pull-right" id="D_IpAddress">??</div>WiFi IP Address</a>
               </li>
             </ul>
-            </div>									<!-- end left column -->
-          	<div class="col-sm-4">	<!-- right column -->
+            </div>													<!-- end left column -->
+          	<div class="col-md-3 col-sm-3">	<!-- right column -->
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_TelegramCount">??</div>Telegrams Processed</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_TelegramErrors">??</div>Telegrams Errors</a>
               </li>
             </ul>
             <br>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_ChipID">??</div>ESP Chip ID</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_CoreVersion">??</div>ESP Core Version</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_SdkVersion">??</div>ESP SdkVersion</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_CpuFreqMHz">??</div>ESP CPY Freq. (MHz)</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_SketchSize">??</div>ESP Sketch Size</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_FreeSketchSpace">??</div>ESP Free Sketch Space</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_FlashChipID">??</div>ESP Flash Chip ID</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_FlashChipSize">??</div>ESP Flash Chip Size</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_FlashChipRealSize">??</div>ESP Flash Chip Real Size</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_FlashChipSpeed">??</div>ESP Flash Chip Speed</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_BoardType">??</div>ESP Board Type</a>
               </li>
             </ul>
             <ul class="nav nav-pills">
-              <li class="active"><a style="width:350px" href="#">
+              <li class="active"><a style="width:300px" href="#">
                   <div class="span badge pull-right" id="D_EspChipID">??</div>ESP Chip ID</a>
               </li>
             </ul>
