@@ -203,10 +203,11 @@ void handleKeyInput() {
       case 'm':
       case 'M':     testMonth++;
                     break;
-#endif
+#else
       case 'n':
       case 'M':     showRaw = !showRaw;
                     break;
+#endif
       case 'P':     TelnetStream.println("Purging logfile ..\r");
                     rotateLogFile("handleKeyInput(): logFile purged at user request!");
                     break;

@@ -258,7 +258,8 @@ bool readHourData() {
 //while(hoursFile.available() && (r <= 8)) {        // read data (records 1 till 8)
   for(r=1; r <= 8; r++) {
       yield();
-      if (Verbose) TelnetStream.printf(" %d", r);
+      if (Verbose)  TelnetStream.printf(" %d", r);
+      else          TelnetStream.print("h");
       TelnetStream.flush();
       hoursDat[r].Label            = (int)hoursFile.readStringUntil(';').toInt();
       hoursDat[r].EnergyDelivered  = (float)hoursFile.readStringUntil(';').toFloat();
@@ -370,7 +371,8 @@ bool readWeekDayData() {
 //while(weekFile.available() && (r <= 6)) {
   for(r = 0; r<=6; r++) {
       yield();
-      if (Verbose) TelnetStream.printf(" %d", r);
+      if (Verbose)  TelnetStream.printf(" %d", r);
+      else          TelnetStream.print("w");
       TelnetStream.flush();
       weekDayDat[r].Label            = (int)weekFile.readStringUntil(';').toInt();
       weekDayDat[r].EnergyDelivered  = (float)weekFile.readStringUntil(';').toFloat();
@@ -520,7 +522,7 @@ bool readMonthData() {
                                         ,    String(monthsDat[r].EnergyDelivered, 3).c_str()
                                         ,    String(monthsDat[r].EnergyReturned, 3).c_str()
                                         ,    String(monthsDat[r].GasDelivered, 2).c_str() );
-      else TelnetStream.print(".");
+      else TelnetStream.print("m");
       TelnetStream.flush();
       delay(5);
   }

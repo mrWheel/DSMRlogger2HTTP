@@ -27,6 +27,10 @@
 */
 #define _FW_VERSION "v0.6.1 (Sept 19 2018)"
 
+/******************** change this for testing only **********************************/
+//#define HAS_NO_METER       // define if No Meter is attached
+/******************** don't change enything below this comment **********************/
+
 //  part of https://github.com/esp8266/Arduino
 #include <ESP8266WiFi.h>        // version 1.0.0
 
@@ -53,8 +57,6 @@
 
 //  https://github.com/matthijskooijman/arduino-dsmr
 #include <dsmr.h>               // Version 0.1.0
-
-//#define HAS_NO_METER       // define if No Meter is attached
 
 #ifdef ARDUINO_ESP8266_NODEMCU
   #define VCC_ENABLE   14       // D3 = GPIO0, D5 = GPIO14, D6 = GPIO12
