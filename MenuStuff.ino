@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : MenuStuff, part of DSMRlogger2HTTP
-**  Version  : v0.6.1
+**  Version  : v0.6.2
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -21,10 +21,10 @@ void displayDaysHist(bool Telnet=true) {
   for (int i=0; i<7; i++) {
     if (i == thisDay) today = '*';
     else              today = ' ';
-    Label = weekDayDat[i].Label;
-    dtostrf(weekDayDat[i].EnergyDelivered, 9, 3, ED);
-    dtostrf(weekDayDat[i].EnergyReturned, 9, 3, ER);
-    dtostrf(weekDayDat[i].GasDelivered, 8, 2, GD);
+    Label = weekDat[i].Label;
+    dtostrf(weekDat[i].EnergyDelivered, 9, 3, ED);
+    dtostrf(weekDat[i].EnergyReturned, 9, 3, ER);
+    dtostrf(weekDat[i].GasDelivered, 8, 2, GD);
     sprintf(cMsg, "[%02d][%02d]%c Energy Del.[%s], Ret.[%s], Gas Del.[%s]\r", i, Label, today
                                                                             , ED, ER, GD);
     if (Telnet) TelnetStream.println(cMsg);
@@ -100,16 +100,20 @@ void displayBoardInfo() {
   TelnetStream.print("]\r\n Telegrams Processed [");  TelnetStream.print( telegramCount );
   TelnetStream.print("]\r\n        With eErrors [");  TelnetStream.print( telegramErrors );
   TelnetStream.print("]\r\n            FreeHeap [");  TelnetStream.print( ESP.getFreeHeap() );
-  TelnetStream.print("]\r\n             Chip ID [");  TelnetStream.print( ESP.getChipId() );
+  TelnetStream.print("]\r\n             Chip ID [");  TelnetStream.print( ESP.getChipId(), HEX );
   TelnetStream.print("]\r\n        Core Version [");  TelnetStream.print( ESP.getCoreVersion() );
   TelnetStream.print("]\r\n         SDK Version [");  TelnetStream.print( ESP.getSdkVersion() );
   TelnetStream.print("]\r\n      CPU Freq (MHz) [");  TelnetStream.print( ESP.getCpuFreqMHz() );
-  TelnetStream.print("]\r\n         Sketch Size [");  TelnetStream.print( ESP.getSketchSize() );
-  TelnetStream.print("]\r\n   Free Sketch Space [");  TelnetStream.print( ESP.getFreeSketchSpace() );
-  TelnetStream.print("]\r\n       Flash Chip ID [");  TelnetStream.print( ESP.getFlashChipId() );
-  TelnetStream.print("]\r\n     Flash Chip Size [");  TelnetStream.print( ESP.getFlashChipSize() );
-  TelnetStream.print("]\r\nFlash Chip Real Size [");  TelnetStream.print( ESP.getFlashChipRealSize() );
-  TelnetStream.print("]\r\n    Flash Chip Speed [");  TelnetStream.print( ESP.getFlashChipSpeed() );
+  TelnetStream.print("]\r\n         Sketch Size [");  TelnetStream.print( ESP.getSketchSize() / 1024.0 / 1024.0 );
+  TelnetStream.print("]\r\n   Free Sketch Space [");  TelnetStream.print( ESP.getFreeSketchSpace() / 1024.0 / 1024.0 );
+
+  if ((ESP.getFlashChipId() & 0x000000ff) == 0x85) 
+        sprintf(cMsg, "%08X (PUYA)", ESP.getFlashChipId());
+  else  sprintf(cMsg, "%08X", ESP.getFlashChipId());
+  TelnetStream.print("]\r\n       Flash Chip ID [");  TelnetStream.print( cMsg );
+  TelnetStream.print("]\r\n     Flash Chip Size [");  TelnetStream.print( ESP.getFlashChipSize() / 1024 );
+  TelnetStream.print("]\r\nFlash Chip Real Size [");  TelnetStream.print( ESP.getFlashChipRealSize() / 1024 );
+  TelnetStream.print("]\r\n    Flash Chip Speed [");  TelnetStream.print( ESP.getFlashChipSpeed() / 1000 / 1000 );
   TelnetStream.println("]\r");
 
   TelnetStream.println("==================================================================");
@@ -184,7 +188,7 @@ void handleKeyInput() {
                     //setupWiFi(true);
                     ESP.reset();
                     break;
-      case 'G':     if (!readWeekDayData()) TelnetStream.println("handleKeyInput(): error readWeekDayData()!");
+      case 'G':     if (!readWeekData()) TelnetStream.println("handleKeyInput(): error readWeekData()!");
                     if (!readHourData())    TelnetStream.println("handleKeyInput(): error readHourData()!");
                     if (!readMonthData())   TelnetStream.println("handleKeyInput(): error readMonthData()!");
                     break;
@@ -221,18 +225,8 @@ void handleKeyInput() {
                     break;
       case 's':
       case 'S':     listSPIFFS();
-                    TelnetStream.printf("\r\nAvailable SPIFFS space [%ld]\r\n\n", freeSpace());
                     break;
-      case 'T':     if (SPIFFS.exists(TEST_LOCK_FILE)) {
-                      SPIFFS.remove(TEST_LOCK_FILE);
-                      writeLogFile("handleKeyInput(): remove LOCK_FILE");
-                    } else {
-                      File lockFile = SPIFFS.open(TEST_LOCK_FILE, "w");
-                      lockFile.close();
-                      writeLogFile("handleKeyInput(): create LOCK_FILE");
-                    }
-                    break;
-      case 'U':     saveWeekDayData();
+      case 'U':     saveWeekData();
                     saveHourData(9);
                     saveThisMonth(thisYear, thisMonth, false);
                     break;
@@ -257,7 +251,7 @@ void handleKeyInput() {
                     break;
       default:      TelnetStream.println("\nCommands are:\r\n");
                     TelnetStream.println("   B - Board Type\r");
-                    TelnetStream.println("   D - Display WeekDay and Hours from memory\r");
+                    TelnetStream.println("   D - Display tables from memory\r");
                     TelnetStream.println("  *F - Force Re-Config WiFi\r");
                     TelnetStream.println("  *G - Get from SPIFFS (read Data-files)\r");
                     TelnetStream.printf ("   I - Identify by blinking LED on GPIO[%02d]\r\n", BUILTIN_LED);
@@ -274,13 +268,6 @@ void handleKeyInput() {
                     TelnetStream.println("  *P - Purge LogFile\r");
                     TelnetStream.println("  *R - Reboot\r");
                     TelnetStream.println("   S - SPIFFS space available\r");
-#ifndef HAS_NO_METER
-                    if (SPIFFS.exists(TEST_LOCK_FILE)) {
-                      TelnetStream.println("  *T - Tockle (Remove) LOCK_FILE\r");
-                    } else {
-                      TelnetStream.println("  *T - Tockle (Create) LOCK_FILE\r");
-                    }
-#endif
                     TelnetStream.println("  *U - Update SPIFFS (save Data-files)\r");
                     TelnetStream.println("   V - Tockle Verbose\r");
                     if (waitForATOupdate > millis()) {

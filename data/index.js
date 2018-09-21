@@ -212,7 +212,6 @@
             $('#D_SSID').html(data.SSID);
             $('#D_PskKey').html(data.PskKey);
             $('#D_IpAddress').html(data.IpAddress);
-            $('#D_EspChipID').html(data.EspChipID);
             $('#D_Hostname').html(data.Hostname);
             $('#D_TelegramCount').html(data.TelegramCount);
             $('#D_TelegramErrors').html(data.TelegramErrors);

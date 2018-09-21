@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : SPIFFSstuff, part of DSMRlogger2HTTP
-**  Version  : v0.6.0
+**  Version  : v0.6.2
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -16,7 +16,7 @@ uint16_t freeSpace() {
   
   SPIFFS.info(SPIFFSinfo);
 
-  space = (uint16_t)(SPIFFSinfo.totalBytes - SPIFFSinfo.usedBytes);
+  space = (int32_t)(SPIFFSinfo.totalBytes - SPIFFSinfo.usedBytes);
 
   return space;
   
@@ -34,6 +34,17 @@ void listSPIFFS() {
     yield();
   }
   TelnetStream.flush();
+
+  SPIFFS.info(SPIFFSinfo);
+
+  int32_t space = (int32_t)(SPIFFSinfo.totalBytes - SPIFFSinfo.usedBytes);
+  TelnetStream.println("\r");
+  TelnetStream.printf("Available SPIFFS space [%ld]bytes\r\n", freeSpace());
+  TelnetStream.printf("           SPIFFS Size [%ld]kB\r\n", (SPIFFSinfo.totalBytes / 1024));
+  TelnetStream.printf("     SPIFFS block Size [%ld]bytes\r\n", SPIFFSinfo.blockSize);
+  TelnetStream.printf("      SPIFFS page Size [%ld]bytes\r\n", SPIFFSinfo.pageSize);
+  TelnetStream.printf(" SPIFFS max.Open Files [%ld]\r\n\n", SPIFFSinfo.maxOpenFiles);
+
 
 } // listSPIFFS()
 
@@ -93,6 +104,7 @@ void readLogFile() {
 //===========================================================================================
 bool writeLogFile(String logLine) {
 //===========================================================================================
+    return true;
 
     bool newLogFile;
 
@@ -102,7 +114,7 @@ bool writeLogFile(String logLine) {
       return false;
     }
 
-    if (freeSpace() < 2500) {
+    if (freeSpace() < 4000) {
       rotateLogFile("rotateLogFile due to space");
     }
     
@@ -178,19 +190,11 @@ void saveHourData(int8_t slot) {
     return;
   }
 
-#ifdef HAS_NO_METER
-  if (SPIFFS.exists(TEST_LOCK_FILE)) {
-    TelnetStream.println("saveHourData() ==> Lock File Exists -> not overwiting with testdata!.. \r");
-    TelnetStream.flush();
-    return;
-  }
-#endif
-
   if (slot >= 1 && slot <= 8) {
     if (    (hoursDat[1].EnergyDelivered == 0.0) 
-         || (hoursDat[1].EnergyReturned  == 0.0)
-         || (hoursDat[1].GasDelivered    == 0.0)) {
-      TelnetStream.println("saveHourData(): Error (Zero value)!!\r");
+         && (hoursDat[1].EnergyReturned  == 0.0)
+         && (hoursDat[1].GasDelivered    == 0.0)) {
+      TelnetStream.println("saveHourData(): Error? (Zero values)!!\r");
       TelnetStream.flush();
       return;
     }
@@ -252,6 +256,8 @@ bool readHourData() {
   TelnetStream.flush();
   Serial.printf("%s: size(%d) \r\n", HOURS_FILE, hoursFile.size());
 
+  if (hoursFile.size() == 0) return false;
+
   String header = hoursFile.readStringUntil('\n');  // read CSV Header (rec 0)
 
   r = 1;
@@ -269,7 +275,8 @@ bool readHourData() {
       delay(10);
       //r++;
   }
-  
+  TelnetStream.print("  ");
+
   hoursFile.close();  
   
   if (hoursDat[8].Label != 8) {
@@ -293,29 +300,21 @@ bool readHourData() {
 
 
 //===========================================================================================
-void saveWeekDayData() {
+void saveWeekData() {
 //===========================================================================================
 
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
-  TelnetStream.print("saveWeekDayData() ... ");
+  TelnetStream.print("saveWeekData() ... ");
   TelnetStream.flush();
-  Serial.print("saveWeekDayData(s) ... ");
-  writeLogFile("saveWeekDayData() ... ");
+  Serial.print("saveWeekData(s) ... ");
+  writeLogFile("saveWeekData() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
     TelnetStream.flush();
     return;
   }
-
-#ifdef HAS_NO_METER
-  if (SPIFFS.exists(TEST_LOCK_FILE)) {
-    TelnetStream.println("saveWeekDayData() ==> Lock File Exists -> not overwiting with testdata!.. \r");
-    TelnetStream.flush();
-    return;
-  }
-#endif
 
   displayDaysHist(false);   // write to log-file
 
@@ -327,34 +326,34 @@ void saveWeekDayData() {
     TelnetStream.flush();
     weekFile.print(r);  // Label
     weekFile.print(";");
-    weekFile.print((float)weekDayDat[r].EnergyDelivered);
+    weekFile.print((float)weekDat[r].EnergyDelivered);
     weekFile.print(";");
-    weekFile.print((float)weekDayDat[r].EnergyReturned);
+    weekFile.print((float)weekDat[r].EnergyReturned);
     weekFile.print(";");
-    weekFile.print((float)weekDayDat[r].GasDelivered);
+    weekFile.print((float)weekDat[r].GasDelivered);
     weekFile.println(";");
   //delay(10);
   }
 
   weekFile.close();  
 
-  TelnetStream.println("saveWeekDayData(): Done\r");
+  TelnetStream.println("saveWeekData(): Done\r");
   TelnetStream.flush();
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
   
-} // saveWeekDayData()
+} // saveWeekData()
 
 //===========================================================================================
-bool readWeekDayData() {
+bool readWeekData() {
 //===========================================================================================
   int8_t  r=0;
 
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
-  TelnetStream.print("readWeekDayData() ... ");
+  TelnetStream.print("readWeekData() ... ");
   TelnetStream.flush();
-  Serial.print("readWeekDayData() ... ");
-  writeLogFile("readWeekDayData() ... ");
+  Serial.print("readWeekData() ... ");
+  writeLogFile("readWeekData() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
@@ -367,6 +366,8 @@ bool readWeekDayData() {
   TelnetStream.flush();
   Serial.printf("%s: size(%d) \r\n", WEEKDAY_FILE, weekFile.size());
 
+  if (weekFile.size() == 0) return false;
+
   r=0;
 //while(weekFile.available() && (r <= 6)) {
   for(r = 0; r<=6; r++) {
@@ -374,19 +375,20 @@ bool readWeekDayData() {
       if (Verbose)  TelnetStream.printf(" %d", r);
       else          TelnetStream.print("w");
       TelnetStream.flush();
-      weekDayDat[r].Label            = (int)weekFile.readStringUntil(';').toInt();
-      weekDayDat[r].EnergyDelivered  = (float)weekFile.readStringUntil(';').toFloat();
-      weekDayDat[r].EnergyReturned   = (float)weekFile.readStringUntil(';').toFloat();
-      weekDayDat[r].GasDelivered     = (float)weekFile.readStringUntil(';').toFloat();
+      weekDat[r].Label            = (int)weekFile.readStringUntil(';').toInt();
+      weekDat[r].EnergyDelivered  = (float)weekFile.readStringUntil(';').toFloat();
+      weekDat[r].EnergyReturned   = (float)weekFile.readStringUntil(';').toFloat();
+      weekDat[r].GasDelivered     = (float)weekFile.readStringUntil(';').toFloat();
       String n = weekFile.readStringUntil('\n');
       delay(10);
       //r++;
   }
+  TelnetStream.print("  ");
   
   weekFile.close();  
 
-  if (weekDayDat[6].Label != 6) {
-    TelnetStream.printf("readWeekDayData(): ERROR!! ==> read [%d] records\r\n", r);
+  if (weekDat[6].Label != 6) {
+    TelnetStream.printf("readWeekData(): ERROR!! ==> read [%d] records\r\n", r);
     TelnetStream.flush();
     writeLogFile("Error reading [weekDay.csv] ...");
     return false;
@@ -398,7 +400,7 @@ bool readWeekDayData() {
 
   return true;
 
-} // readWeekDayData()
+} // readWeekData()
 
 
 //===========================================================================================
@@ -423,19 +425,11 @@ void saveThisMonth(int8_t thisYear, int8_t thisMonth, bool force) {
     return;
   }
   
-#ifdef HAS_NO_METER
-  if (SPIFFS.exists(TEST_LOCK_FILE)) {
-    TelnetStream.println("saveThisMonth() ==> Lock File Exists -> not overwiting with testdata!.. \r");
-    TelnetStream.flush();
-    return;
-  }
-#endif
-  
   if (!force) {  
     if (    (monthsDat[1].EnergyDelivered == 0.0) 
-         || (monthsDat[1].EnergyReturned  == 0.0)
-         || (monthsDat[1].GasDelivered    == 0.0)) {
-      TelnetStream.println("saveThisMonth(): Error (Zero value)!!\r");
+         && (monthsDat[1].EnergyReturned  == 0.0)
+         && (monthsDat[1].GasDelivered    == 0.0)) {
+      TelnetStream.println("saveThisMonth(): Error? (Zero value)!!\r");
       TelnetStream.flush();
       return;
     }
@@ -506,6 +500,9 @@ bool readMonthData() {
   TelnetStream.printf("%s: size(%d) ", MONTHS_FILE, monthsFile.size());
   TelnetStream.flush();
   Serial.printf("%s: size(%d) \r\n", MONTHS_FILE, monthsFile.size());
+
+  if (monthsFile.size() == 0) return false;
+
 //-- seek() gives strange results ..  
 //monthsFile.seek(recLength, SeekSet); // skip header
   String mHeader = monthsFile.readStringUntil('\n');  // skip header
@@ -647,14 +644,6 @@ void shiftDownMonthData(int8_t thisYear, int8_t thisMonth) {
     return;
   }
 
-#ifdef HAS_NO_METER
-  if (SPIFFS.exists(TEST_LOCK_FILE)) {
-    TelnetStream.println("shiftDownMonthData() ==> Lock File Exists -> not overwiting with testdata!.. \r");
-    TelnetStream.flush();
-    return;
-  }
-#endif
-
   monthsFile = SPIFFS.open(MONTHS_FILE, "w");
 
   //--- write header -----
@@ -709,12 +698,6 @@ void shiftDownMonthData(int8_t thisYear, int8_t thisMonth) {
 void createDummyData() {
 //===========================================================================================
 
-  if (SPIFFS.exists(TEST_LOCK_FILE)) {
-    TelnetStream.println("createDummyData() ==> Lock File Exists -> not overwiting with testdata!.. \r");
-    TelnetStream.flush();
-    return;
-  }
-
   TelnetStream.println("createDummyData() ==> hoursDat[].. \r");
   TelnetStream.flush();
   for (int s=1; s<=8; s++) {
@@ -725,15 +708,15 @@ void createDummyData() {
   }
   saveHourData(9);
   
-  TelnetStream.println("createDummyData() ==> weekDayDat[].. \r");
+  TelnetStream.println("createDummyData() ==> weekDat[].. \r");
   TelnetStream.flush();
   for (int s=0; s<=6; s++) {
-    weekDayDat[s].Label           = s;
-    weekDayDat[s].EnergyDelivered = 0.0;
-    weekDayDat[s].EnergyReturned  = 0.0;
-    weekDayDat[s].GasDelivered    = 0.0;
+    weekDat[s].Label           = s;
+    weekDat[s].EnergyDelivered = 0.0;
+    weekDat[s].EnergyReturned  = 0.0;
+    weekDat[s].GasDelivered    = 0.0;
   }
-  saveWeekDayData();
+  saveWeekData();
   
   TelnetStream.println("createDummyData() ==> monthsDat[].. \r");
   TelnetStream.flush();

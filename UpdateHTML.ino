@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : UpdateHTML, part of DSMRlogger2HTTM
-**  Version  : v0.6.1
+**  Version  : v0.6.2
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -12,7 +12,7 @@
 //=======================================================================
 void sendDataDeviceInfo() {
 //=======================================================================
-
+  
 //-Slimme Meter Info----------------------------------------------------------
   jsonString  = "{";
   jsonString += " \"Identification\":\"" + String(Identification) + "\"";
@@ -29,16 +29,20 @@ void sendDataDeviceInfo() {
                                             + String( "  " )
                                             + String( __TIME__ ) + "\"";
   jsonString += ",\"FreeHeap\":\""          + String( ESP.getFreeHeap() ) + "\"";
-  jsonString += ",\"ChipID\":\""            + String( ESP.getChipId() ) + "\"";
+  jsonString += ",\"ChipID\":\""            + String( ESP.getChipId(), HEX ) + "\"";
   jsonString += ",\"CoreVersion\":\""       + String( ESP.getCoreVersion() ) + "\"";
   jsonString += ",\"SdkVersion\":\""        + String( ESP.getSdkVersion() ) + "\"";
   jsonString += ",\"CpuFreqMHz\":\""        + String( ESP.getCpuFreqMHz() ) + "\"";
-  jsonString += ",\"SketchSize\":\""        + String( ESP.getSketchSize() ) + "\"";
-  jsonString += ",\"FreeSketchSpace\":\""   + String( ESP.getFreeSketchSpace() ) + "\"";
-  jsonString += ",\"FlashChipID\":\""       + String( ESP.getFlashChipId() ) + "\"";
-  jsonString += ",\"FlashChipSize\":\""     + String( ESP.getFlashChipSize() ) + "\"";
-  jsonString += ",\"FlashChipRealSize\":\"" + String( ESP.getFlashChipRealSize() ) + "\"";
-  jsonString += ",\"FlashChipSpeed\":\""    + String( ESP.getFlashChipSpeed() ) + "\"";
+  jsonString += ",\"SketchSize\":\""        + String( (ESP.getSketchSize() / 1024.0), 3) + "kB\"";
+  jsonString += ",\"FreeSketchSpace\":\""   + String( (ESP.getFreeSketchSpace() / 1024.0), 3 ) + "kB\"";
+
+  if ((ESP.getFlashChipId() & 0x000000ff) == 0x85) 
+        sprintf(cMsg, "%08X (PUYA)", ESP.getFlashChipId());
+  else  sprintf(cMsg, "%08X", ESP.getFlashChipId());
+  jsonString += ",\"FlashChipID\":\""       + String(cMsg) + "\"";  // flashChipId
+  jsonString += ",\"FlashChipSize\":\""     + String( (float)(ESP.getFlashChipSize() / 1024.0 / 1024.0), 3 ) + "MB\"";
+  jsonString += ",\"FlashChipRealSize\":\"" + String( (float)(ESP.getFlashChipRealSize() / 1024.0 / 1024.0), 3 ) + "MB\"";
+  jsonString += ",\"FlashChipSpeed\":\""    + String( (float)(ESP.getFlashChipSpeed() / 1000.0 / 1000.0) ) + "MHz\"";
   jsonString += ",\"BoardType\":";
 #ifdef ARDUINO_ESP8266_NODEMCU
     jsonString += String("\"ESP8266_NODEMCU\"");
@@ -53,9 +57,8 @@ void sendDataDeviceInfo() {
     jsonString += String("\"ESP8266_ESP12\"");
 #endif
   jsonString += ",\"SSID\":\""              + String( WiFi.SSID() ) + "\"";
-  jsonString += ",\"PskKey\":\""            + String( WiFi.psk() ) + "\"";
+//jsonString += ",\"PskKey\":\""            + String( WiFi.psk() ) + "\"";    // uncomment if you want to see this
   jsonString += ",\"IpAddress\":\""         +  WiFi.localIP().toString()  + "\"";
-  jsonString += ",\"EspChipID\":\""         + String( ESP.getChipId() ) + "\"";
   jsonString += ",\"Hostname\":\""          + String( HOSTNAME ) + "\"";
   jsonString += ",\"TelegramCount\":\""     + String( telegramCount ) + "\"";
   jsonString += ",\"TelegramErrors\":\""    + String( telegramErrors ) + "\"";
@@ -96,17 +99,17 @@ void sendDataActual() {
   jsonString += ",\"Power_Delivered\":\"" + String(PowerDelivered, 3) + "\"";
   jsonString += ",\"Power_Returned\":\"" + String(PowerReturned, 3) + "\"";
   jsonString += ",\"Voltage_l1\":\"" + String(Voltage_l1, 1) + "\"";
-  jsonString += ",\"Current_l1\":\"" + String(Current_l1, 1) + "\"";
+  jsonString += ",\"Current_l1\":\"" + String(Current_l1) + "\"";
   jsonString += ",\"Voltage_l2\":\"" + String(Voltage_l2, 1) + "\"";
-  jsonString += ",\"Current_l2\":\"" + String(Current_l2, 1) + "\"";
+  jsonString += ",\"Current_l2\":\"" + String(Current_l2) + "\"";
   jsonString += ",\"Voltage_l3\":\"" + String(Voltage_l3, 1) + "\"";
-  jsonString += ",\"Current_l3\":\"" + String(Current_l3, 1) + "\"";
-  jsonString += ",\"Power_Delivered_l1\":\"" + String(PowerDelivered_l1, 3) + "\"";
-  jsonString += ",\"Power_Returned_l1\":\"" + String(PowerReturned_l1, 3) + "\"";
-  jsonString += ",\"Power_Delivered_l2\":\"" + String(PowerDelivered_l2, 3) + "\"";
-  jsonString += ",\"Power_Returned_l2\":\"" + String(PowerReturned_l2, 3) + "\"";
-  jsonString += ",\"Power_Delivered_l3\":\"" + String(PowerDelivered_l3, 3) + "\"";
-  jsonString += ",\"Power_Returned_l3\":\"" + String(PowerReturned_l3, 3) + "\"";
+  jsonString += ",\"Current_l3\":\"" + String(Current_l3) + "\"";
+  jsonString += ",\"Power_Delivered_l1\":\"" + String(PowerDelivered_l1) + "\"";
+  jsonString += ",\"Power_Returned_l1\":\"" + String(PowerReturned_l1) + "\"";
+  jsonString += ",\"Power_Delivered_l2\":\"" + String(PowerDelivered_l2) + "\"";
+  jsonString += ",\"Power_Returned_l2\":\"" + String(PowerReturned_l2) + "\"";
+  jsonString += ",\"Power_Delivered_l3\":\"" + String(PowerDelivered_l3) + "\"";
+  jsonString += ",\"Power_Returned_l3\":\"" + String(PowerReturned_l3) + "\"";
   jsonString += "}";
   server.send(200, "application/json", jsonString);
   TelnetStream.println("sendDataActual(): send JSON string\r\n");
@@ -152,7 +155,7 @@ void sendTableMonths() {
       jsonString +=  ",\"Gas_Delivered2\":\""    + String(( monthsDat[slot12].GasDelivered    - monthsDat[nextSlot12].GasDelivered), 2) + "\"";
       jsonString += "}";
     } else {
-      jsonString +=  sKomma + "{\"Month\":\"Tot en Met " + monthName[iMonth] + "\""; 
+      jsonString +=  sKomma + "{\"Month\":\"Tot en met " + monthName[iMonth] + "\""; 
       jsonString +=  ",\"ED1_Year\":\"" + String(cYear1) + "\""; 
       jsonString +=  ",\"Energy_Delivered1\":\"" + String(monthsDat[slot].EnergyDelivered, 3) + "\"";
       jsonString +=  ",\"ED2_Year\":\"" + String(cYear2) + "\""; 
@@ -192,14 +195,14 @@ void sendTableWeek() {
                                     , thisWeekDay,     r,       prevSlot,     slot);
     if (r != 0) {
       jsonString +=  sKomma + "{\"WeekDay\":\"" + getDayName(slot) + "\""; 
-      jsonString +=  ",\"Energy_Delivered\":\"" + String((weekDayDat[slot].EnergyDelivered - weekDayDat[prevSlot].EnergyDelivered), 3) + "\"";
-      jsonString +=  ",\"Energy_Returned\":\"" + String((weekDayDat[slot].EnergyReturned - weekDayDat[prevSlot].EnergyReturned), 3) + "\"";
-      jsonString +=  ",\"Gas_Delivered\":\"" + String((weekDayDat[slot].GasDelivered - weekDayDat[prevSlot].GasDelivered), 2) + "\"";
+      jsonString +=  ",\"Energy_Delivered\":\"" + String((weekDat[slot].EnergyDelivered - weekDat[prevSlot].EnergyDelivered), 3) + "\"";
+      jsonString +=  ",\"Energy_Returned\":\"" + String((weekDat[slot].EnergyReturned - weekDat[prevSlot].EnergyReturned), 3) + "\"";
+      jsonString +=  ",\"Gas_Delivered\":\"" + String((weekDat[slot].GasDelivered - weekDat[prevSlot].GasDelivered), 2) + "\"";
     } else {
-      jsonString +=  sKomma + "{\"WeekDay\":\"Tot en Met " + getDayName(slot) + "\""; 
-      jsonString +=  ",\"Energy_Delivered\":\"" + String(weekDayDat[slot].EnergyDelivered, 3) + "\"";
-      jsonString +=  ",\"Energy_Returned\":\"" + String(weekDayDat[slot].EnergyReturned, 3) + "\"";
-      jsonString +=  ",\"Gas_Delivered\":\"" + String(weekDayDat[slot].GasDelivered, 2) + "\"";
+      jsonString +=  sKomma + "{\"WeekDay\":\"Tot en met " + getDayName(slot) + "\""; 
+      jsonString +=  ",\"Energy_Delivered\":\"" + String(weekDat[slot].EnergyDelivered, 3) + "\"";
+      jsonString +=  ",\"Energy_Returned\":\"" + String(weekDat[slot].EnergyReturned, 3) + "\"";
+      jsonString +=  ",\"Gas_Delivered\":\"" + String(weekDat[slot].GasDelivered, 2) + "\"";
     }
     jsonString += "}";
     sKomma      = ",";
@@ -250,7 +253,7 @@ void sendTableHours() {
       jsonString +=  ",\"Gas_Delivered\":\""    + String(( hoursDat[slot].GasDelivered    - hoursDat[prevSlot].GasDelivered), 2) + "\"";
       jsonString += "}";
     } else {
-      jsonString +=  sKomma + "{\"Hour\":\"Tot en Met " + String(cHour).substring(7) + "\""; 
+      jsonString +=  sKomma + "{\"Hour\":\"Tot en met " + String(cHour).substring(7) + "\""; 
       jsonString +=  ",\"Energy_Delivered\":\"" + String(hoursDat[slot].EnergyDelivered, 3) + " (kWh)\"";
       jsonString +=  ",\"Energy_Returned\":\""  + String(hoursDat[slot].EnergyReturned, 3)  + " (kWh)\"";
       jsonString +=  ",\"Gas_Delivered\":\""    + String(hoursDat[slot].GasDelivered, 2)    + "\"";

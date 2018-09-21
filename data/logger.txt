@@ -1,4 +1,0 @@
-This is the log-file of the DSMR-logger
-Have fun using it!
-Regards,
-Willem Aandewiel

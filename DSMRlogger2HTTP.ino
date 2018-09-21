@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
-**  Version  : v0.6.1
+**  Version  : v0.6.2
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -25,10 +25,10 @@
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->"
 */
-#define _FW_VERSION "v0.6.1 (Sept 19 2018)"
+#define _FW_VERSION "v0.6.2 (Sept 21 2018)"
 
 /******************** change this for testing only **********************************/
-//#define HAS_NO_METER       // define if No Meter is attached
+// #define HAS_NO_METER       // define if No Meter is attached
 /******************** don't change enything below this comment **********************/
 
 //  part of https://github.com/esp8266/Arduino
@@ -75,10 +75,15 @@
   //#define VCC_ENABLE    0     // GPIO02 Pin 5
   //#define VCC_ENABLE    1     // TxD -> GPIO01 Pin 1
 #endif
-#define HOURS_FILE        "/hours.csv"
-#define WEEKDAY_FILE      "/weekDay.csv"
-#define MONTHS_FILE       "/months.csv"
-#define TEST_LOCK_FILE    "/TEST_LOCK"
+#ifdef HAS_NO_METER
+    #define HOURS_FILE        "/TSThours.csv"
+    #define WEEKDAY_FILE      "/TSTweek.csv"
+    #define MONTHS_FILE       "/TSTmonths.csv"
+#else
+    #define HOURS_FILE        "/PRDhours.csv"
+    #define WEEKDAY_FILE      "/PRDweek.csv"
+    #define MONTHS_FILE       "/PRDmonths.csv"
+#endif
 #define MONTHS_CSV_HEADER "YYMM;   Energy Del;   Energy Ret;    Gas Del;\n"
 #define HOURS_CSV_HEADER  "HR; Energy Del; Energy Ret;    Gas Del;\n"
 #define LOG_FILE          "/logger.txt"
@@ -96,7 +101,7 @@ typedef struct {
 } dataStruct;
 
 static    dataStruct hoursDat[10];    // 0 + 1-8
-static    dataStruct weekDayDat[9];   // 0 - 6 (0=sunday)
+static    dataStruct weekDat[9];      // 0 - 6 (0=sunday)
 static    dataStruct monthsDat[27];   // 0 + year1 1 t/m 12 + year2 1 t/m 12
 static char *weekDayName[]  { "Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "UnKnown" };
 static char *monthName[]  {  "00", "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli"
@@ -131,14 +136,16 @@ uint32_t  waitLoop, noMeterWait, telegramCount, telegramErrors, waitForATOupdate
 char      cMsg[100], fChar[10];
 char      APname[50], MAChex[13]; //n1n2n3n4n5n6\0
 float     EnergyDelivered, EnergyReturned;
-float     PowerDelivered, PowerDelivered_l1, PowerDelivered_l2, PowerDelivered_l3;
-float     PowerReturned,  PowerReturned_l1,  PowerReturned_l2,  PowerReturned_l3;
+float     PowerDelivered, PowerReturned;
+int32_t   PowerDelivered_l1, PowerDelivered_l2, PowerDelivered_l3;
+int32_t   PowerReturned_l1,  PowerReturned_l2,  PowerReturned_l3;
 float     GasDelivered;
 String    pTimestamp;
-String    Identification, P1_Version, Equipment_Id, GasEquipment_Id, ElectricityTariff;
+String    P1_Version, Equipment_Id, GasEquipment_Id, ElectricityTariff;
+char      Identification[150];
 float     EnergyDeliveredTariff1, EnergyDeliveredTariff2, EnergyReturnedTariff1, EnergyReturnedTariff2;
 float     Voltage_l1, Voltage_l2, Voltage_l3;
-float     Current_l1, Current_l2, Current_l3;
+uint16_t  Current_l1, Current_l2, Current_l3;
 uint16_t  GasDeviceType;
 
 String    lastReset   = "", lastStartup = "";
@@ -249,6 +256,41 @@ String macToStr(const uint8_t* mac) {
 
 
 //===========================================================================================
+void escapeJson(const char * Src, char * Dest) {
+  int p=0;
+
+  if (Verbose) Serial.print("In[");
+  for(int c=0; Src[c] != '\0'; c++) {
+    if (Verbose) Serial.print(Src[c]);
+    switch((char)Src[c]) {
+      case '\\':  Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='5', Dest[p++]='c';  
+                  break;
+      case '\/':  Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='2', Dest[p++]='f';
+                  break;
+      case '\b':  Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='0', Dest[p++]='8';
+                  break;
+      case '\f':  Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='0', Dest[p++]='c';
+                  break;
+      case '\n':  Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='0', Dest[p++]='d';
+                  break;
+      case '\r':  Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='0', Dest[p++]='a';
+                  break;
+      case '\t':  Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='0', Dest[p++]='9';
+                  break;
+      default:    Dest[p++]=Src[c];  
+    }
+  }
+  Dest[p] = '\0';
+  if (Verbose) Serial.print("] => Out[");
+  for(int c=0; c < sizeof(Dest), Dest[c] != '\0'; c++) {
+    if (Verbose) Serial.print(Dest[c]);
+  }
+  if (Verbose) Serial.println("]");
+  
+} // escapeJson()
+
+
+//===========================================================================================
 void hourToSlot(int8_t h, int8_t &slot, int8_t &nextSlot, int8_t &prevSlot) {
 //===========================================================================================
   switch(h) {
@@ -299,35 +341,35 @@ void printData() {
     sprintf(cMsg, "Energy Returned      : %skWh", fChar);
     TelnetStream.println(cMsg);
 
-    dtostrf(PowerDelivered, 8, 1, fChar);
-    sprintf(cMsg, "Power Delivered      : %sWatt", fChar);
+    dtostrf(PowerDelivered, 8, 0, fChar);
+    sprintf(cMsg, "Power Delivered      : %skW", fChar);
     TelnetStream.println(cMsg);
 
-    dtostrf(PowerReturned, 8, 1, fChar);
-    sprintf(cMsg, "Power Returned       : %sWatt", fChar);
+    dtostrf(PowerReturned, 8, 0, fChar);
+    sprintf(cMsg, "Power Returned       : %skW", fChar);
     TelnetStream.println(cMsg);
     
-    dtostrf(PowerDelivered_l1, 8, 1, fChar);
-    sprintf(cMsg, "Power Delivered (l1) : %sWatt", fChar);
+    dtostrf(PowerDelivered_l1, 8, 0, fChar);
+    sprintf(cMsg, "Power Delivered (l1) : %skW", fChar);
     TelnetStream.println(cMsg);
     
-    dtostrf(PowerDelivered_l2, 8, 1, fChar);
-    sprintf(cMsg, "Power Delivered (l2) : %sWatt", fChar);
+    dtostrf(PowerDelivered_l2, 8, 0, fChar);
+    sprintf(cMsg, "Power Delivered (l2) : %skW", fChar);
     TelnetStream.println(cMsg);
     
-    dtostrf(PowerDelivered_l3, 8, 1, fChar);
-    sprintf(cMsg, "Power Delivered (l3) : %sWatt", fChar);
+    dtostrf(PowerDelivered_l3, 8, 0, fChar);
+    sprintf(cMsg, "Power Delivered (l3) : %skW", fChar);
     TelnetStream.println(cMsg);
     
-    dtostrf(PowerReturned_l1, 8, 1, fChar);
+    dtostrf(PowerReturned_l1, 8, 0, fChar);
     sprintf(cMsg, "Power Returned (l1)  : %sWatt", fChar);
     TelnetStream.println(cMsg);
     
-    dtostrf(PowerReturned_l2, 8, 1, fChar);
+    dtostrf(PowerReturned_l2, 8, 0, fChar);
     sprintf(cMsg, "Power Returned (l2)  : %sWatt", fChar);
     TelnetStream.println(cMsg);
     
-    dtostrf(PowerReturned_l3, 8, 1, fChar);
+    dtostrf(PowerReturned_l3, 8, 0, fChar);
     sprintf(cMsg, "Power Returned (l3)  : %sWatt", fChar);
     TelnetStream.println(cMsg);
 
@@ -343,9 +385,13 @@ void printData() {
 void processData(MyData DSMRdata) {
 //===========================================================================================
   int8_t slot, nextSlot, prevSlot;
+  char   cID[100], cID2[100];
   
 #ifndef HAS_NO_METER
-    Identification                    = DSMRdata.identification;
+  //Identification                    = DSMRdata.identification;
+  //escapeJson(DSMRdata.identification.c_str(), cID2);
+  //Identification                    = String(cID2);
+    escapeJson(DSMRdata.identification.c_str(), Identification);
     P1_Version                        = DSMRdata.p1_version;
     pTimestamp                        = DSMRdata.timestamp;
     if (DSMRdata.equipment_id_present) {
@@ -376,14 +422,14 @@ void processData(MyData DSMRdata) {
             Voltage_l3                = (float)DSMRdata.voltage_l3;
     } else  Voltage_l3                = 0.0;
     if (DSMRdata.current_l1_present) {
-            Current_l1                = (float)DSMRdata.current_l1;
-    } else  Current_l1                = 0.0;
+            Current_l1                = DSMRdata.current_l1;
+    } else  Current_l1                = 0;
     if (DSMRdata.current_l2_present) {
-            Current_l2                = (float)DSMRdata.current_l2;
-    } else  Current_l2                = 0.0;
+            Current_l2                = DSMRdata.current_l2;
+    } else  Current_l2                = 0;
     if (DSMRdata.current_l3_present) {
-            Current_l3                = (float)DSMRdata.current_l3;
-    } else  Current_l3                = 0.0;
+            Current_l3                = DSMRdata.current_l3;
+    } else  Current_l3                = 0;
     if (DSMRdata.power_delivered_present) {
             PowerDelivered            = (float)DSMRdata.power_delivered.int_val();
     } else  PowerDelivered            = 0.0;
@@ -467,23 +513,23 @@ void processData(MyData DSMRdata) {
       // weekday() from unixTimestamp is from 1 (sunday) to 7 (saturday)
       if (thisWeekDay != -1) rotateLogFile("Daily rotate");
       thisWeekDay = weekday(unixTimestamp);
-      // in our weekDayDat[] table we have to subtract "1" to get 0 (sunday) to 6 (saturday)
+      // in our weekDat[] table we have to subtract "1" to get 0 (sunday) to 6 (saturday)
       slot = thisWeekDay - 1;
       if (slot < 0) slot = 6;
       TelnetStream.printf("Saving data for WeekDay[%02d] in slot[%02d]\n", thisWeekDay, slot);
       Serial.printf("Saving data for WeekDay[%02d] in slot[%02d]\n", thisWeekDay, slot);
-      weekDayDat[slot].EnergyDelivered = EnergyDelivered;
-      weekDayDat[slot].EnergyReturned  = EnergyReturned;
-      weekDayDat[slot].GasDelivered    = GasDelivered;
-      saveWeekDayData();
+      weekDat[slot].EnergyDelivered = EnergyDelivered;
+      weekDat[slot].EnergyReturned  = EnergyReturned;
+      weekDat[slot].GasDelivered    = GasDelivered;
+      saveWeekData();
     }
     slot = weekday(unixTimestamp);
-    // in our weekDayDat[] table we have to subtract "1" to get 0 (sunday) to 6 (saturday)
+    // in our weekDat[] table we have to subtract "1" to get 0 (sunday) to 6 (saturday)
     slot -= 1;
     if (slot < 0) slot = 6;
-    weekDayDat[slot].EnergyDelivered = EnergyDelivered;
-    weekDayDat[slot].EnergyReturned  = EnergyReturned;
-    weekDayDat[slot].GasDelivered    = GasDelivered;
+    weekDat[slot].EnergyDelivered = EnergyDelivered;
+    weekDat[slot].EnergyReturned  = EnergyReturned;
+    weekDat[slot].GasDelivered    = GasDelivered;
 
 //================= handle Month change ======================================================
     if (thisMonth != MonthFromTimestamp(pTimestamp)) {
@@ -619,7 +665,7 @@ void setup() {
 
 //------ tabellen inlezen ----------------------------
   if (!readHourData())    TelnetStream.println("setup(): error readHourData()!");
-  if (!readWeekDayData()) TelnetStream.println("setup(): error readWeekDayData()!");
+  if (!readWeekData()) TelnetStream.println("setup(): error readWeekData()!");
   if (!readMonthData())   TelnetStream.println("setup(): error readMonthData()!");
   TelnetStream.flush();
   thisYear        = getLastYear();
@@ -700,9 +746,16 @@ void loop () {
   // ---- create some dummy data for testing without a Slimme Meter connected (HAS_NO_METER is defined)
   static  MyData    DSMRdata;
   static  uint8_t   sMinute = 1, sHour = 20, sDay = 27, sMonth = 12, sYear = 16;
-
+          char      testID[100];
+          
   if (millis() > noMeterWait) {
     noMeterWait += 2000;
+
+    strcpy(testID, "/ABCD(*)EFGHIJ(*)KLMNOPQRSTUVWXYZ");
+    testID[6]  = '\\';
+    testID[15] = '\t';
+    escapeJson(testID, Identification);
+    P1_Version                        = "TST";
 
     EnergyDelivered  += (float)(random(1, 50) / 15.0);
     EnergyReturned   += (float)(random(1, 40) / 55.0);
