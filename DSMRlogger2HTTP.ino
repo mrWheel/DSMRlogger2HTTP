@@ -10,7 +10,7 @@
   Arduino-IDE settings for ESP01 (black):
 
     - Board: "Generic ESP8266 Module"
-    - Flash mode: "DIO" / "DOUT"
+    - Flash mode: "DOUT"
     - Flash size: "1M (128K SPIFFS)"
     - Debug port: "Disabled"
     - Debug Level: "None"
@@ -25,7 +25,7 @@
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->"
 */
-#define _FW_VERSION "v0.6.2 (Sept 21 2018)"
+#define _FW_VERSION "v0.6.2-RC (Sept 22 2018)"
 
 /******************** change this for testing only **********************************/
 // #define HAS_NO_METER       // define if No Meter is attached
@@ -103,9 +103,11 @@ typedef struct {
 static    dataStruct hoursDat[10];    // 0 + 1-8
 static    dataStruct weekDat[9];      // 0 - 6 (0=sunday)
 static    dataStruct monthsDat[27];   // 0 + year1 1 t/m 12 + year2 1 t/m 12
-static char *weekDayName[]  { "Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "UnKnown" };
-static char *monthName[]  {  "00", "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli"
-                           , "Augustus", "September", "Oktober", "November", "December", "13" };
+static char *weekDayName[]  { "Zondag", "Maandag", "Dinsdag", "Woensdag"
+                            , "Donderdag", "Vrijdag", "Zaterdag", "UnKnown" };
+static char *monthName[]    { "00", "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli"
+                            , "Augustus", "September", "Oktober", "November", "December", "13" };
+static char *flashMode[]    { "QIO", "QOUT", "DIO", "DOUT", "UnKnown" };
 
 /**
 struct FSInfo {
@@ -431,26 +433,29 @@ void processData(MyData DSMRdata) {
             Current_l3                = DSMRdata.current_l3;
     } else  Current_l3                = 0;
     if (DSMRdata.power_delivered_present) {
-            PowerDelivered            = (float)DSMRdata.power_delivered.int_val();
+            PowerDelivered            = (float)DSMRdata.power_delivered;
     } else  PowerDelivered            = 0.0;
     if (DSMRdata.power_delivered_l1_present) {
-            PowerDelivered_l1         = (float)DSMRdata.power_delivered_l1.int_val();
-    } else  PowerDelivered_l1         = 0.0;
+            PowerDelivered_l1         = DSMRdata.power_delivered_l1.int_val();
+    } else  PowerDelivered_l1         = 0;
     if (DSMRdata.power_delivered_l2_present) {
-            PowerDelivered_l2         = (float)DSMRdata.power_delivered_l2.int_val();
-    } else  PowerDelivered_l2         = 0.0;
+            PowerDelivered_l2         = DSMRdata.power_delivered_l2.int_val();
+    } else  PowerDelivered_l2         = 0;
     if (DSMRdata.power_delivered_l3_present) {
-            PowerDelivered_l3         = (float)DSMRdata.power_delivered_l3.int_val();
-    } else  PowerDelivered_l3         = 0.0;
+            PowerDelivered_l3         = DSMRdata.power_delivered_l3.int_val();
+    } else  PowerDelivered_l3         = 0;
+    if (DSMRdata.power_returned_present) {
+            PowerReturned             = (float)DSMRdata.power_returned;
+    } else  PowerReturned             = 0.0;
     if (DSMRdata.power_returned_l1_present) {
-            PowerReturned_l1          = (float)DSMRdata.power_returned_l1.int_val();
-    } else  PowerReturned_l1          = 0.0;
+            PowerReturned_l1          = DSMRdata.power_returned_l1.int_val();
+    } else  PowerReturned_l1          = 0;
     if (DSMRdata.power_returned_l2_present) {
-            PowerReturned_l2          = (float)DSMRdata.power_returned_l2.int_val();
-    } else  PowerReturned_l2          = 0.0;
+            PowerReturned_l2          = DSMRdata.power_returned_l2.int_val();
+    } else  PowerReturned_l2          = 0;
     if (DSMRdata.power_returned_l3_present) {
-            PowerReturned_l3          = (float)DSMRdata.power_returned_l3.int_val();
-    } else  PowerReturned_l3          = 0.0;
+            PowerReturned_l3          = DSMRdata.power_returned_l3.int_val();
+    } else  PowerReturned_l3          = 0;
     if (DSMRdata.gas_device_type_present) {
             GasDeviceType             = DSMRdata.gas_device_type;
     } else  GasDeviceType             = 0;

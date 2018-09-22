@@ -92,32 +92,35 @@ void displayMonthsHist(bool Telnet=true) {
 void displayBoardInfo() {
 //===========================================================================================
   TelnetStream.println("\r\n==================================================================\r");
-  TelnetStream.print(" \r\n          (c)2018 by [Willem Aandewiel (www.aandewiel.nl)");
-  TelnetStream.print("]\r\n    Firmware Version [");  TelnetStream.print( _FW_VERSION );
-  TelnetStream.print("]\r\n            Compiled [");  TelnetStream.print( __DATE__ ); 
-                                                      TelnetStream.print( "  " );
-                                                      TelnetStream.print( __TIME__ );
-  TelnetStream.print("]\r\n Telegrams Processed [");  TelnetStream.print( telegramCount );
-  TelnetStream.print("]\r\n        With eErrors [");  TelnetStream.print( telegramErrors );
-  TelnetStream.print("]\r\n            FreeHeap [");  TelnetStream.print( ESP.getFreeHeap() );
-  TelnetStream.print("]\r\n             Chip ID [");  TelnetStream.print( ESP.getChipId(), HEX );
-  TelnetStream.print("]\r\n        Core Version [");  TelnetStream.print( ESP.getCoreVersion() );
-  TelnetStream.print("]\r\n         SDK Version [");  TelnetStream.print( ESP.getSdkVersion() );
-  TelnetStream.print("]\r\n      CPU Freq (MHz) [");  TelnetStream.print( ESP.getCpuFreqMHz() );
-  TelnetStream.print("]\r\n         Sketch Size [");  TelnetStream.print( ESP.getSketchSize() / 1024.0 / 1024.0 );
-  TelnetStream.print("]\r\n   Free Sketch Space [");  TelnetStream.print( ESP.getFreeSketchSpace() / 1024.0 / 1024.0 );
+  TelnetStream.print(" \r\n            (c)2018 by [Willem Aandewiel (www.aandewiel.nl)");
+  TelnetStream.print("]\r\n      Firmware Version [");  TelnetStream.print( _FW_VERSION );
+  TelnetStream.print("]\r\n              Compiled [");  TelnetStream.print( __DATE__ ); 
+                                                        TelnetStream.print( "  " );
+                                                        TelnetStream.print( __TIME__ );
+  TelnetStream.print("]\r\n   Telegrams Processed [");  TelnetStream.print( telegramCount );
+  TelnetStream.print("]\r\n           With Errors [");  TelnetStream.print( telegramErrors );
+  TelnetStream.print("]\r\n              FreeHeap [");  TelnetStream.print( ESP.getFreeHeap() );
+  TelnetStream.print("]\r\n               Chip ID [");  TelnetStream.print( ESP.getChipId(), HEX );
+  TelnetStream.print("]\r\n          Core Version [");  TelnetStream.print( ESP.getCoreVersion() );
+  TelnetStream.print("]\r\n           SDK Version [");  TelnetStream.print( ESP.getSdkVersion() );
+  TelnetStream.print("]\r\n        CPU Freq (MHz) [");  TelnetStream.print( ESP.getCpuFreqMHz() );
+  TelnetStream.print("]\r\n      Sketch Size (kB) [");  TelnetStream.print( ESP.getSketchSize() / 1024.0 / 1024.0 );
+  TelnetStream.print("]\r\nFree Sketch Space (kB) [");  TelnetStream.print( ESP.getFreeSketchSpace() / 1024.0 / 1024.0 );
 
   if ((ESP.getFlashChipId() & 0x000000ff) == 0x85) 
         sprintf(cMsg, "%08X (PUYA)", ESP.getFlashChipId());
   else  sprintf(cMsg, "%08X", ESP.getFlashChipId());
-  TelnetStream.print("]\r\n       Flash Chip ID [");  TelnetStream.print( cMsg );
-  TelnetStream.print("]\r\n     Flash Chip Size [");  TelnetStream.print( ESP.getFlashChipSize() / 1024 );
-  TelnetStream.print("]\r\nFlash Chip Real Size [");  TelnetStream.print( ESP.getFlashChipRealSize() / 1024 );
-  TelnetStream.print("]\r\n    Flash Chip Speed [");  TelnetStream.print( ESP.getFlashChipSpeed() / 1000 / 1000 );
+  TelnetStream.print("]\r\n         Flash Chip ID [");  TelnetStream.print( cMsg );
+  TelnetStream.print("]\r\n       Flash Chip Size [");  TelnetStream.print( ESP.getFlashChipSize() / 1024 );
+  TelnetStream.print("]\r\n  Flash Chip Real Size [");  TelnetStream.print( ESP.getFlashChipRealSize() / 1024 );
+  TelnetStream.print("]\r\n      Flash Chip Speed [");  TelnetStream.print( ESP.getFlashChipSpeed() / 1000 / 1000 );
+  FlashMode_t ideMode = ESP.getFlashChipMode();
+  TelnetStream.print("]\r\n       Flash Chip Mode [");  TelnetStream.print( flashMode[ideMode] );
+
   TelnetStream.println("]\r");
 
   TelnetStream.println("==================================================================");
-  TelnetStream.print(" \r\n          Board type [");
+  TelnetStream.print(" \r\n            Board type [");
 #ifdef ARDUINO_ESP8266_NODEMCU
     TelnetStream.print("ESP8266_NODEMCU");
 #endif
@@ -130,10 +133,10 @@ void displayBoardInfo() {
 #ifdef ESP8266_ESP12
     TelnetStream.print("ESP8266_ESP12");
 #endif
-  TelnetStream.print("]\r\n                SSID [");  TelnetStream.print( WiFi.SSID() );
-//TelnetStream.print("]\r\n             PSK key [");  TelnetStream.print( WiFi.psk() );
-  TelnetStream.print("]\r\n          IP Address [");  TelnetStream.print( WiFi.localIP() );
-  TelnetStream.print("]\r\n            Hostname [");  TelnetStream.print( HOSTNAME );
+  TelnetStream.print("]\r\n                  SSID [");  TelnetStream.print( WiFi.SSID() );
+//TelnetStream.print("]\r\n               PSK key [");  TelnetStream.print( WiFi.psk() );
+  TelnetStream.print("]\r\n            IP Address [");  TelnetStream.print( WiFi.localIP() );
+  TelnetStream.print("]\r\n              Hostname [");  TelnetStream.print( HOSTNAME );
   TelnetStream.println("]\r");
   TelnetStream.println("==================================================================\r\n");
   TelnetStream.flush();

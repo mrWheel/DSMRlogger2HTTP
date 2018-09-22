@@ -208,6 +208,7 @@
             $('#D_FlashChipSize').html(data.FlashChipSize);
             $('#D_FlashChipRealSize').html(data.FlashChipRealSize);
             $('#D_FlashChipSpeed').html(data.FlashChipSpeed);
+            $('#D_FlashChipMode').html(data.FlashChipMode);
             $('#D_BoardType').html(data.BoardType);
             $('#D_SSID').html(data.SSID);
             $('#D_PskKey').html(data.PskKey);

@@ -43,6 +43,9 @@ void sendDataDeviceInfo() {
   jsonString += ",\"FlashChipSize\":\""     + String( (float)(ESP.getFlashChipSize() / 1024.0 / 1024.0), 3 ) + "MB\"";
   jsonString += ",\"FlashChipRealSize\":\"" + String( (float)(ESP.getFlashChipRealSize() / 1024.0 / 1024.0), 3 ) + "MB\"";
   jsonString += ",\"FlashChipSpeed\":\""    + String( (float)(ESP.getFlashChipSpeed() / 1000.0 / 1000.0) ) + "MHz\"";
+
+  FlashMode_t ideMode = ESP.getFlashChipMode();
+  jsonString += ",\"FlashChipMode\":\""    + String( flashMode[ideMode] ) + "\"";
   jsonString += ",\"BoardType\":";
 #ifdef ARDUINO_ESP8266_NODEMCU
     jsonString += String("\"ESP8266_NODEMCU\"");
