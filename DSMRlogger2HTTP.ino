@@ -474,33 +474,16 @@ void processData(MyData DSMRdata) {
       lastStartup = "lastStartup: <b>" + buildDateTimeString(pTimestamp) + "</b>,  Restart Reason: <b>" + lastReset + "</b> ";
     }
 
-//    if (PowerDelivered == 0.0) {
-//      PowerDelivered = PowerDelivered_l1 + PowerDelivered_l2 + PowerDelivered_l3;
-//    }
-//    if (PowerReturned == 0.0) {
-//      PowerReturned = PowerReturned_l1 + PowerReturned_l2 + PowerReturned_l3;
-//    }
-
 //================= handle Hour change ======================================================
     if (thisHour != HourFromTimestamp(pTimestamp)) {
       thisHour = HourFromTimestamp(pTimestamp);
-      if (   (EnergyDelivered == 0.0) 
-          || (EnergyReturned  == 0.0)
-          || (GasDelivered    == 0.0)) {
-            TelnetStream.println("Last Read hourData is zero (skip)");
-            writeLogFile("Last Read hourData is zero (skip)");
-            thisHour = -2;
-      } else {
-        hourToSlot(thisHour, slot, nextSlot, prevSlot);
-//      slot = thisHour;
-//      if (slot < 0) slot = 23;
-        TelnetStream.printf("Saving data for thisHour[%02d] in slot[%02d] (nextSlot[%02d])\n", thisHour, slot, nextSlot);
-        Serial.printf("Saving data for thisHour[%02d] in slot[%02d] (nextSlot[%02d])\n", thisHour, slot, nextSlot);
-        hoursDat[slot].EnergyDelivered = EnergyDelivered;
-        hoursDat[slot].EnergyReturned  = EnergyReturned;
-        hoursDat[slot].GasDelivered    = GasDelivered;
-        saveHourData(slot);
-      }
+      hourToSlot(thisHour, slot, nextSlot, prevSlot);
+      TelnetStream.printf("Saving data for thisHour[%02d] in slot[%02d] (nextSlot[%02d])\n", thisHour, slot, nextSlot);
+      Serial.printf("Saving data for thisHour[%02d] in slot[%02d] (nextSlot[%02d])\n", thisHour, slot, nextSlot);
+      hoursDat[slot].EnergyDelivered = EnergyDelivered;
+      hoursDat[slot].EnergyReturned  = EnergyReturned;
+      hoursDat[slot].GasDelivered    = GasDelivered;
+      saveHourData(slot);
 
     } // if (thisHour != HourFromTimestamp(pTimestamp)) 
 
@@ -542,17 +525,10 @@ void processData(MyData DSMRdata) {
       thisYear  = YearFromTimestamp(pTimestamp);
       if (Verbose) TelnetStream.printf("processData(): thisYear[20%02d] => thisMonth[%02d]\r\n", thisYear, thisMonth);
       TelnetStream.flush();
-      if (   (EnergyDelivered == 0.0) 
-          || (EnergyReturned  == 0.0)
-          || (GasDelivered    == 0.0)) {
-            TelnetStream.println("Last Read monthData is zero (skip)");
-            writeLogFile("Last Read monthData is zero (skip)");
-            thisMonth = -2;
-      } else {
-        lastMonth = getLastMonth();
-        TelnetStream.printf("processData(): lastMonth[%02d] - thisYear[20%02d] => thisMonth[%02d]\r\n"
-                                            , lastMonth, thisYear, thisMonth);
-        if (lastMonth != thisMonth) {
+      lastMonth = getLastMonth();
+      TelnetStream.printf("processData(): lastMonth[%02d] - thisYear[20%02d] => thisMonth[%02d]\r\n"
+                                          , lastMonth, thisYear, thisMonth);
+      if (lastMonth != thisMonth) {
           if (Verbose) TelnetStream.printf("processData(): lastMonth[%02d]; thisYear[%02d] => thisMonth[%02d]\r\n"
                                                           ,lastMonth,       thisYear,         thisMonth);
           TelnetStream.println("processData(): Move thisMonth one slot up");
@@ -562,19 +538,18 @@ void processData(MyData DSMRdata) {
           shiftDownMonthData(thisYear, thisMonth);
           if (Verbose) TelnetStream.println("processData(): months shifted down!");
           TelnetStream.flush();
-        }
-        TelnetStream.printf("processData(): Saving data for thisMonth[20%02d-%02d] in slot[01]\n", thisYear, thisMonth);
-        TelnetStream.flush();
-        Serial.printf("processData(): Saving data for thisMonth[20%02d-%02d] in slot[01]\n", thisYear, thisMonth);
-        sprintf(cMsg, "%02d%02d", thisYear, thisMonth);
-        monthsDat[1].Label           = String(cMsg).toInt();
-        monthsDat[1].EnergyDelivered = EnergyDelivered;
-        monthsDat[1].EnergyReturned  = EnergyReturned;
-        monthsDat[1].GasDelivered    = GasDelivered;
-        saveThisMonth(thisYear, thisMonth, false);
-        if (Verbose) TelnetStream.printf("processData(): monthsDat[1] for [20%04d] saved!\r\n", String(cMsg).toInt());
-        TelnetStream.flush();
       }
+      TelnetStream.printf("processData(): Saving data for thisMonth[20%02d-%02d] in slot[01]\n", thisYear, thisMonth);
+      TelnetStream.flush();
+      Serial.printf("processData(): Saving data for thisMonth[20%02d-%02d] in slot[01]\n", thisYear, thisMonth);
+      sprintf(cMsg, "%02d%02d", thisYear, thisMonth);
+      monthsDat[1].Label           = String(cMsg).toInt();
+      monthsDat[1].EnergyDelivered = EnergyDelivered;
+      monthsDat[1].EnergyReturned  = EnergyReturned;
+      monthsDat[1].GasDelivered    = GasDelivered;
+      saveThisMonth(thisYear, thisMonth, false);
+      if (Verbose) TelnetStream.printf("processData(): monthsDat[1] for [20%04d] saved!\r\n", String(cMsg).toInt());
+      TelnetStream.flush();
 
     } // if (thisMonth != MonthFromTimestamp(pTimestamp)) 
 
@@ -677,7 +652,7 @@ void setup() {
   thisMonth       = getLastMonth();
 
   telegramCount   = 0;
-  telegramErrors      = 0;
+  telegramErrors  = 0;
   
   server.on("/getDeviceInfo.json", sendDataDeviceInfo);
   server.on("/getActual.json", sendDataActual);
