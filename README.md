@@ -1,3 +1,7 @@
+# Warning
+This firmware will nót compile with the ArduinoIDE 1.8.6 and higher probably
+due to some typecasting problems of the pre-processor...
+
 # DSMRlogger2HTTP
 This repository contains the software for the *Draadloze Slimme Meter Uitlezer*.
 
@@ -20,13 +24,13 @@ If you use an **ESP01 black** (recommended) than you should set the board to:
 Arduino-IDE settings for ESP01 (black):
 
     - Board: "Generic ESP8266 Module"
-    - Flash mode: "DIO" / "DOUT"
+    - Flash mode: "DIO" / "DOUT" (for PUYA flash chip only use "DOUT"!
     - Flash size: "1M (128K SPIFFS)"
     - Debug port: "Disabled"
     - Debug Level: "None"
     - IwIP Variant: "v2 Lower Memory"
     - Reset Method: "nodemcu"
-    - Crystal Frequency: "26 MHz" (otherwise Serial output is garbidge)
+    - Crystal Frequency: "26 MHz"
     - Flash Frequency: "40MHz"
     - CPU Frequency: "80 MHz"
     - Buildin Led: "1"  // GPIO01 - Pin 2
