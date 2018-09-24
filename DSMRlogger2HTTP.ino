@@ -25,7 +25,7 @@
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->"
 */
-#define _FW_VERSION "v0.7.0 (Sept 24 2018)"
+#define _FW_VERSION "v0.7.0 (Sep 24 2018)"
 
 /******************** change this for testing only **********************************/
 // #define HAS_NO_METER       // define if No Meter is attached
@@ -65,6 +65,7 @@
   #else
     #define HOSTNAME     "NODEMCU-DSMR"
   #endif
+  //#define VCC_ENABLE    0     // <-- define valid GPIO-pin for DTR
 #endif
 #ifdef ARDUINO_ESP8266_GENERIC
   #ifdef HAS_NO_METER
@@ -72,8 +73,7 @@
   #else
     #define HOSTNAME     "ESP01-DSMR"
   #endif
-  //#define VCC_ENABLE    0     // GPIO02 Pin 5
-  //#define VCC_ENABLE    1     // TxD -> GPIO01 Pin 1
+  //#define VCC_ENABLE    0     // ESP01 does not have a free GPIO-pin
 #endif
 #ifdef HAS_NO_METER
     #define HOURS_FILE        "/TSThours.csv"
@@ -88,10 +88,79 @@
 #define HOURS_CSV_HEADER  "HR; Energy Del; Energy Ret;    Gas Del;\n"
 #define LOG_FILE          "/logger.txt"
 #define LOG_FILE_R        "/loggerR.txt"
-//#define MAXGOOGLE       25
 #define NUMLASTLOG        3  
 #define LED_ON            LOW
 #define LED_OFF           HIGH
+
+/**
+ * Define the DSMRdata we're interested in, as well as the DSMRdatastructure to
+ * hold the parsed DSMRdata. This list shows all supported fields, remove
+ * any fields you are not using from the below list to make the parsing
+ * and printing code smaller.
+ * Each template argument below results in a field of the same name.
+ */
+using MyData = ParsedData<
+  /* String */         identification
+  /* String */        ,p1_version
+  /* String */        ,timestamp
+  /* String */        ,equipment_id
+  /* FixedValue */    ,energy_delivered_tariff1
+  /* FixedValue */    ,energy_delivered_tariff2
+  /* FixedValue */    ,energy_returned_tariff1
+  /* FixedValue */    ,energy_returned_tariff2
+  /* String */        ,electricity_tariff
+  /* FixedValue */    ,power_delivered
+  /* FixedValue */    ,power_returned
+//  /* FixedValue */    ,electricity_threshold
+//  /* uint8_t */       ,electricity_switch_position
+//  /* uint32_t */      ,electricity_failures
+//  /* uint32_t */      ,electricity_long_failures
+//  /* String */        ,electricity_failure_log
+//  /* uint32_t */      ,electricity_sags_l1
+//  /* uint32_t */      ,electricity_sags_l2
+//  /* uint32_t */      ,electricity_sags_l3
+//  /* uint32_t */      ,electricity_swells_l1
+//  /* uint32_t */      ,electricity_swells_l2
+//  /* uint32_t */      ,electricity_swells_l3
+//  /* String */        ,message_short
+//  /* String */        ,message_long
+  /* FixedValue */    ,voltage_l1
+  /* FixedValue */    ,voltage_l2
+  /* FixedValue */    ,voltage_l3
+  /* FixedValue */    ,current_l1
+  /* FixedValue */    ,current_l2
+  /* FixedValue */    ,current_l3
+  /* FixedValue */    ,power_delivered_l1
+  /* FixedValue */    ,power_delivered_l2
+  /* FixedValue */    ,power_delivered_l3
+  /* FixedValue */    ,power_returned_l1
+  /* FixedValue */    ,power_returned_l2
+  /* FixedValue */    ,power_returned_l3
+  /* uint16_t */      ,gas_device_type
+  /* String */        ,gas_equipment_id
+//  /* uint8_t */       ,gas_valve_position
+  /* TimestampedFixedValue */ ,gas_delivered
+//  /* uint16_t */      ,thermal_device_type
+//  /* String */        ,thermal_equipment_id
+//  /* uint8_t */       ,thermal_valve_position
+//  /* TimestampedFixedValue */ ,thermal_delivered
+//  /* uint16_t */      ,water_device_type
+//  /* String */        ,water_equipment_id
+//  /* uint8_t */       ,water_valve_position
+//  /* TimestampedFixedValue */ ,water_delivered
+//  /* uint16_t */      ,slave_device_type
+//  /* String */        ,slave_equipment_id
+//  /* uint8_t */       ,slave_valve_position
+//  /* TimestampedFixedValue */ ,slave_delivered
+>;
+ 
+//===========================================================================================
+void displayHoursHist(bool);  // prototype (see MenuStuff tab)
+void displayDaysHist(bool);   // prototype
+void displayMonthsHist(bool); // prototype
+void configModeCallback(WiFiManager *myWiFiManager);
+void processData(MyData DSMRdata);
+//===========================================================================================
 
 typedef struct {
     uint16_t  Label;
@@ -100,9 +169,9 @@ typedef struct {
     float     GasDelivered;
 } dataStruct;
 
-static    dataStruct hoursDat[10];    // 0 + 1-8
-static    dataStruct weekDat[9];      // 0 - 6 (0=sunday)
-static    dataStruct monthsDat[27];   // 0 + year1 1 t/m 12 + year2 1 t/m 12
+static dataStruct hoursDat[10];    // 0 + 1-8
+static dataStruct weekDat[9];      // 0 - 6 (0=sunday)
+static dataStruct monthsDat[27];   // 0 + year1 1 t/m 12 + year2 1 t/m 12
 static char *weekDayName[]  { "Zondag", "Maandag", "Dinsdag", "Woensdag"
                             , "Donderdag", "Vrijdag", "Zaterdag", "UnKnown" };
 static char *monthName[]    { "00", "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli"
@@ -121,7 +190,7 @@ struct FSInfo {
 **/
 static FSInfo SPIFFSinfo;
 
-// Set up to read from the Serial port, and use D5 as the
+// Set up to read from the Serial port, and use VCC_ENABLE as the
 // request pin. 
 #ifdef VCC_ENABLE
   P1Reader reader(&Serial, VCC_ENABLE);
@@ -130,9 +199,9 @@ static FSInfo SPIFFSinfo;
 #endif
 ;
 
-WiFiClient      wifiClient;
-ESP8266WebServer server ( 80 );
-FtpServer ftpSrv;   //set #define FTP_DEBUG in ESP8266FtpServer.h to see ftp verbose on serial
+WiFiClient        wifiClient;
+ESP8266WebServer  server ( 80 );
+FtpServer         ftpSrv;   //set #define FTP_DEBUG in ESP8266FtpServer.h to see ftp verbose on serial
 
 uint32_t  waitLoop, noMeterWait, telegramCount, telegramErrors, waitForATOupdate;
 char      cMsg[100], fChar[10];
@@ -162,68 +231,6 @@ IPAddress ipDNS, ipGateWay, ipSubnet;
 uint16_t  WIFIreStartCount;
 String    jsonString;
 
-/**
- * Define the DSMRdata we're interested in, as well as the DSMRdatastructure to
- * hold the parsed DSMRdata. This list shows all supported fields, remove
- * any fields you are not using from the below list to make the parsing
- * and printing code smaller.
- * Each template argument below results in a field of the same name.
- */
-using MyData = ParsedData<
-  /* String */ identification
-  /* String */ ,p1_version
-  /* String */ ,timestamp
-  /* String */ ,equipment_id
-  /* FixedValue */ ,energy_delivered_tariff1
-  /* FixedValue */ ,energy_delivered_tariff2
-  /* FixedValue */ ,energy_returned_tariff1
-  /* FixedValue */ ,energy_returned_tariff2
-  /* String */ ,electricity_tariff
-  /* FixedValue */ ,power_delivered
-  /* FixedValue */ ,power_returned
-//  /* FixedValue */ ,electricity_threshold
-//  /* uint8_t */ ,electricity_switch_position
-//  /* uint32_t */ ,electricity_failures
-//  /* uint32_t */ ,electricity_long_failures
-//  /* String */ ,electricity_failure_log
-//  /* uint32_t */ ,electricity_sags_l1
-//  /* uint32_t */ ,electricity_sags_l2
-//  /* uint32_t */ ,electricity_sags_l3
-//  /* uint32_t */ ,electricity_swells_l1
-//  /* uint32_t */ ,electricity_swells_l2
-//  /* uint32_t */ ,electricity_swells_l3
-//  /* String */ ,message_short
-//  /* String */ ,message_long
-  /* FixedValue */ ,voltage_l1
-  /* FixedValue */ ,voltage_l2
-  /* FixedValue */ ,voltage_l3
-  /* FixedValue */ ,current_l1
-  /* FixedValue */ ,current_l2
-  /* FixedValue */ ,current_l3
-  /* FixedValue */ ,power_delivered_l1
-  /* FixedValue */ ,power_delivered_l2
-  /* FixedValue */ ,power_delivered_l3
-  /* FixedValue */ ,power_returned_l1
-  /* FixedValue */ ,power_returned_l2
-  /* FixedValue */ ,power_returned_l3
-  /* uint16_t */ ,gas_device_type
-  /* String */ ,gas_equipment_id
-//  /* uint8_t */ ,gas_valve_position
-  /* TimestampedFixedValue */ ,gas_delivered
-//  /* uint16_t */ ,thermal_device_type
-//  /* String */ ,thermal_equipment_id
-//  /* uint8_t */ ,thermal_valve_position
-//  /* TimestampedFixedValue */ ,thermal_delivered
-//  /* uint16_t */ ,water_device_type
-//  /* String */ ,water_equipment_id
-//  /* uint8_t */ ,water_valve_position
-//  /* TimestampedFixedValue */ ,water_delivered
-//  /* uint16_t */ ,slave_device_type
-//  /* String */ ,slave_equipment_id
-//  /* uint8_t */ ,slave_valve_position
-//  /* TimestampedFixedValue */ ,slave_delivered
->;
-
 struct showValues {
   template<typename Item>
   void apply(Item &i) {
@@ -236,14 +243,6 @@ struct showValues {
     }
   }
 };
- 
-//===========================================================================================
-void displayHoursHist(bool);  // prototype (see MenuStuff tab)
-void displayDaysHist(bool);   // prototype
-void displayMonthsHist(bool); // prototype
-//void configModeCallback(WiFiManager);
-//void processData(MyData);
-//===========================================================================================
 
 
 //===========================================================================================

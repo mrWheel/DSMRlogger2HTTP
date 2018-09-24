@@ -1,7 +1,3 @@
-# Warning
-This firmware will nót compile with the ArduinoIDE 1.8.6 and higher probably
-due to some typecasting problems of the pre-processor...
-
 # DSMRlogger2HTTP
 This repository contains the software for the *Draadloze Slimme Meter Uitlezer*.
 
