@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : WiFiStuff, part of DSMRlogger2HTTP
-**  Version  : v0.6.0
+**  Version  : v0.7.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -11,7 +11,7 @@
 
 //===========================================================================================
 //gets called when WiFiManager enters configuration mode
-void configModeCallback (WiFiManager *myWiFiManager) {
+void configModeCallback(WiFiManager *myWiFiManager) {
 //===========================================================================================
     //blinker.attach(5.0, blink);
 
@@ -22,8 +22,9 @@ void configModeCallback (WiFiManager *myWiFiManager) {
     if (debug) Serial.println(" with SSID: ");
     writeLogFile(" with SSID: ");
     //if you used auto generated SSID, print it
-    if (debug) Serial.println(myWiFiManager->getConfigPortalSSID());
-    writeLogFile(myWiFiManager->getConfigPortalSSID());
+    if (debug) Serial.println("myWiFiManager->getConfigPortalSSID()");
+    writeLogFile("myWiFiManager->getConfigPortalSSID()");
+    myWiFiManager->getConfigPortalSSID();
   
 }   // configModeCallback()
 

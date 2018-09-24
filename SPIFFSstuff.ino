@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : SPIFFSstuff, part of DSMRlogger2HTTP
-**  Version  : v0.6.2
+**  Version  : v0.7.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -267,13 +267,14 @@ bool readHourData() {
       if (Verbose)  TelnetStream.printf(" %d", r);
       else          TelnetStream.print("h");
       TelnetStream.flush();
-      hoursDat[r].Label            = (int)hoursFile.readStringUntil(';').toInt();
-      hoursDat[r].EnergyDelivered  = (float)hoursFile.readStringUntil(';').toFloat();
-      hoursDat[r].EnergyReturned   = (float)hoursFile.readStringUntil(';').toFloat();
-      hoursDat[r].GasDelivered     = (float)hoursFile.readStringUntil(';').toFloat();
-      String n = hoursFile.readStringUntil('\n');
+      if (hoursFile.available() > 0) {
+        hoursDat[r].Label            = (int)hoursFile.readStringUntil(';').toInt();
+        hoursDat[r].EnergyDelivered  = (float)hoursFile.readStringUntil(';').toFloat();
+        hoursDat[r].EnergyReturned   = (float)hoursFile.readStringUntil(';').toFloat();
+        hoursDat[r].GasDelivered     = (float)hoursFile.readStringUntil(';').toFloat();
+        String n = hoursFile.readStringUntil('\n');
+      }
       delay(10);
-      //r++;
   }
   TelnetStream.print("  ");
 
@@ -368,18 +369,18 @@ bool readWeekData() {
 
   if (weekFile.size() == 0) return false;
 
-  r=0;
-//while(weekFile.available() && (r <= 6)) {
   for(r = 0; r<=6; r++) {
       yield();
       if (Verbose)  TelnetStream.printf(" %d", r);
       else          TelnetStream.print("w");
       TelnetStream.flush();
-      weekDat[r].Label            = (int)weekFile.readStringUntil(';').toInt();
-      weekDat[r].EnergyDelivered  = (float)weekFile.readStringUntil(';').toFloat();
-      weekDat[r].EnergyReturned   = (float)weekFile.readStringUntil(';').toFloat();
-      weekDat[r].GasDelivered     = (float)weekFile.readStringUntil(';').toFloat();
-      String n = weekFile.readStringUntil('\n');
+      if (weekFile.available() > 0) {
+        weekDat[r].Label            = (int)weekFile.readStringUntil(';').toInt();
+        weekDat[r].EnergyDelivered  = (float)weekFile.readStringUntil(';').toFloat();
+        weekDat[r].EnergyReturned   = (float)weekFile.readStringUntil(';').toFloat();
+        weekDat[r].GasDelivered     = (float)weekFile.readStringUntil(';').toFloat();
+        String n = weekFile.readStringUntil('\n');
+      }
       delay(10);
       //r++;
   }
@@ -509,11 +510,13 @@ bool readMonthData() {
   
   for(r = 1; r <= 24; r++) {
       yield();
-      monthsDat[r].Label            = (int)monthsFile.readStringUntil(';').toInt();
-      monthsDat[r].EnergyDelivered  = (float)monthsFile.readStringUntil(';').toFloat();
-      monthsDat[r].EnergyReturned   = (float)monthsFile.readStringUntil(';').toFloat();
-      monthsDat[r].GasDelivered     = (float)monthsFile.readStringUntil(';').toFloat();
-      String n = monthsFile.readStringUntil('\n');
+      if (monthsFile.available() > 0) {
+        monthsDat[r].Label            = (int)monthsFile.readStringUntil(';').toInt();
+        monthsDat[r].EnergyDelivered  = (float)monthsFile.readStringUntil(';').toFloat();
+        monthsDat[r].EnergyReturned   = (float)monthsFile.readStringUntil(';').toFloat();
+        monthsDat[r].GasDelivered     = (float)monthsFile.readStringUntil(';').toFloat();
+        String n = monthsFile.readStringUntil('\n');
+      }
       if (Verbose) TelnetStream.printf("recNo[%02d] Label[%04d], ED[%s], ER[%s], GD[%s]\r\n"
                                         , r, monthsDat[r].Label
                                         ,    String(monthsDat[r].EnergyDelivered, 3).c_str()
@@ -521,7 +524,7 @@ bool readMonthData() {
                                         ,    String(monthsDat[r].GasDelivered, 2).c_str() );
       else TelnetStream.print("m");
       TelnetStream.flush();
-      delay(5);
+      delay(10);
   }
   
   monthsFile.close();  

@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : TimeStuff, part of DSMRlogger2HTTP
-**  Version  : v0.6.1
+**  Version  : v0.7.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **

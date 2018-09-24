@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
-**  Version  : v0.6.2
+**  Version  : v0.7.0
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -16,7 +16,7 @@
     - Debug Level: "None"
     - IwIP Variant: "v2 Lower Memory"
     - Reset Method: "nodemcu"
-    - Crystal Frequency: "26 MHz" (otherwise Serial output is garbidge)
+    - Crystal Frequency: "26 MHz" 
     - VTables: "Flash"
     - Flash Frequency: "40MHz"
     - CPU Frequency: "80 MHz"
@@ -25,7 +25,7 @@
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->"
 */
-#define _FW_VERSION "v0.6.2-RC (Sept 22 2018)"
+#define _FW_VERSION "v0.7.0 (Sept 24 2018)"
 
 /******************** change this for testing only **********************************/
 // #define HAS_NO_METER       // define if No Meter is attached
@@ -156,7 +156,7 @@ bool      debug = true, OTAinProgress = false, Verbose = false, showRaw = false,
 String    dateTime;
 int8_t    thisHour = -1, thisWeekDay = -1, thisMonth = -1, lastMonth, thisYear = 15;
 int8_t    testMonth = 0;
-int8_t    tries;
+int8_t    tries, showRawCount;
 uint32_t  unixTimestamp;
 IPAddress ipDNS, ipGateWay, ipSubnet;
 uint16_t  WIFIreStartCount;
@@ -241,6 +241,8 @@ struct showValues {
 void displayHoursHist(bool);  // prototype (see MenuStuff tab)
 void displayDaysHist(bool);   // prototype
 void displayMonthsHist(bool); // prototype
+//void configModeCallback(WiFiManager);
+//void processData(MyData);
 //===========================================================================================
 
 
@@ -267,7 +269,7 @@ void escapeJson(const char * Src, char * Dest) {
     switch((char)Src[c]) {
       case '\\':  Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='5', Dest[p++]='c';  
                   break;
-      case '\/':  Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='2', Dest[p++]='f';
+      case '/':   Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='2', Dest[p++]='f';
                   break;
       case '\b':  Dest[p++]='\\'; Dest[p++]='u'; Dest[p++]='0'; Dest[p++]='0'; Dest[p++]='0', Dest[p++]='8';
                   break;
@@ -783,7 +785,11 @@ void loop () {
     if (showRaw) {
       while(Serial.available() > 0) {
         char rIn = Serial.read();
+        if (rIn == '!') showRawCount++;
         TelnetStream.write((char)rIn);
+      }
+      if (showRawCount > 20) {
+        showRaw = false;
       }
     } else {
       if (reader.available()) {
