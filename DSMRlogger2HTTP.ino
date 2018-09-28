@@ -31,16 +31,16 @@
 // #define HAS_NO_METER       // define if No Meter is attached
 /******************** don't change enything below this comment **********************/
 
-//  part of https://github.com/esp8266/Arduino
+//  part of ESP8266 Core https://github.com/esp8266/Arduino
 #include <ESP8266WiFi.h>        // version 1.0.0
 
-//  part of https://github.com/esp8266/Arduino
+//  part of ESP8266 Core https://github.com/esp8266/Arduino
 #include <ESP8266WebServer.h>   // Version 1.0.0
 
 //  https://github.com/tzapu/WiFiManager
 #include <WiFiManager.h>        // version 0.14.0
 
-//  part of https://github.com/esp8266/Arduino
+//  part of ESP8266 Core https://github.com/esp8266/Arduino
 #include <ArduinoOTA.h>         // Version 1.0.0
 
 //  https://github.com/jandrassy/TelnetStream
@@ -49,7 +49,7 @@
 //  thanks to David Paiva
 #include "FTPserver.h"          // Version "FTP-2017-10-18"
 
-//  part of https://github.com/esp8266/Arduino
+//  part of ESP8266 Core https://github.com/esp8266/Arduino
 #include <FS.h>
 
 //  https://github.com/PaulStoffregen/Time
