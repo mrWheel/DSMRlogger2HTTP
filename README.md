@@ -1,5 +1,5 @@
 # DSMRlogger2HTTP
-This repository contains the software for the *Draadloze Slimme Meter Uitlezer*.
+This repository contains the software for the *Draadloze Slimme Meter Reader*.
 
 ![Completed](/images/DSMRlogger_Casing.jpg)
 
@@ -14,13 +14,13 @@ Unzip the file into your Arduino Projects directory.
 A map "**DSMRlogger2HTML**" will be created with in it all the files necessary to program an ESP01
 to function as a “*Slimme Meter Uitlezer*”.
 
-If you use an **ESP01 black** (recommended) than you should set the board to:
+If you use an **ESP01 black** (recommended) than you **must** set the board to:
 
 <code>
 Arduino-IDE settings for ESP01 (black):
 
     - Board: "Generic ESP8266 Module"
-    - Flash mode: "DIO" / "DOUT" (for PUYA flash chip only use "DOUT"!
+    - Flash mode: "DOUT"
     - Flash size: "1M (128K SPIFFS)"
     - Debug port: "Disabled"
     - Debug Level: "None"
@@ -36,6 +36,9 @@ Arduino-IDE settings for ESP01 (black):
 </code>
 
 For more information see: “https://willem.aandewiel.nl/index.php/slimme-meter-uitlezer/”
+
+If you are new to programming the ESP8266 (and you have mastered the Dutch language) I recoment 
+[this](https://willem.aandewiel.nl/index.php/aan-de-slag-met-de-esp8266/) post!
 
 ![Actual](/images/DSMR_Actual.png)
 ![DeviceInfo](/images/DSMR_DeviceInfo.png)
