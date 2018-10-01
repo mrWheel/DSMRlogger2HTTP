@@ -19,7 +19,7 @@ but there are more. Luckely @igrr has fixed the SPIFFS read problem with the PUY
      See: https://github.com/esp8266/Arduino/issues/4061
 ```
 
-I have provided a patched version of the file Esp.cpp. This file will work with all types of Flash
+I have provided a patched version of the file ```Esp.cpp```. This file will work with all types of Flash
 chips so just do the following:
 
 ### Install patched version Esp.cpp
@@ -44,6 +44,11 @@ or
 ```cp <where-ever-you-downloaded-this>/Esp.cpp  . ``` 
 
 And now restart the Arduino-IDE and your good to program (also) boards with a PUYA Flash chip!
+
+Once the ```esp.cpp``` file is replaced, restart the IDE and flash your sketch using 
+the "**Tools -> Erase Flash -> All Flash Contents**" option. 
+After it's done flashing, go to "**Tools -> ESP8266 Sketch Data Upload**". This will upload all the 
+files in the "**data**" subfolder of your sketch folder.
 
 ## Nederlands
 Er zijn een heleboel ESP-01 bordjes in omloop die een Flash chip van PUYA hebben.
@@ -87,3 +92,7 @@ of:
 ```cp <where-ever-you-downloaded-this>/Esp.cpp . ``` 
 
 Nu de Arduino-IDE opnieuw opstarten en je kunt (ook) bordjes met een PUYA Flash chip flashen!
+
+Nu ```Esp.cpp``` bestand is vervangen door het ge-patch-te ```Esp.cpp``` bestand, moet je de IDE herstarten en beginnen
+met het flash van een sketch met de "**Tools -> Erase Flash -> All Flash Contents**" optie! 
+Als het flashen klaar is, kun je met "**Tools -> ESP8266 Sketch Data Upload**" de bestanden in de "**data**" sub-map van je sketch map naar de ESP-01 overzetten.
