@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : UpdateHTML, part of DSMRlogger2HTTM
-**  Version  : v0.7.0
+**  Version  : v0.7.2
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -63,6 +63,7 @@ void sendDataDeviceInfo() {
 //jsonString += ",\"PskKey\":\""            + String( WiFi.psk() ) + "\"";    // uncomment if you want to see this
   jsonString += ",\"IpAddress\":\""         +  WiFi.localIP().toString()  + "\"";
   jsonString += ",\"Hostname\":\""          + String( HOSTNAME ) + "\"";
+  jsonString += ",\"upTime\":\""            + String( upTime() ) + "\"";
   jsonString += ",\"TelegramCount\":\""     + String( telegramCount ) + "\"";
   jsonString += ",\"TelegramErrors\":\""    + String( telegramErrors ) + "\"";
   jsonString += ",\"statusLong\":\"" + lastStartup + "\"";

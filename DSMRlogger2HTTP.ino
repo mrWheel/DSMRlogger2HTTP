@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
-**  Version  : v0.7.0
+**  Version  : v0.7.2
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -25,7 +25,7 @@
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->"
 */
-#define _FW_VERSION "v0.7.0 (Sep 24 2018)"
+#define _FW_VERSION "v0.7.2 (Oct 03 2018)"
 
 /******************** change this for testing only **********************************/
 // #define HAS_NO_METER       // define if No Meter is attached
@@ -221,7 +221,7 @@ uint16_t  GasDeviceType;
 
 String    lastReset   = "", lastStartup = "";
 String    lastLogLine[NUMLASTLOG + 1]; 
-bool      debug = true, OTAinProgress = false, Verbose = false, showRaw = false, SPIFFSmounted = false;
+bool      debug = true, OTAinProgress = false, doLog = false, Verbose = false, showRaw = false, SPIFFSmounted = false;
 String    dateTime;
 int8_t    thisHour = -1, thisWeekDay = -1, thisMonth = -1, lastMonth, thisYear = 15;
 int8_t    testMonth = 0;
@@ -291,6 +291,21 @@ void escapeJson(const char * Src, char * Dest) {
   if (Verbose) Serial.println("]");
   
 } // escapeJson()
+
+//===========================================================================================
+String upTime() {
+//===========================================================================================
+
+  char    calcUptime[20];
+  int32_t seconds = millis() / 1000;
+
+  sprintf(calcUptime, "%d::%02d:%02d", int((seconds / (60 * 60 * 24) ) % 365)
+                                     , int((seconds / (60 * 60) ) % 24)
+                                     , int((seconds /  60 ) % 60) );
+
+  return calcUptime;
+
+} // upTime()
 
 
 //===========================================================================================

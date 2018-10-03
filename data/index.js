@@ -1,7 +1,7 @@
 
 //*************************************************************************  
 //  Program  : index.js, part of DSMRlogger2HTTP
-//  Version  : v0.7.0
+//  Version  : v0.7.2
 //
 //  Copyright (c) 2018 Willem Aandewiel
 //
@@ -214,6 +214,7 @@
             $('#D_PskKey').html(data.PskKey);
             $('#D_IpAddress').html(data.IpAddress);
             $('#D_Hostname').html(data.Hostname);
+            $('#D_upTime').html(data.upTime);
             $('#D_TelegramCount').html(data.TelegramCount);
             $('#D_TelegramErrors').html(data.TelegramErrors);
             $('#D_statusLong').html(data.statusLong);

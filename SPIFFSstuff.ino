@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : SPIFFSstuff, part of DSMRlogger2HTTP
-**  Version  : v0.7.0
+**  Version  : v0.7.2
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -59,6 +59,7 @@ void readLogFile() {
     if (!SPIFFSmounted) {
       TelnetStream.println("No SPIFFS filesystem..");
       TelnetStream.flush();
+      doLog = false;
       return;
     }
     // open the file. note that only one file can be open at a time,
@@ -97,25 +98,28 @@ void readLogFile() {
     } // for i ..
     
     TelnetStream.println("\n===END===\r");
+    TelnetStream.println(">Logging is active\r");
     TelnetStream.flush();
+    doLog   = true;
 
 }   // readLogFile()
 
 //===========================================================================================
 bool writeLogFile(String logLine) {
 //===========================================================================================
-    return true;
-
     bool newLogFile;
 
     if (!SPIFFSmounted) {
       TelnetStream.println("No SPIFFS filesystem..");
       TelnetStream.flush();
+      doLog = false;
       return false;
     }
 
     if (freeSpace() < 4000) {
       rotateLogFile("rotateLogFile due to space");
+      TelnetStream.println("logging is stopped!");
+      doLog = false;
     }
     
     if (SPIFFS.exists(LOG_FILE)) {
@@ -139,17 +143,17 @@ bool writeLogFile(String logLine) {
     }
     // open the file. note that only one file can be open at a time,
     // so you have to close this one before opening another.
-    File logFile = SPIFFS.open(LOG_FILE, "a");
-
-    // if the file is available, write to it:
-    if (logFile) {
-      logFile.print(lastLogLine[0]);
-      logFile.println("\r");
-      logFile.close();
-      lastLogLine[0].replace('\r', ' ');
-      lastLogLine[0].replace('\n', ' ');
-      return true;
-    
+    if (doLog) {
+      File logFile = SPIFFS.open(LOG_FILE, "a");
+      // if the file is available, write to it:
+      if (logFile) {
+        logFile.print(lastLogLine[0]);
+        logFile.println("\r");
+        logFile.close();
+        lastLogLine[0].replace('\r', ' ');
+        lastLogLine[0].replace('\n', ' ');
+        return true;
+      }
     } else {
       lastLogLine[0].replace('\r', ' ');
       lastLogLine[0].replace('\n', ' ');
@@ -167,6 +171,7 @@ void rotateLogFile(String reason) {
   }
   SPIFFS.rename(LOG_FILE, LOG_FILE_R);
   writeLogFile(reason);
+  doLog = false;
   
 } // rotateLogFile()
 

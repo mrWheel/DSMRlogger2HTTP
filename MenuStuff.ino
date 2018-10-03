@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : MenuStuff, part of DSMRlogger2HTTP
-**  Version  : v0.7.0
+**  Version  : v0.7.2
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -137,6 +137,7 @@ void displayBoardInfo() {
   TelnetStream.print("]\r\n                  PSK key [");  TelnetStream.print( WiFi.psk() );
   TelnetStream.print("]\r\n               IP Address [");  TelnetStream.print( WiFi.localIP() );
   TelnetStream.print("]\r\n                 Hostname [");  TelnetStream.print( HOSTNAME );
+  TelnetStream.print("]\r\n                   upTime [");  TelnetStream.print( upTime() );
   TelnetStream.println("]\r");
   TelnetStream.println("==================================================================\r\n");
   TelnetStream.flush();
@@ -217,6 +218,7 @@ void handleKeyInput() {
 #endif
       case 'P':     TelnetStream.println("Purging logfile ..\r");
                     rotateLogFile("handleKeyInput(): logFile purged at user request!");
+                    doLog = false;
                     break;
       case 'R':     TelnetStream.print("Reboot in 3 seconds ... \r");
                     TelnetStream.flush();
