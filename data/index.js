@@ -1,7 +1,7 @@
 
 //*************************************************************************  
 //  Program  : index.js, part of DSMRlogger2HTTP
-//  Version  : v0.7.2
+//  Version  : v0.7.4
 //
 //  Copyright (c) 2018 Willem Aandewiel
 //
@@ -217,10 +217,7 @@
             $('#D_upTime').html(data.upTime);
             $('#D_TelegramCount').html(data.TelegramCount);
             $('#D_TelegramErrors').html(data.TelegramErrors);
-            $('#D_statusLong').html(data.statusLong);
-            $('#D_lastLogLine1').html(data.lastLogLine1);
-            $('#D_lastLogLine2').html(data.lastLogLine2);
-            $('#D_lastLogLine3').html(data.lastLogLine3);
+            $('#D_lastReset').html(data.lastReset);
           }).fail(function(err){
             console.log("err getJSON getDeviceInfo.json "+JSON.stringify(err));
           });

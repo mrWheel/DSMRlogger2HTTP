@@ -1,8 +1,9 @@
 /*
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
-**  Version  : v0.7.2
-**
+*/
+#define _FW_VERSION "v0.7.4 (Oct 05 2018)"
+/*
 **  Copyright (c) 2018 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
@@ -25,7 +26,6 @@
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->"
 */
-#define _FW_VERSION "v0.7.2 (Oct 03 2018)"
 
 /******************** change this for testing only **********************************/
 // #define HAS_NO_METER       // define if No Meter is attached
@@ -45,9 +45,6 @@
 
 //  https://github.com/jandrassy/TelnetStream
 #include <TelnetStream.h>       // Version 0.0.1
-
-//  thanks to David Paiva
-#include "FTPserver.h"          // Version "FTP-2017-10-18"
 
 //  part of ESP8266 Core https://github.com/esp8266/Arduino
 #include <FS.h>
@@ -201,7 +198,6 @@ static FSInfo SPIFFSinfo;
 
 WiFiClient        wifiClient;
 ESP8266WebServer  server ( 80 );
-FtpServer         ftpSrv;   //set #define FTP_DEBUG in ESP8266FtpServer.h to see ftp verbose on serial
 
 uint32_t  waitLoop, noMeterWait, telegramCount, telegramErrors, waitForATOupdate;
 char      cMsg[100], fChar[10];
@@ -219,7 +215,7 @@ float     Voltage_l1, Voltage_l2, Voltage_l3;
 uint16_t  Current_l1, Current_l2, Current_l3;
 uint16_t  GasDeviceType;
 
-String    lastReset   = "", lastStartup = "";
+String    lastReset = "";
 String    lastLogLine[NUMLASTLOG + 1]; 
 bool      debug = true, OTAinProgress = false, doLog = false, Verbose = false, showRaw = false, SPIFFSmounted = false;
 String    dateTime;
@@ -486,9 +482,6 @@ void processData(MyData DSMRdata) {
     EnergyReturned    = EnergyReturnedTariff1  + EnergyReturnedTariff2;
 #endif
     unixTimestamp       = epoch(pTimestamp);
-    if ((lastStartup == "") && (pTimestamp.length() >= 10)) {
-      lastStartup = "lastStartup: <b>" + buildDateTimeString(pTimestamp) + "</b>,  Restart Reason: <b>" + lastReset + "</b> ";
-    }
 
 //================= handle Hour change ======================================================
     if (thisHour != HourFromTimestamp(pTimestamp)) {
@@ -590,7 +583,6 @@ void setup() {
     delay(2000);
   }
   digitalWrite(BUILTIN_LED, LED_OFF);  // HIGH is OFF
-  lastStartup = "";
   lastReset     = ESP.getResetReason();
   
   #ifdef ARDUINO_ESP8266_GENERIC
@@ -611,7 +603,6 @@ void setup() {
     TelnetStream.println("SPIFFS Mount succesfull");
     TelnetStream.flush();
     SPIFFSmounted = true;
-    ftpSrv.begin("esp8266","esp8266");    //username, PASSWORD for ftp.  set ports in ESP8266FtpServer.h  (default 21, 50009 for PASV)
     sprintf(cMsg, "Last reset reason: [%s]", ESP.getResetReason().c_str());
     if (lastReset.length() > 2) {
         writeLogFile(cMsg);
@@ -676,8 +667,20 @@ void setup() {
   server.on("/getTableHours.json", sendTableHours);
   server.on("/getTableMonths.json", sendTableMonths);
 
+  server.on("/onderhoud", HTTP_POST, handleFileDelete);
+  server.on("/onderhoud", handleRoot);
+  server.on("/onderhoud/upload", HTTP_POST, []() {
+    server.send(200, "text/plain", "");
+  }, handleFileUpload);
+  
   server.serveStatic("/", SPIFFS, "/index.html");
   server.serveStatic("/index.js", SPIFFS, "/index.js");
+
+  server.onNotFound([]() {
+    if (!handleFileRead(server.uri()))
+      server.send(404, "text/plain", "FileNotFound");
+  });
+
 
   server.begin();
   if (debug) Serial.println( "HTTP server started" );
@@ -711,7 +714,6 @@ void loop () {
 //===========================================================================================
   ArduinoOTA.handle();
   server.handleClient();
-  ftpSrv.handleFTP();
   handleKeyInput();
 
   if (!showRaw) {

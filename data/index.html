@@ -4,7 +4,7 @@
 <!--
 ***************************************************************************  
 **  Program  : index.html, part of DSMRlogger2HTTP
-**  Version  : v0.7.2
+**  Version  : v0.7.4
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -299,6 +299,11 @@
             </ul>
             <ul class="nav nav-pills">
               <li class="active"><a style="width:410px" href="#">
+                  <div class="span badge pull-right" id="D_lastReset">??</div>DSMR last Reset Reason</a>
+              </li>
+            </ul>
+            <ul class="nav nav-pills">
+              <li class="active"><a style="width:410px" href="#">
                   <div class="span badge pull-right" id="D_Compiled">??</div>DSMR Compiled</a>
               </li>
             </ul>
@@ -399,10 +404,6 @@
           </div>		<!-- end left column -->
         </div> 			<!-- end row -->
         <br>
-        <div id="D_statusLong">-</div>
-        <div id="D_lastLogLine1">-</div>
-        <div id="D_lastLogLine2">-</div>
-        <div id="D_lastLogLine3">-</div>
 
       </div>
       <!-- END OFF id="tab_DeviceInfo" -->

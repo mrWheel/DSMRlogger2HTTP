@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : UpdateHTML, part of DSMRlogger2HTTM
-**  Version  : v0.7.2
+**  Version  : v0.7.4
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -66,10 +66,7 @@ void sendDataDeviceInfo() {
   jsonString += ",\"upTime\":\""            + String( upTime() ) + "\"";
   jsonString += ",\"TelegramCount\":\""     + String( telegramCount ) + "\"";
   jsonString += ",\"TelegramErrors\":\""    + String( telegramErrors ) + "\"";
-  jsonString += ",\"statusLong\":\"" + lastStartup + "\"";
-  for(int l = 0; l < NUMLASTLOG; l++) {
-    jsonString += ",\"lastLogLine" + String((l+1)) + "\":\"[" + String(l) + "]lastLogLine: <b>" + String(lastLogLine[l]) + "</b>\"";
-  }
+  jsonString += ",\"lastReset\":\"" + lastReset + "\"";
   jsonString += "}";
   server.send(200, "application/json", jsonString);
   TelnetStream.println("sendDataDeviceInfo(): send JSON string\r\n");

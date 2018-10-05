@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : SPIFFSstuff, part of DSMRlogger2HTTP
-**  Version  : v0.7.2
+**  Version  : v0.7.4
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -125,8 +125,8 @@ bool writeLogFile(String logLine) {
     if (SPIFFS.exists(LOG_FILE)) {
         newLogFile = false;
     } else {
-        TelnetStream.println("writeLogFile(): new logfile\r");
-        TelnetStream.flush();
+        //TelnetStream.println("writeLogFile(): new logfile\r");
+        //TelnetStream.flush();
         newLogFile = true;
     }
 
