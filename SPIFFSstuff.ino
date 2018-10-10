@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : SPIFFSstuff, part of DSMRlogger2HTTP
-**  Version  : v0.7.4
+**  Version  : v0.7.5
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -10,7 +10,7 @@
 */
 
 //===========================================================================================
-uint16_t freeSpace() {
+int32_t freeSpace() {
 //===========================================================================================
   int32_t space;
   
@@ -117,6 +117,7 @@ bool writeLogFile(String logLine) {
     }
 
     if (freeSpace() < 4000) {
+      if (debug) Serial.printf("Rotate logFile due to space [%ld]\n", freeSpace());
       rotateLogFile("rotateLogFile due to space");
       TelnetStream.println("logging is stopped!");
       doLog = false;
@@ -166,10 +167,12 @@ bool writeLogFile(String logLine) {
 void rotateLogFile(String reason) {
 //===========================================================================================
 
+  yield();
   if (SPIFFS.exists(LOG_FILE_R)) {
     SPIFFS.remove(LOG_FILE_R);
   }
   SPIFFS.rename(LOG_FILE, LOG_FILE_R);
+  delay(100);
   writeLogFile(reason);
   doLog = false;
   
