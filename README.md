@@ -25,7 +25,7 @@ Arduino-IDE settings for ESP01 (black):
     - Debug port: "Disabled"
     - Debug Level: "None"
     - IwIP Variant: "v2 Lower Memory"
-    - Reset Method: "nodemcu"
+    - Reset Method: "nodemcu"   // <-- this actualy depends on the programmer you use
     - Crystal Frequency: "26 MHz"
     - Flash Frequency: "40MHz"
     - CPU Frequency: "80 MHz"
@@ -35,11 +35,15 @@ Arduino-IDE settings for ESP01 (black):
     - Port: "ESP01-DSMR at <-- IP address →"
 </code>
 
-For more information see: “https://willem.aandewiel.nl/index.php/slimme-meter-uitlezer/”
+For more information see [this post](https://willem.aandewiel.nl/index.php/slimme-meter-uitlezer/).
 
 If you are new to programming the ESP8266 (and you have mastered the Dutch language) I recoment 
 [this](https://willem.aandewiel.nl/index.php/aan-de-slag-met-de-esp8266/) post!
 
 ![Actual](/images/DSMR_Actual.png)
 ![DeviceInfo](/images/DSMR_DeviceInfo.png)
+
+If you upload one of the <code>PRDfiles.csv</code>, you need to reboot the ESP01-DSMR before it overwrites the files again from memory to SPIFFS (every change of the hour, day or month).
+
+![Onderhoud](/images/DSMR_Onderhoud.png)
 
