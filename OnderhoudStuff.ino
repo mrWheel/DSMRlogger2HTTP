@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : OnderhoudStuff, part of DSMRlogger2HTTP
-**  Version  : v0.7.4
+**  Version  : v0.7.5
 **
 **  Mostly stolen from https://www.arduinoforum.de/User-Fips
 **  See also https://www.arduinoforum.de/arduino-Thread-SPIFFS-DOWNLOAD-UPLOAD-DELETE-Esp8266-NodeMCU
@@ -57,10 +57,19 @@ void handleRoot() {                     // HTML onderhoud
   onderhoudHTML += formatBytes(fs_info.usedBytes).c_str();      
   onderhoudHTML += "<p>";
 
-  onderhoudHTML += "<hr><hr><br><form action='/' method='POST'>Exit Onderhoud ";
-  onderhoudHTML += "<input type='submit' class='button' name='SUBMIT' value='Exit'>";
-  onderhoudHTML += "</form><p><br>";
-  onderhoudHTML += "\r\n";
+  onderhoudHTML += "<hr>";
+  onderhoudHTML += "<div style='width: 30%'>";
+  onderhoudHTML += "  <form style='float: left;' action='/ReBoot' method='POST'>ReBoot DSMRlogger ";
+  onderhoudHTML += "    <input type='submit' class='button' name='SUBMIT' value='ReBoot'>";
+  onderhoudHTML += "  </form>";
+
+  onderhoudHTML += "  <form style='float: right;' action='/' method='POST'> &nbsp; Exit Onderhoud ";
+  onderhoudHTML += "   <input type='submit' class='button' name='SUBMIT' value='Exit'>";
+  onderhoudHTML += "  </form>";
+  onderhoudHTML += "</div>";
+  onderhoudHTML += "<div style='width: 80%'>&nbsp;</div>";
+  
+  onderhoudHTML += "</body></html>\r\n";
 
   server.send(200, "text/html", onderhoudHTML);
 }
@@ -92,6 +101,53 @@ String getContentType(String filename) {
   return "text/plain";
 }
 
+void handleReBoot() {
+  String redirectHTML = "";
+
+  redirectHTML += "<!DOCTYPE HTML><html lang='en-US'>";
+  redirectHTML += "<head>";
+  redirectHTML += "<meta charset='UTF-8'>";
+  redirectHTML += "<style type='text/css'>";
+  redirectHTML += "body {background-color: lightgray;}";
+  redirectHTML += "</style>";
+  redirectHTML += "<title>Redirect to DSMRlogger</title>";
+  redirectHTML += "</head>";
+  redirectHTML += "<body><h1>ESP01-DSMR Onderhoud</h1>";
+  redirectHTML += "<h3>Rebooting ESP01-DSMR</h3>";
+  redirectHTML += "<br><div style='width: 500px; position: relative; font-size: 25px;'>";
+  redirectHTML += "  <div style='float: left;'>Redirect over &nbsp;</div>";
+  redirectHTML += "  <div style='float: left;' id='counter'>20</div>";
+  redirectHTML += "  <div style='float: left;'>&nbsp; seconden ...</div>";
+  redirectHTML += "  <div style='float: right;'>&nbsp;</div>";
+  redirectHTML += "</div>";
+  redirectHTML += "<!-- Note: don't tell people to `click` the link, just tell them that it is a link. -->";
+  redirectHTML += "<br><br><hr>If you are not redirected automatically, click this <a href='/'>ESP01-DSMR</a>.";
+  redirectHTML += "  <script>";
+  redirectHTML += "      setInterval(function() {";
+  redirectHTML += "          var div = document.querySelector('#counter');";
+  redirectHTML += "          var count = div.textContent * 1 - 1;";
+  redirectHTML += "          div.textContent = count;";
+  redirectHTML += "          if (count <= 0) {";
+  redirectHTML += "              window.location.replace('/'); ";
+  redirectHTML += "          } ";
+  redirectHTML += "      }, 1000); ";
+  redirectHTML += "  </script> ";
+  redirectHTML += "</body></html>\r\n";
+  
+  server.send(200, "text/html", redirectHTML);
+  
+  TelnetStream.println("ReBoot DSMRlogger ..");
+  TelnetStream.flush();
+  if (debug) {
+    Serial.println("ReBoot DSMRlogger ..");
+    Serial.flush();
+  }
+  delay(1000);
+  ESP.reset();
+  
+} // handleReBoot()
+
+
 bool handleFileRead(String path) {
   TelnetStream.println("handleFileRead: " + path);
   if (path.endsWith("/")) path += "index.html";
@@ -107,7 +163,9 @@ bool handleFileRead(String path) {
     return true;
   }
   return false;
-}
+  
+} // handleFileRead()
+
 
 void handleFileDelete() {                               
   if (server.args() == 0) return handleRoot();
@@ -133,7 +191,9 @@ void handleFileDelete() {
     onderhoudHTML += "'><style>body {background-color: powderblue;}</style></head>\r\n<body><center><h2>Bestand niet gevonden</h2>wacht 3 seconden...</center>";
     server.send(200, "text/html", onderhoudHTML );
   }
-}
+  
+} // handleFileDelete()
+
 
 void handleFileUpload() {                                 
   if (server.uri() != "/onderhoud/upload") return;
@@ -160,7 +220,9 @@ void handleFileUpload() {
     TelnetStream.print("handleFileUpload Size: "); TelnetStream.println(upload.totalSize);
     handleRoot();
   }
-}
+  
+} // handleFileUpload()
+
 
 //void formatSpiffs() {       // Format SPIFFS
 //  SPIFFS.format();

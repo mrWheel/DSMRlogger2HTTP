@@ -2,7 +2,7 @@
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
 */
-#define _FW_VERSION "v0.7.4 (Oct 05 2018)"
+#define _FW_VERSION "v0.7.5 (Oct 10 2018)"
 /*
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -16,7 +16,7 @@
     - Debug port: "Disabled"
     - Debug Level: "None"
     - IwIP Variant: "v2 Lower Memory"
-    - Reset Method: "nodemcu"
+    - Reset Method: "nodemcu"   // but will depend on the programmer!
     - Crystal Frequency: "26 MHz" 
     - VTables: "Flash"
     - Flash Frequency: "40MHz"
@@ -222,7 +222,8 @@ String    dateTime;
 int8_t    thisHour = -1, thisWeekDay = -1, thisMonth = -1, lastMonth, thisYear = 15;
 int8_t    testMonth = 0;
 int8_t    tries, showRawCount;
-uint32_t  unixTimestamp;
+uint32_t  nextSecond, unixTimestamp;
+uint64_t  upTimeSeconds;
 IPAddress ipDNS, ipGateWay, ipSubnet;
 uint16_t  WIFIreStartCount;
 String    jsonString;
@@ -293,11 +294,10 @@ String upTime() {
 //===========================================================================================
 
   char    calcUptime[20];
-  int32_t seconds = millis() / 1000;
 
-  sprintf(calcUptime, "%d::%02d:%02d", int((seconds / (60 * 60 * 24) ) % 365)
-                                     , int((seconds / (60 * 60) ) % 24)
-                                     , int((seconds /  60 ) % 60) );
+  sprintf(calcUptime, "%d::%02d:%02d", int((upTimeSeconds / (60 * 60 * 24)) % 365)
+                                     , int((upTimeSeconds / (60 * 60)) % 24)
+                                     , int((upTimeSeconds / (60)) % 60));
 
   return calcUptime;
 
@@ -604,6 +604,12 @@ void setup() {
     TelnetStream.flush();
     SPIFFSmounted = true;
     sprintf(cMsg, "Last reset reason: [%s]", ESP.getResetReason().c_str());
+    if (debug) {
+      Serial.println(cMsg);
+      Serial.flush();
+    }
+    TelnetStream.println(cMsg);
+    TelnetStream.flush();
     if (lastReset.length() > 2) {
         writeLogFile(cMsg);
     }
@@ -666,21 +672,21 @@ void setup() {
   server.on("/getTableWeek.json", sendTableWeek);
   server.on("/getTableHours.json", sendTableHours);
   server.on("/getTableMonths.json", sendTableMonths);
+  server.on("/ReBoot", HTTP_POST, handleReBoot);
+  
+  server.serveStatic("/", SPIFFS, "/index.html");
+  server.serveStatic("/index.js", SPIFFS, "/index.js");
 
   server.on("/onderhoud", HTTP_POST, handleFileDelete);
   server.on("/onderhoud", handleRoot);
   server.on("/onderhoud/upload", HTTP_POST, []() {
     server.send(200, "text/plain", "");
   }, handleFileUpload);
-  
-  server.serveStatic("/", SPIFFS, "/index.html");
-  server.serveStatic("/index.js", SPIFFS, "/index.js");
 
   server.onNotFound([]() {
     if (!handleFileRead(server.uri()))
       server.send(404, "text/plain", "FileNotFound");
   });
-
 
   server.begin();
   if (debug) Serial.println( "HTTP server started" );
@@ -703,8 +709,10 @@ void setup() {
   delay(100);
   reader.enable(true);
 
-  waitLoop    = millis() + 5000;
-  noMeterWait = millis() + 5000;
+  waitLoop      = millis() + 5000;
+  noMeterWait   = millis() + 5000;
+  upTimeSeconds = (millis() / 1000) + 50;
+  nextSecond    = millis() + 1000;
   
 } // setup()
 
@@ -837,6 +845,11 @@ void loop () {
     }
   } // if (!OTAinProgress) 
 #endif
+
+  if (millis() > nextSecond) {
+    nextSecond += 1000; // nextSecond is ahead of millis() so it will "rollover" 
+    upTimeSeconds++;    // before millis() and this will probably work just fine
+  }
 
 } // loop()
 
