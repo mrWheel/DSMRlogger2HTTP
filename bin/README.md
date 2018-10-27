@@ -33,6 +33,8 @@ Toets het commando in zoals hier onder weergegeven, maar vervang alle variabelen
     python <path naar: 'espota.py'> -i <IPaddress ESP-01> -p 8266 --auth= -f <path naar 'DSMRlogger2HTTP_v6.ino.bin'>
 ```
 
+*LET OP: de quotjes ('), kleiner-dan (<) en groter-dan (>) tekens moet je niet intoetsen!!*
+
 ## 3) Voor update naar een, via een kabel verbonden, programmer voor de ESP-01:
 
 ### 3.1)
@@ -48,7 +50,7 @@ Toets het commando in zoals hier onder weergegeven, maar vervang alle variabelen
   <path naar: 'esptool'> -vv -cd nodemcu -cb 115200 -cp <USBpoort> -ca 0x00000 -cf <path naar 'DSMRlogger2HTTP_v6.ino.bin'>
 ```
 
-*LET OP: de quotjes moet je niet intoetsen!!*
+*LET OP: de quotjes ('), kleiner-dan (<) en groter-dan (>) tekens moet je niet intoetsen!!*
 
 ## 4)
 Start nu de ArduinoIDE op, selecteer het programma ```DSMRlogger2HTTP```.
@@ -57,12 +59,12 @@ Start nu de ArduinoIDE op, selecteer het programma ```DSMRlogger2HTTP```.
 Selecteer in [**Tools**] de correcte settings voor het ESP-01 board.
 
     - Board: "Generic ESP8266 Module"
-    - Flash mode: "DIO" / "DOUT"
+    - Flash mode: "DOUT"
     - Flash size: "1M (128K SPIFFS)"
     - Debug port: "Disabled"
     - Debug Level: "None"
     - IwIP Variant: "v2 Lower Memory"
-    - Reset Method: "nodemcu"
+    - Reset Method: "nodemcu"   // <-- dit is afhankelijk van de programmer die je gebruikt
     - Crystal Frequency: "26 MHz" (otherwise Serial output is garbidge)
     - VTables: "Flash"
     - Flash Frequency: "40MHz"
