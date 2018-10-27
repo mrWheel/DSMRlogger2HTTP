@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : MenuStuff, part of DSMRlogger2HTTP
-**  Version  : v0.7.2
+**  Version  : v0.7.6
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -275,7 +275,7 @@ void handleKeyInput() {
                     TelnetStream.println("  *R - Reboot\r");
                     TelnetStream.println("   S - SPIFFS space available\r");
                     TelnetStream.println("  *U - Update SPIFFS (save Data-files)\r");
-                    TelnetStream.println("   V - Tockle Verbose\r");
+                    TelnetStream.println("   V - Toggle Verbose\r");
                     if (waitForATOupdate > millis()) {
                       TelnetStream.println("   W - Cancel Wait for ATO update\r");
                     } else {

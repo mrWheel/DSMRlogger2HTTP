@@ -2,7 +2,7 @@
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
 */
-#define _FW_VERSION "v0.7.5 (Oct 10 2018)"
+#define _FW_VERSION "v0.7.6 (Oct 27 2018)"
 /*
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -364,15 +364,15 @@ void printData() {
     TelnetStream.println(cMsg);
     
     dtostrf(PowerDelivered_l1, 8, 0, fChar);
-    sprintf(cMsg, "Power Delivered (l1) : %skW", fChar);
+    sprintf(cMsg, "Power Delivered (l1) : %sWatt", fChar);
     TelnetStream.println(cMsg);
     
     dtostrf(PowerDelivered_l2, 8, 0, fChar);
-    sprintf(cMsg, "Power Delivered (l2) : %skW", fChar);
+    sprintf(cMsg, "Power Delivered (l2) : %sWatt", fChar);
     TelnetStream.println(cMsg);
     
     dtostrf(PowerDelivered_l3, 8, 0, fChar);
-    sprintf(cMsg, "Power Delivered (l3) : %skW", fChar);
+    sprintf(cMsg, "Power Delivered (l3) : %sWatt", fChar);
     TelnetStream.println(cMsg);
     
     dtostrf(PowerReturned_l1, 8, 0, fChar);

@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : OnderhoudStuff, part of DSMRlogger2HTTP
-**  Version  : v0.7.5
+**  Version  : v0.7.6
 **
 **  Mostly stolen from https://www.arduinoforum.de/User-Fips
 **  See also https://www.arduinoforum.de/arduino-Thread-SPIFFS-DOWNLOAD-UPLOAD-DELETE-Esp8266-NodeMCU
@@ -168,15 +168,24 @@ bool handleFileRead(String path) {
 
 
 void handleFileDelete() {                               
+  String file2Delete, hostNameURL, IPaddressURL;                     
   if (server.args() == 0) return handleRoot();
   if (server.hasArg("Delete")) {
+    file2Delete = server.arg("Delete");
+    file2Delete.toLowerCase();
     Dir dir = SPIFFS.openDir("/");
     while (dir.next())    {
       String path = dir.fileName();
       path.replace(" ", "%20"); path.replace("ä", "%C3%A4"); path.replace("Ä", "%C3%84"); path.replace("ö", "%C3%B6"); path.replace("Ö", "%C3%96");
       path.replace("ü", "%C3%BC"); path.replace("Ü", "%C3%9C"); path.replace("ß", "%C3%9F"); path.replace("€", "%E2%82%AC");
-      if (server.arg("Delete") != "http://" + WiFi.localIP().toString() + path + "?download=" )
+      hostNameURL   = "http://" + String(HOSTNAME) + ".local" + path + "?download=";
+      hostNameURL.toLowerCase();
+      IPaddressURL  = "http://" + WiFi.localIP().toString() + path + "?download=";
+      IPaddressURL.toLowerCase();
+    //if (server.arg("Delete") != "http://" + WiFi.localIP().toString() + path + "?download=" )
+      if ( (file2Delete != hostNameURL ) && (file2Delete != IPaddressURL ) ) {
         continue;
+      }
       SPIFFS.remove(dir.fileName());
       String header = "HTTP/1.1 303 OK\r\nLocation:";
       header += server.uri();
