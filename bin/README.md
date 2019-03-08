@@ -1,4 +1,4 @@
-# Binary voor ESP-01 (v0.6.2)
+# Binary voor ESP-01 
 
 ## 1)
 Download, als zip file, de laatste versie van DSMRlogger2HTTP van github
