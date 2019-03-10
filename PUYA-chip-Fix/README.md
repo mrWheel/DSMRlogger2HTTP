@@ -1,5 +1,7 @@
 ***Achter de Engelse tekst staat dezelfde tekst in het Nederlands***
 
+**\*\*\* With the ESP8266 core 2.5.0 the PUYA patch should not be necessery anymore \*\*\***
+
 There are a lot of ESP-01 board available now which have a Flash Chip from PUYA.
 This Flash chip is not compatible with the normaly used Flash chip.
 
@@ -50,6 +52,9 @@ After it's done flashing, go to "**Tools -> ESP8266 Sketch Data Upload**". This 
 files in the "**data**" subfolder of your sketch folder.
 
 ## Nederlands
+
+**\*\*\* Met de ESP8266 core 2.5.0 zou de PUYA patch niet meer nodig moeten zijn \*\*\***
+
 Er zijn een heleboel ESP-01 bordjes in omloop die een Flash chip van PUYA hebben.
 Deze Flash chip is niet compatibel met de gewoonlijk aanwezige Flash chips.
 
