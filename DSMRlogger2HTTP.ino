@@ -2,9 +2,9 @@
 ***************************************************************************  
 **  Program  : DSMRlogger2HTTP
 */
-#define _FW_VERSION "v0.7.6 (Oct 27 2018)"
+#define _FW_VERSION "v0.7.7 (" +String( __DATE__) + " " + String(__TIME__) + ")"
 /*
-**  Copyright (c) 2018 Willem Aandewiel
+**  Copyright (c) 2019 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      
@@ -28,7 +28,7 @@
 */
 
 /******************** change this for testing only **********************************/
-// #define HAS_NO_METER       // define if No Meter is attached
+// #define HAS_NO_METER       // define if No Smart Meter is attached
 /******************** don't change enything below this comment **********************/
 
 //  part of ESP8266 Core https://github.com/esp8266/Arduino
@@ -68,7 +68,7 @@
   #ifdef HAS_NO_METER
     #define HOSTNAME     "TEST-DSMR"
   #else
-    #define HOSTNAME     "ESP01-DSMR"
+    #define HOSTNAME     "ESP01-DSMR2"  // <<-- testing!!!!!
   #endif
   //#define VCC_ENABLE    0     // ESP01 does not have a free GPIO-pin
 #endif
@@ -217,7 +217,7 @@ uint16_t  GasDeviceType;
 
 String    lastReset = "";
 String    lastLogLine[NUMLASTLOG + 1]; 
-bool      debug = true, OTAinProgress = false, doLog = false, Verbose = false, showRaw = false, SPIFFSmounted = false;
+bool      debug = true, OTAinProgress = false, Verbose = false, showRaw = false, SPIFFSmounted = false;
 String    dateTime;
 int8_t    thisHour = -1, thisWeekDay = -1, thisMonth = -1, lastMonth, thisYear = 15;
 int8_t    testMonth = 0;
@@ -295,9 +295,9 @@ String upTime() {
 
   char    calcUptime[20];
 
-  sprintf(calcUptime, "%d::%02d:%02d", int((upTimeSeconds / (60 * 60 * 24)) % 365)
-                                     , int((upTimeSeconds / (60 * 60)) % 24)
-                                     , int((upTimeSeconds / (60)) % 60));
+  sprintf(calcUptime, "%d(d):%02d:%02d", int((upTimeSeconds / (60 * 60 * 24)) % 365)
+                                       , int((upTimeSeconds / (60 * 60)) % 24)
+                                       , int((upTimeSeconds / (60)) % 60));
 
   return calcUptime;
 
@@ -508,7 +508,6 @@ void processData(MyData DSMRdata) {
 //================= handle Day change ======================================================
     if (thisWeekDay != weekday(unixTimestamp)) {
       // weekday() from unixTimestamp is from 1 (sunday) to 7 (saturday)
-      if (thisWeekDay != -1) rotateLogFile("Daily rotate");
       thisWeekDay = weekday(unixTimestamp);
       // in our weekDat[] table we have to subtract "1" to get 0 (sunday) to 6 (saturday)
       slot = thisWeekDay - 1;
@@ -543,7 +542,6 @@ void processData(MyData DSMRdata) {
           TelnetStream.println("processData(): Move thisMonth one slot up");
           TelnetStream.flush();
           Serial.println("processData(): Move thisMonth one slot up");
-          writeLogFile("processData(): Move thisMonth one slot up!");
           shiftDownMonthData(thisYear, thisMonth);
           if (Verbose) TelnetStream.println("processData(): months shifted down!");
           TelnetStream.flush();
@@ -610,9 +608,6 @@ void setup() {
     }
     TelnetStream.println(cMsg);
     TelnetStream.flush();
-    if (lastReset.length() > 2) {
-        writeLogFile(cMsg);
-    }
   }
 //=============end SPIFFS =========================================
 
@@ -646,7 +641,6 @@ void setup() {
   //============= configure OTA (minimal) ====================
   ArduinoOTA.setHostname(HOSTNAME);   // defaults to esp8266-[ChipID]
   ArduinoOTA.onStart([]() {
-    writeLogFile("Start OTA update ...");
     Serial.swap();  // stop receiving data from TxR
     OTAinProgress = true;
     // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
@@ -731,7 +725,8 @@ void loop () {
   if (!OTAinProgress) {
     if (!showRaw) {
       if (millis() > waitLoop) {
-        waitLoop = millis() + 10000;  // tien seconden?
+        //waitLoop = millis() + 10000;  // tien seconden?
+        waitLoop = millis() + 2000;  // test 2 seconden
 
         reader.enable(true);
 #ifdef ARDUINO_ESP8266_GENERIC
