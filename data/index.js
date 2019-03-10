@@ -1,7 +1,7 @@
 
 //*************************************************************************  
 //  Program  : index.js, part of DSMRlogger2HTTP
-//  Version  : v0.7.5
+//  Version  : v0.7.6
 //
 //  Copyright (c) 2018 Willem Aandewiel
 //

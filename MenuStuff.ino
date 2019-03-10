@@ -1,9 +1,9 @@
 /*
 ***************************************************************************  
 **  Program  : MenuStuff, part of DSMRlogger2HTTP
-**  Version  : v0.7.6
+**  Version  : v0.7.8
 **
-**  Copyright (c) 2018 Willem Aandewiel
+**  Copyright (c) 2019 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      
@@ -17,7 +17,7 @@ void displayDaysHist(bool Telnet=true) {
   int Label;
 
   if (Telnet) TelnetStream.println("\n======== WeekDay History ==========\r\n");
-//else        writeLogFile("======== WeekDay History ==========");
+
   for (int i=0; i<7; i++) {
     if (i == thisDay) today = '*';
     else              today = ' ';
@@ -28,7 +28,6 @@ void displayDaysHist(bool Telnet=true) {
     sprintf(cMsg, "[%02d][%02d]%c Energy Del.[%s], Ret.[%s], Gas Del.[%s]\r", i, Label, today
                                                                             , ED, ER, GD);
     if (Telnet) TelnetStream.println(cMsg);
-  //else        writeLogFile(cMsg);
   }
   TelnetStream.flush();
   
@@ -43,7 +42,6 @@ void displayHoursHist(bool Telnet=true) {
   int Label;
   
   if (Telnet) TelnetStream.println("\n======== Hours History ==========\r\n");
-//else        writeLogFile("======== Hours History ==========");
   for (int i=1; i<=8; i++) {
     if (i == thisHour)  hour = '*';
     else                hour = ' '; 
@@ -54,7 +52,6 @@ void displayHoursHist(bool Telnet=true) {
     sprintf(cMsg, "[%02d][%02d]%c Energy Del.[%s], Ret.[%s], Gas Del.[%s]\r", i, Label, hour
                                                                           , ED, ER, GD);
     if (Telnet) TelnetStream.println(cMsg);
-  //else        writeLogFile(cMsg);
 
   }
   TelnetStream.flush();
@@ -71,7 +68,6 @@ void displayMonthsHist(bool Telnet=true) {
   int Label;
   
   if (Telnet) TelnetStream.println("\n======== Months History ==========\r\n");
-  else        writeLogFile("======== Months History ==========");
   for (int i=1; i<=24; i++) {
     Label = monthsDat[i].Label;
     dtostrf(monthsDat[i].EnergyDelivered, 9, 3, ED);
@@ -80,7 +76,6 @@ void displayMonthsHist(bool Telnet=true) {
     sprintf(cMsg, "[%02d][%04d] Energy Del.[%s], Ret.[%s], Gas Del.[%s]\r", i, Label
                                                                           , ED, ER, GD);
     if (Telnet) TelnetStream.println(cMsg);
-    else        writeLogFile(cMsg);
 
   }
   TelnetStream.flush();
@@ -158,7 +153,6 @@ void waitForOTAupload() {
     ArduinoOTA.handle();
     delay(10);
   }
-  writeLogFile("Reboot after OTA update ....");
   TelnetStream.println("now Rebooting.\r");
   TelnetStream.flush();
   ESP.reset();
@@ -186,24 +180,20 @@ void handleKeyInput() {
                     break;
       case 'F':     TelnetStream.printf("\r\nConnect to AP [%s] and go to ip address shown in the AP-name\r\n", APname);
                     TelnetStream.flush();
-                    writeLogFile("handleKeyInput(): Force reset WiFi credentials ..");
                     delay(1000);
                     WiFi.disconnect();  // deletes credentials !
                     //setupWiFi(true);
                     ESP.reset();
                     break;
-      case 'G':     if (!readWeekData()) TelnetStream.println("handleKeyInput(): error readWeekData()!");
-                    if (!readHourData())    TelnetStream.println("handleKeyInput(): error readHourData()!");
-                    if (!readMonthData())   TelnetStream.println("handleKeyInput(): error readMonthData()!");
+      case 'G':     if (!readWeekData())  TelnetStream.println("handleKeyInput(): error readWeekData()!");
+                    if (!readHourData())  TelnetStream.println("handleKeyInput(): error readHourData()!");
+                    if (!readMonthData()) TelnetStream.println("handleKeyInput(): error readMonthData()!");
                     break;
       case 'i':
       case 'I':     for(int I=0; I<10; I++) {
                       digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
                       delay(1000);
                     }
-                    break;
-      case 'l':
-      case 'L':     readLogFile();
                     break;
 #ifdef HAS_NO_METER
       case 'Z':     createDummyData();
@@ -216,14 +206,9 @@ void handleKeyInput() {
       case 'M':     showRaw = !showRaw;
                     break;
 #endif
-      case 'P':     TelnetStream.println("Purging logfile ..\r");
-                    rotateLogFile("handleKeyInput(): logFile purged at user request!");
-                    doLog = false;
-                    break;
       case 'R':     TelnetStream.print("Reboot in 3 seconds ... \r");
                     TelnetStream.flush();
                     delay(3000);
-                    writeLogFile("handleKeyInput(): Reboot requested by operator..");
                     TelnetStream.println("now Rebooting.                      \r");
                     TelnetStream.flush();
                     ESP.reset();
@@ -260,7 +245,6 @@ void handleKeyInput() {
                     TelnetStream.println("  *F - Force Re-Config WiFi\r");
                     TelnetStream.println("  *G - Get from SPIFFS (read Data-files)\r");
                     TelnetStream.printf ("   I - Identify by blinking LED on GPIO[%02d]\r\n", BUILTIN_LED);
-                    TelnetStream.println("   L - read LogFile\r");
 #ifdef HAS_NO_METER
                     TelnetStream.println("  *Z - create Dummy Data\r");
                     TelnetStream.println("   m - force next Month\r");
@@ -271,7 +255,6 @@ void handleKeyInput() {
                       TelnetStream.println("   N - No Parsing (show RAW data from Smart Meter)\r");
                       showRawCount = 0;
                     }
-                    TelnetStream.println("  *P - Purge LogFile\r");
                     TelnetStream.println("  *R - Reboot\r");
                     TelnetStream.println("   S - SPIFFS space available\r");
                     TelnetStream.println("  *U - Update SPIFFS (save Data-files)\r");

@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : WiFiStuff, part of DSMRlogger2HTTP
-**  Version  : v0.7.0
+**  Version  : v0.7.8
 **
 **  Copyright (c) 2018 Willem Aandewiel
 **
@@ -13,19 +13,13 @@
 //gets called when WiFiManager enters configuration mode
 void configModeCallback(WiFiManager *myWiFiManager) {
 //===========================================================================================
-    //blinker.attach(5.0, blink);
-
     if (debug) Serial.print("configModeCallback(): Entered config mode @");
-    writeLogFile("configModeCallback(): Entered config mode @");
     if (debug) Serial.print(WiFi.softAPIP());
-    writeLogFile(String(WiFi.softAPIP()).c_str());
     if (debug) Serial.println(" with SSID: ");
-    writeLogFile(" with SSID: ");
     //if you used auto generated SSID, print it
     if (debug) Serial.println("myWiFiManager->getConfigPortalSSID()");
-    writeLogFile("myWiFiManager->getConfigPortalSSID()");
     myWiFiManager->getConfigPortalSSID();
-  
+
 }   // configModeCallback()
 
 
@@ -50,7 +44,6 @@ byte    mac[6];
     if (forceAP) {
         if (debug) Serial.printf("Restart DSMR to start AP [%s] to re-configure\r\n", APname);
         TelnetStream.printf("Restart DSMR to start AP [%s] to re-configure\r\n", APname);
-        writeLogFile("Start AP to re-configure ..");
         wifiManager.resetSettings();
         noConnectWiFi   = 0;
     }
@@ -71,7 +64,6 @@ byte    mac[6];
         Serial.println("startConfigPortal(): Failed to connect and hit timeout");
         TelnetStream.println("startConfigPortal(): Failed to connect and hit timeout");
         TelnetStream.flush();
-        writeLogFile("startConfigPortal(): Failed to connect and hit timeout");
         delay(1000);
         //reset and try again, or maybe put it to deep sleep
         ESP.reset();
@@ -79,7 +71,6 @@ byte    mac[6];
       } 
     } else {
       if (!wifiManager.autoConnect(APname)) {
-         writeLogFile("autoConnect(): Failed to connect and hit timeout");
          delay(1000);
          //reset and try again, or maybe put it to deep sleep
          ESP.reset();
@@ -91,7 +82,6 @@ byte    mac[6];
     Serial.flush();
     TelnetStream.println("connected to WiFi ... Yes! ;-)");
     TelnetStream.flush();
-    writeLogFile("connected to WiFi!");
 
     // WiFi connexion is OK
     if (debug) {

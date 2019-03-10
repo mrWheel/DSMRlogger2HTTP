@@ -1,9 +1,9 @@
 /*
 ***************************************************************************  
 **  Program  : SPIFFSstuff, part of DSMRlogger2HTTP
-**  Version  : v0.7.5
+**  Version  : v0.7.7
 **
-**  Copyright (c) 2018 Willem Aandewiel
+**  Copyright (c) 2019 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      
@@ -48,136 +48,6 @@ void listSPIFFS() {
 
 } // listSPIFFS()
 
-//===========================================================================================
-void readLogFile() {
-//===========================================================================================
-    String  logFileName;
-    char    charF = '\0';
-    char    SDbuffer[100];
-    uint8_t bSize;
-
-    if (!SPIFFSmounted) {
-      TelnetStream.println("No SPIFFS filesystem..");
-      TelnetStream.flush();
-      doLog = false;
-      return;
-    }
-    // open the file. note that only one file can be open at a time,
-    // so you have to close this one before opening another.
-    for(int i=0; i<=1; i++) {
-      if (i==0) logFileName = LOG_FILE_R;
-      else      logFileName = LOG_FILE;
-
-      if (!SPIFFS.exists(logFileName)) {
-        continue;
-      }
-      File logFile = SPIFFS.open(logFileName, "r");
-
-      bSize = 0;
-      memset(SDbuffer,0,sizeof(SDbuffer));
-      while (logFile.available()) {
-        yield();
-        charF = (char)logFile.read();
-        if (charF == '\n' || charF == '\r' || charF == '\0' || bSize > 98) {
-            if (bSize > 0) {
-                TelnetStream.println(SDbuffer);
-            }
-            bSize = 0;
-            memset(SDbuffer,0,sizeof(SDbuffer));
-        }
-        else {
-            if (charF >= 32 && charF <= 126) {
-                SDbuffer[bSize++] = (char)charF;
-            }
-        }
-        yield();
-      }
-      
-      logFile.close();
-    
-    } // for i ..
-    
-    TelnetStream.println("\n===END===\r");
-    TelnetStream.println(">Logging is active\r");
-    TelnetStream.flush();
-    doLog   = true;
-
-}   // readLogFile()
-
-//===========================================================================================
-bool writeLogFile(String logLine) {
-//===========================================================================================
-    bool newLogFile;
-
-    if (!SPIFFSmounted) {
-      TelnetStream.println("No SPIFFS filesystem..");
-      TelnetStream.flush();
-      doLog = false;
-      return false;
-    }
-
-    if (freeSpace() < 4000) {
-      if (debug) Serial.printf("Rotate logFile due to space [%ld]\n", freeSpace());
-      rotateLogFile("rotateLogFile due to space");
-      TelnetStream.println("logging is stopped!");
-      doLog = false;
-    }
-    
-    if (SPIFFS.exists(LOG_FILE)) {
-        newLogFile = false;
-    } else {
-        //TelnetStream.println("writeLogFile(): new logfile\r");
-        //TelnetStream.flush();
-        newLogFile = true;
-    }
-
-    if (logLine.length() > 4) {
-      for(int l = (NUMLASTLOG - 1); l > 0; l--) {
-        lastLogLine[l] = lastLogLine[l - 1];
-      }
-      lastLogLine[0] = "-";
-      if (pTimestamp.length() >= 10) {
-        lastLogLine[0] = "[" + buildDateTimeString(pTimestamp) + "] " + logLine;
-      } else {
-        lastLogLine[0] = "[Reboot] " + logLine;
-      }
-    }
-    // open the file. note that only one file can be open at a time,
-    // so you have to close this one before opening another.
-    if (doLog) {
-      File logFile = SPIFFS.open(LOG_FILE, "a");
-      // if the file is available, write to it:
-      if (logFile) {
-        logFile.print(lastLogLine[0]);
-        logFile.println("\r");
-        logFile.close();
-        lastLogLine[0].replace('\r', ' ');
-        lastLogLine[0].replace('\n', ' ');
-        return true;
-      }
-    } else {
-      lastLogLine[0].replace('\r', ' ');
-      lastLogLine[0].replace('\n', ' ');
-      return false;
-    }
-
-}   // writeLogFile()
-
-//===========================================================================================
-void rotateLogFile(String reason) {
-//===========================================================================================
-
-  yield();
-  if (SPIFFS.exists(LOG_FILE_R)) {
-    SPIFFS.remove(LOG_FILE_R);
-  }
-  SPIFFS.rename(LOG_FILE, LOG_FILE_R);
-  delay(100);
-  writeLogFile(reason);
-  doLog = false;
-  
-} // rotateLogFile()
-
 
 //===========================================================================================
 void saveHourData(int8_t slot) {
@@ -189,7 +59,6 @@ void saveHourData(int8_t slot) {
   TelnetStream.print(cMsg);
   TelnetStream.flush();
   Serial.print(cMsg);
-  writeLogFile(cMsg);
   displayHoursHist(false);    // log to file
 
   if (!SPIFFSmounted) {
@@ -248,7 +117,6 @@ bool readHourData() {
   TelnetStream.print("readHourData() ... ");
   TelnetStream.flush();
   Serial.print("readHourData() ... ");
-  writeLogFile("readHourData() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
@@ -295,7 +163,6 @@ bool readHourData() {
       TelnetStream.flush();
       Serial.printf("Label[%d] has value [%d]\r\n", r, hoursDat[r].Label);
     }
-    writeLogFile("Error reading [hours.csv] ...");
     return false;
   }
 
@@ -317,7 +184,6 @@ void saveWeekData() {
   TelnetStream.print("saveWeekData() ... ");
   TelnetStream.flush();
   Serial.print("saveWeekData(s) ... ");
-  writeLogFile("saveWeekData() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
@@ -362,7 +228,6 @@ bool readWeekData() {
   TelnetStream.print("readWeekData() ... ");
   TelnetStream.flush();
   Serial.print("readWeekData() ... ");
-  writeLogFile("readWeekData() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
@@ -399,7 +264,6 @@ bool readWeekData() {
   if (weekDat[6].Label != 6) {
     TelnetStream.printf("readWeekData(): ERROR!! ==> read [%d] records\r\n", r);
     TelnetStream.flush();
-    writeLogFile("Error reading [weekDay.csv] ...");
     return false;
   }
 
@@ -425,7 +289,6 @@ void saveThisMonth(int8_t thisYear, int8_t thisMonth, bool force) {
   TelnetStream.print(cMsg);
   TelnetStream.flush();
   Serial.print(cMsg);
-  writeLogFile(cMsg);
   displayMonthsHist(false);    // log to file
 
   if (!SPIFFSmounted) {
@@ -453,7 +316,6 @@ void saveThisMonth(int8_t thisYear, int8_t thisMonth, bool force) {
   if (!SPIFFS.exists(MONTHS_FILE)) {
     TelnetStream.println("saveThisMonth(): create empty file");
     TelnetStream.flush();
-    writeLogFile("saveThisMonth(): create empty file");
     
     monthsFile = SPIFFS.open(MONTHS_FILE, "w");
     monthsFile.print(cMsg);
@@ -494,7 +356,6 @@ bool readMonthData() {
   TelnetStream.println("readMonthData() ... \r");
   TelnetStream.flush();
   Serial.println("readMonthData() ... ");
-  writeLogFile("readMonthData() ... ");
 
   if (!SPIFFSmounted) {
     TelnetStream.println("No SPIFFS filesystem..\r");
@@ -584,7 +445,6 @@ int8_t getLastMonth() {
   TelnetStream.println(cMsg);
   TelnetStream.flush();
   Serial.println(cMsg);
-  writeLogFile(cMsg);
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
   return lastMonth;
@@ -626,7 +486,6 @@ int8_t getLastYear() {
   TelnetStream.println(cMsg);
   TelnetStream.flush();
   Serial.println(cMsg);
-  writeLogFile(cMsg);
   digitalWrite(BUILTIN_LED, !digitalRead(BUILTIN_LED));
 
   return lastYear;
@@ -645,7 +504,6 @@ void shiftDownMonthData(int8_t thisYear, int8_t thisMonth) {
   TelnetStream.printf("shiftDownMonthData(20%02d-%02d) ... \n", thisYear, thisMonth);
   TelnetStream.flush();
   Serial.printf("shiftDownMonthData(20%02d-%02d) ... \n", thisYear, thisMonth);
-  writeLogFile("shiftDownMonthData() ... ");
   displayMonthsHist(false);   // log to file
   displayMonthsHist(true);    // log to TelnetStream
 
