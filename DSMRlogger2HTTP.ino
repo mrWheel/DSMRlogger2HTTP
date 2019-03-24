@@ -21,7 +21,7 @@
     - VTables: "Flash"
     - Flash Frequency: "40MHz"
     - CPU Frequency: "80 MHz"
-    - Buildin Led: "1"  // GPIO01 - Pin 2
+    - Buildin Led: "1"  // GPIO01 !! for ESP-01S USE "2"! Also the "S" has no red led
     - Upload Speed: "115200"
     - Erase Flash: "Only Sketch"
     - Port: "ESP01-DSMR at <-- IP address -->"
