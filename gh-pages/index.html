@@ -158,8 +158,6 @@ git clone https://github.com/&lt;jouw-repository-username&gt;/DSMRlogger2HTTP.gi
 
 cd DSMRlogger2HTTP
 
-git checkout gh-pages
-
 cd mkdocs
 </code></pre>
 
@@ -176,9 +174,10 @@ pushen:</p>
 <pre><code>mkdocs build
 mkdocs gh-deploy
 
-git add mkdocs
+git add mkdocs/&lt;1e file dat je veranderd hebt&gt;
+git add mkdocs/&lt;2e file dat je veranderd hebt&gt;
 git commit -m &quot;reden van deze commit&quot;
-git push -u origin gh-pages
+git push 
 </code></pre>
 
 <p>Ga vervolgens naar github en naar <em>jouw</em> versie van <strong>DSMRlogger2HTTP</strong> en
