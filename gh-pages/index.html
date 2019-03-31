@@ -145,11 +145,18 @@
             <div class="section">
               
                 <h1 id="github-pages-onderhouden">Github pages onderhouden</h1>
+<p>Als je wil bijdragen aan een project in github moet je dat project eerst 'clonen'.</p>
+<p>Ik vond <a href="https://kbroman.org/github_tutorial/pages/fork.html">hier</a> een aardige post
+over de stappen die je dan moet nemen.</p>
+<p>In de basis komt het erop neer dat je een kopie (fork) van deze repository maakt en 
+dan met dit kopie aan de gang gaat. Uiteindelijk ben je klaar met je aanpassingen en
+kun je een <code>merge request</code> naar mij sturen. Het onderstaande blijft dan geldig maar 
+gebeurd op je ge-forkte repository.</p>
 <p>Voer, in een command window, de volgende commando's in:</p>
 <pre><code>cd &lt;waar je de boel wilt hebben&gt;
-git clone https://github.com/mrWheel/DSMRloggerHTTP.git
+git clone https://github.com/&lt;jouw-repository-username&gt;/DSMRlogger2HTTP.git
 
-cd DSMRloggerHTTP
+cd DSMRlogger2HTTP
 
 git checkout gh-pages
 
@@ -174,6 +181,21 @@ git commit -m &quot;reden van deze commit&quot;
 git push -u origin gh-pages
 </code></pre>
 
+<p>Ga vervolgens naar github en naar <em>jouw</em> versie van <strong>DSMRlogger2HTTP</strong> en
+klik op de <code>pull Request</code> knop boven in het scherm en klik vervolgens op
+de groene <code>Create pull request</code> knop, voer een duidelijke beschrijving in
+van wat je hebt aangepast en klik nogmaals op de groene <code>Create pull request</code> 
+knop.</p>
+<p>Ik moet vervolgens het volgende doen:</p>
+<ul>
+<li>Ik ga naar mijn versie van de repository</li>
+<li>Klik vervolgens op de <code>Pull requests</code> knop</li>
+<li>Klik op een request</li>
+<li>Klik op de omschrijving om de aanpassingen te zien</li>
+<li>Geef aan dat er nog andere dingen moeten worden aangepast</li>
+<li>Als de aanpassingen niet goed zijn klik op de <code>Close</code> knop</li>
+<li>Klik anders op de <code>Merge pull request</code> knop</li>
+</ul>
 <p>Klaar!</p>
               
             </div>
