@@ -2,26 +2,40 @@
 
 Voor de project beschrijving ga naar [www.aandewiel.nl](https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/).
 
-# Inhoudsopgave
-
-* - Installatie
-    * - [ArduinoIDE](installatieArduinoIDE.md)
-    * - [ESP8266 core](installatieESP8266core.md)
-    * - [Data Upload Tool](installatieDataUploadTool.md)
-
-* - Bibliotheken
-    * - [Benodigd](benodigdeBibliotheken.md)
-    * - [Installeren](installatieBibliotheken.md)
-
-* - Firmware
-    * - [Clonen van Github](clonenFirmware.md)
-    * - [Uploaden Firmware naar ESP-01](uploadenFirmware.md)
-    * - [Uploaden Data naar ESP-01](uploadenDataMap.md)
-
-* - [Verschillen ESP-01 modules](verschillenESP01ESP01S.md)
+#### Het idee
 
 Zo langzamerhand zijn alle huizen in Nederland uitgerust met een “Slimme Meter”. 
-Hoog tijd dus om een project te starten om deze Slimme Meter thuis uit te kunnen 
-lezen en de gegevens op een door jouw gewenst formaat te presenteren.
+Deze meters beschikken over een "P1" poort, deze poort kan worden uitgelezen. 
+Dit project stelt je in staat dit zelf thuis uit te lezen en de gegevens op een 
+door jouw gewenst formaat te presenteren dmv een "DSMR logger". Er zijn 
+commerciele P1 oplossingen beschikbaar, dit project geeft je aanzienlijk meer 
+controle over de kosten en de gegevens. 
 
-Dit project beoogt precies dat te doen. 
+[DSMR](https://nl.wikipedia.org/wiki/Slimme_meter) is een acroniem voor *Dutch Smart Meter Requirements*
+
+De doelstellingen van de DSMR logger:
+
+- Moet eenvoudig en goedkoop gemaakt kunnen worden.
+- Moet “Over The Air” ge-update kunnen worden.
+- Moet een beperkte historie hebben die intern opgeslagen word.
+- Moet via een externe terminal benaderd kunnen worden (telnet).
+- Moet via een browser de gegevens kunnen presenteren.
+- Moet via een REST API de gegevens kunnen leveren.
+- Moet gegevens eenvoudig verder laten verwerken.
+
+
+# Inhoudsopgave
+
+* [Bouwbeschrijving](bouwbeschrijvingV3.md)
+
+* Installatie [ArduinoIDE](installatieArduinoIDE.md)
+
+* Installatie [Bibliotheken](installatieBibliotheken.md)
+
+* Firmware
+    * [Clonen van Github](clonenFirmware.md)
+    * [Uploaden Firmware naar ESP-01](uploadenFirmware.md)
+    * [Uploaden Data naar ESP-01](uploadenDataMap.md)
+
+* [Verschillen ESP-01 modules](verschillenESP01ESP01S.md)
+
