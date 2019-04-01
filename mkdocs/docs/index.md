@@ -1,6 +1,8 @@
 # Welkom bij de DSMRlogger2HTTP Documentatie
 
-Ga voor de volledige project beschrijving naar [www.aandewiel.nl](https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/).
+Ga voor de volledige project beschrijving naar 
+<a href="https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/" target="_blank">
+www.aandewiel.nl</a>
 
 #### Het idee
 
@@ -11,7 +13,8 @@ door jouw gewenst formaat te presenteren dmv een "DSMR logger". Er zijn
 commerciele P1 oplossingen beschikbaar, dit project geeft je aanzienlijk meer 
 controle over de kosten en de gegevens. 
 
-[DSMR](https://nl.wikipedia.org/wiki/Slimme_meter) is een acroniem voor *Dutch Smart Meter Requirements*
+<a href="https://nl.wikipedia.org/wiki/Slimme_meter" target="_blank">DSMR</a> 
+is een acroniem voor *Dutch Smart Meter Requirements*
 
 De doelstellingen van de DSMR logger:
 
@@ -28,14 +31,15 @@ De doelstellingen van de DSMR logger:
 
 * [Bouwbeschrijving](bouwbeschrijvingV3.md)
 
-* Installatie [ArduinoIDE](installatieArduinoIDE.md)
+* [Installatie ArduinoIDE](installatieArduinoIDE.md)
 
-* Installatie [Bibliotheken](installatieBibliotheken.md)
+* [Installatie Bibliotheken](installatieBibliotheken.md)
 
 * Firmware
     * [Clonen van Github](clonenFirmware.md)
     * [Uploaden Firmware naar ESP-01](uploadenFirmware.md)
     * [Uploaden Data naar ESP-01](uploadenDataMap.md)
+    * [Eerste keer opstarten](eersteKeerOpstarten.md)
 
 * [Verschillen ESP-01 modules](verschillenESP01ESP01S.md)
 

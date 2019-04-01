@@ -10,18 +10,15 @@ theme:
         - yaml
 
 nav:
-    - 'index.md'
-
+    - Introductie: 'index.md'
     - bouwbeschrijving: 'bouwbeschrijvingV3.md'
-
     - Installatie ArduinoIDE: 'installatieArduinoIDE.md'
-
     - Installatie Bibliotheken: 'installatieBibliotheken.md'
 
     - Firmware:
-       - 'Clonen van github': 'clonenFirmware.md'
-       - 'Uploaden naar ESP-01': 'uploadenFirmware.md'
-       - 'Upload Data ESP-01': 'uploadenDataMap.md'
-
-    - Verschillen ESP-01 modules': 'verschillenESP01ESP01S.md'
+       - Clonen van github: 'clonenFirmware.md'
+       - Uploaden naar ESP-01: 'uploadenFirmware.md'
+       - Upload Data ESP-01: 'uploadenDataMap.md'
+       - Eerste keer opstarten: 'eersteKeerOpstarten.md'
+    - Verschillen ESP-01 modules: 'verschillenESP01ESP01S.md'
 
