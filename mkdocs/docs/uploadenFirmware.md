@@ -5,14 +5,17 @@ dat je er firmware naar toe wilt sturen (flashen) moet je de ESP01 bij het opsta
 in deze flash mode zetten door een paar GPIO-pinnen Hoog (3v3) of juist Laag (GND)
 te maken.
 
-[hier](ESP01FlashMode.md) staat beschreven hoe je dat kunt doen.
+[Hier](ESP01FlashMode.md) staat beschreven hoe je dat kunt doen.
 
 Als de ESP01 eenmaal in flash mode staat kun je de firmware er eenvoudig naartoe sturen door
 op deze &nbsp; ![](img/ArduinoCompileAndUpload.png) &nbsp; knop te klikken.
 
 
-Sluit nu de ESP01 aan op je computer en zet deze in `flash mode` dmv een ESP programmer 
-of FTDI adapter. [Meer info]().
+Sluit de ESP01 aan op je computer en zet deze in `flash mode` dmv een ESP programmer 
+of FTDI adapter. 
+
+Meer informatie hierover kun je <a href="https://willem.aandewiel.nl/index.php/2018/09/27/aan-de-slag-met-de-esp8266/" target=_"blank">hier</a>
+vinden.
 
 
 Gebruik deze instellingen:
