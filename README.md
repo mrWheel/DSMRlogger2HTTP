@@ -4,7 +4,7 @@ This repository contains the software for the *Draadloze Slimme Meter Reader*.
 <div style="background: lightblue;">
 <br />
 There is a new repository with new firmware for de DSMR-logger that you can find 
-[here](https://github.com/mrWheel/DSMRloggerWS)
+    <a href="https://github.com/mrWheel/DSMRloggerWS">here</a>
 <br />
 </div>
 
