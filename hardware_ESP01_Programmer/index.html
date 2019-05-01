@@ -8,18 +8,19 @@
   
   <meta name="author" content="Willem Aandewiel">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>bouwbeschrijving - DSMRlogger2HTTP</title>
+  <title>Programmer ESP-01 - DSMRlogger2HTTP</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link href="../extra.css" rel="stylesheet">
   
   <script>
     // Current page data
-    var mkdocs_page_name = "bouwbeschrijving";
-    var mkdocs_page_input_path = "bouwbeschrijvingV3.md";
-    var mkdocs_page_url = "/index.php/2018/08/28/slimme-meter-uitlezer/bouwbeschrijvingV3/";
+    var mkdocs_page_name = "Programmer ESP-01";
+    var mkdocs_page_input_path = "hardware_ESP01_Programmer.md";
+    var mkdocs_page_url = "/index.php/2018/08/28/slimme-meter-uitlezer/hardware_ESP01_Programmer/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
@@ -51,36 +52,31 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="..">Introductie</a>
+    <a class="" href="..">Documentatie DSMRlogger2HTTP</a>
 	    </li>
           
-            <li class="toctree-l1 current">
+            <li class="toctree-l1">
 		
-    <a class="current" href="./">bouwbeschrijving</a>
+    <a class="" href="../introductie/">Introductie</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Voorbereiding</span>
     <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#bouwbeschrijving-dsmr-logger-v3">Bouwbeschrijving DSMR-logger V3</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l3" href="#inhoud-opencircuit-bouwpakket">Inhoud Opencircuit bouwpakket</a></li>
-        
-            <li><a class="toctree-l3" href="#solderen">Solderen</a></li>
-        
-        </ul>
-    
-
+                <li class="">
+                    
+    <a class="" href="../installatieArduinoIDE/">ArduinoIDE</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../installatieESP8266core/">ESP8266 Core</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../installatieDataUploadTool/">Data Upload Tool</a>
+                </li>
     </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../installatieArduinoIDE/">Installatie ArduinoIDE</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../installatieBibliotheken/">Installatie Bibliotheken</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -89,26 +85,66 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../clonenFirmware/">Clonen van github</a>
+    <a class="" href="../benodigdeBibliotheken/">Benodigd Bibliotheken</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../uploadenFirmware/">Uploaden naar ESP-01</a>
+    <a class="" href="../installatieBibliotheken/">Installeren Bibliotheken</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../uploadenDataMap/">Upload Data ESP-01</a>
+    <a class="" href="../clonenFirmware/">DSMR-Firmware</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../eersteKeerOpstarten/">Eerste keer opstarten</a>
+    <a class="" href="../uploadFirmware_ESP-01/">Firmware Flashen naar ESP-01</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../uploadDataMap_ESP-01/">Data Flashen naar ESP-01</a>
                 </li>
     </ul>
 	    </li>
           
             <li class="toctree-l1">
 		
-    <a class="" href="../verschillenESP01ESP01S/">Verschillen ESP-01 modules</a>
+    <span class="caption-text">Hardware</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../hardware_V3/">DSMRlogger v3</a>
+                </li>
+                <li class=" current">
+                    
+    <a class="current" href="./">Programmer ESP-01</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#programmer-voor-de-esp-01">Programmer voor de ESP-01</a></li>
+    
+
+    </ul>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Overigen</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../eersteKeerOpstarten/">Eerste keer opstarten</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../verschillenESP-01/">Verschillen ESP-01 modules</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../MITlicense/">License</a>
 	    </li>
           
         </ul>
@@ -132,8 +168,12 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
+        
+          <li>Hardware &raquo;</li>
+        
+      
     
-    <li>bouwbeschrijving</li>
+    <li>Programmer ESP-01</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -143,105 +183,16 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="bouwbeschrijving-dsmr-logger-v3">Bouwbeschrijving DSMR-logger V3</h1>
-<p>Een bouwpakket is <a href="https://opencircuit.nl/Product/13859/Slimme-meter-uitlezer-V3-bouwpakket-met-ESP-01">hier verkrijgbaar</a> </p>
-<h3 id="inhoud-opencircuit-bouwpakket">Inhoud Opencircuit bouwpakket</h3>
-<table>
-<thead>
-<tr>
-<th>Aantal</th>
-<th>Item</th>
-<th>PCB label</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1x</td>
-<td>PCB</td>
-<td>-</td>
-</tr>
-<tr>
-<td>1x</td>
-<td>ESP8266-ESP-01 Black edition</td>
-<td>-</td>
-</tr>
-<tr>
-<td>1x</td>
-<td>BC547</td>
-<td>Q1</td>
-</tr>
-<tr>
-<td>1x</td>
-<td>MCP1700-3v3</td>
-<td>U1</td>
-</tr>
-<tr>
-<td>1x</td>
-<td>1K Ω weerstand (bruin,zwart,rood)</td>
-<td>R1</td>
-</tr>
-<tr>
-<td>2x</td>
-<td>2K2 Ω weerstand (rood,rood,rood)</td>
-<td>R2,R3</td>
-</tr>
-<tr>
-<td>3x</td>
-<td>10K Ω weerstand (bruin,zwart,oranje)</td>
-<td>R4,R5,R6</td>
-</tr>
-<tr>
-<td>1x</td>
-<td>Elco 1µF</td>
-<td>C1</td>
-</tr>
-<tr>
-<td>1x</td>
-<td>Elco 2.2µF</td>
-<td>C2</td>
-</tr>
-<tr>
-<td>1x</td>
-<td>Elco 1000µF</td>
-<td>C3</td>
-</tr>
-<tr>
-<td>1x</td>
-<td>Socket connector 4x2</td>
-<td>J2</td>
-</tr>
-<tr>
-<td>1x</td>
-<td>RJ12 Socket connector</td>
-<td>J1</td>
-</tr>
-<tr>
-<td>1x</td>
-<td>RJ12 kabel</td>
-<td>-</td>
-</tr>
-</tbody>
-</table>
-<h3 id="solderen">Solderen</h3>
-<p>Begin met de laagste componenten: </p>
-<ul>
-<li>Plaats: R4, R5 en R6, plaats deze plat. Weerstanden hebben geen polariteit, de richting 
-maakt dus niet uit.</li>
-<li>Plaats R1,R2,R3 rechtop. </li>
-<li>Plaats Q1 en U1 - de soldeer pads zijn klein en liggen dicht bij elkaar, wees 
-zorgvuldig en neem de tijd. </li>
-</ul>
-<p>De Elco's hebben wel polariteit, de negatieve pool is te zien aan de lichtere streep op de 
-zijkant. Op de PCB is deze kant aangegeven met een witte helft. Daar moet de negatieve pool 
-op worden aangesloten.</p>
-<ul>
-<li>Plaats C1, C2 en C3 met de juiste negatieve pool en de correcte Elco.</li>
-<li>Plaats J2 en J1 </li>
-</ul>
-<p>Als alles goed vast zit, dan is het bordje klaar!</p>
-<p>De ESP01 word uiteindelijk in de socket geplaatst, maar moet eerst nog worden geflashed met 
-de <code>DSMRlogger2HTTP</code> firmware voordat hij kan gaan loggen. Dit doen we via de computer en
-de Arduino IDE.</p>
+                <h2 id="programmer-voor-de-esp-01">Programmer voor de ESP-01</h2>
+<p>Je kunt 
+<a href="https://willem.aandewiel.nl/index.php/2018/08/27/eenvoudige-programmer-voor-de-esp-01-esp8266/" target="_blank">hier</a>
+(www.aandewiel.nl) een post vinden met instructies hoe je eenvoudige een programmer
+voor de ESP-01 kunt maken.</p>
+<p><img alt="" src="../img/USB2SerialAdapter.png" /></p>
+<p><br></p>
+<hr />
+<p><center style="font-size: 70%;">[DSMR-logger v3]</center><br></p>
+<p><center><img alt="" src="../img/DSMR_Bottom_v3.png" /></center></p>
               
             </div>
           </div>
@@ -249,10 +200,10 @@ de Arduino IDE.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../installatieArduinoIDE/" class="btn btn-neutral float-right" title="Installatie ArduinoIDE">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../eersteKeerOpstarten/" class="btn btn-neutral float-right" title="Eerste keer opstarten">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href=".." class="btn btn-neutral" title="Introductie"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../hardware_V3/" class="btn btn-neutral" title="DSMRlogger v3"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -261,6 +212,8 @@ de Arduino IDE.</p>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
+    
+      <p>copyright &copy; 2018 - 2019 <a href="https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/ target="_blank"">Willem Aandewiel</a></p>
     
   </div>
 
@@ -278,10 +231,10 @@ de Arduino IDE.</p>
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../hardware_V3/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../installatieArduinoIDE/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../eersteKeerOpstarten/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

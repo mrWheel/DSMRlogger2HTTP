@@ -8,7 +8,7 @@
   
   <meta name="author" content="Willem Aandewiel">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>ArduinoIDE - DSMRlogger2HTTP</title>
+  <title>Introductie - DSMRlogger2HTTP</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -18,9 +18,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "ArduinoIDE";
-    var mkdocs_page_input_path = "installatieArduinoIDE.md";
-    var mkdocs_page_url = "/index.php/2018/08/28/slimme-meter-uitlezer/installatieArduinoIDE/";
+    var mkdocs_page_name = "Introductie";
+    var mkdocs_page_input_path = "introductie.md";
+    var mkdocs_page_url = "/index.php/2018/08/28/slimme-meter-uitlezer/introductie/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
@@ -55,24 +55,30 @@
     <a class="" href="..">Documentatie DSMRlogger2HTTP</a>
 	    </li>
           
-            <li class="toctree-l1">
+            <li class="toctree-l1 current">
 		
-    <a class="" href="../introductie/">Introductie</a>
+    <a class="current" href="./">Introductie</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#introductie">Introductie</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#het-idee">Het idee</a></li>
+        
+        </ul>
+    
+
+    </ul>
 	    </li>
           
             <li class="toctree-l1">
 		
     <span class="caption-text">Voorbereiding</span>
     <ul class="subnav">
-                <li class=" current">
+                <li class="">
                     
-    <a class="current" href="./">ArduinoIDE</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#installatie-arduinoide">Installatie ArduinoIDE</a></li>
-    
-
-    </ul>
+    <a class="" href="../installatieArduinoIDE/">ArduinoIDE</a>
                 </li>
                 <li class="">
                     
@@ -168,12 +174,8 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
-        
-          <li>Voorbereiding &raquo;</li>
-        
-      
     
-    <li>ArduinoIDE</li>
+    <li>Introductie</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -183,26 +185,96 @@
           <div role="main">
             <div class="section">
               
-                <h2 id="installatie-arduinoide">Installatie ArduinoIDE</h2>
-<p>Download en installeer de Arduino Integrated Development Environment (IDE) 
-voor het Operating Systeem (OS) waar jouw DeskTop of LapTop computer (er 
-zijn versies voor Windows, Linux en Mac) mee werkt.</p>
-<p><img alt="" src="../img/DownloadIDE.png" /></p>
+                <h2 id="introductie">Introductie</h2>
+<p>Dit is de documentatie voor de DSMR-logger v2 en v3 en de DSMRlogger2HTTP firmware.   </p>
+<p>Ga voor de volledige project beschrijving naar 
+<a href="https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/" target="_blank">
+www.aandewiel.nl</a></p>
+<h4 id="het-idee">Het idee</h4>
+<p>Zo langzamerhand zijn alle huizen in Nederland uitgerust met een “Slimme Meter”. 
+Deze meters beschikken over een "P1" poort, deze poort kan worden uitgelezen. 
+Dit project stelt je in staat dit zelf thuis uit te lezen en de gegevens op een 
+door jouw gewenst formaat te presenteren dmv een "DSMR logger". Er zijn 
+commerciele P1 oplossingen beschikbaar, dit project geeft je aanzienlijk meer 
+controle over de kosten en de gegevens. </p>
+<p><a href="https://nl.wikipedia.org/wiki/Slimme_meter" target="_blank">DSMR</a> 
+is een acroniem voor <em>Dutch Smart Meter Requirements</em></p>
+<p>De doelstellingen van de DSMR logger project zijn:</p>
+<ul>
+<li>Moet eenvoudig en goedkoop gemaakt kunnen worden;</li>
+<li>Moet “Over The Air” ge-update kunnen worden;</li>
+<li>Moet een beperkte historie hebben die intern opgeslagen wordt;</li>
+<li>Moet via een externe terminal benaderd kunnen worden (telnet);</li>
+<li>Moet via een browser de gegevens kunnen presenteren;</li>
+<li>Moet via een REST API de gegevens kunnen leveren;</li>
+<li>Moet gegevens eenvoudig verder laten verwerken.</li>
+</ul>
+<p>De DSMR-logger is een hardware en software systeem waarmee de Slimme Meter 
+(vanaf <em>DSMR</em> versie 4.0) kan worden uitgelezen. De uitgelezen data (telegrammen) 
+worden in de DSMR-logger opgeslagen en kunnen in de vorm van tabellen en 
+charts, via WiFi, op een computer of tablet worden weergegeven.</p>
 <div class="admonition note">
-<p class="admonition-title">Let op!</p>
-De DSMRlogger2HTTP firmware is getest met de ArduinoIDE v1.8.8 en v1.8.9
+<p class="admonition-title">Begrippen</p>
+In dit document worden de volgende begrippen gebruikt:
+<table>
+<tr><th align="left">Begrip</th><th align="left">Omschrijving</th></tr>
+<tr>
+    <td style="vertical-align:top">DSMR-logger</td>
+    <td>de Hardware</td>
+</tr>
+<tr>
+    <td style="vertical-align:top">DSMR-logger v2 (of Versie 2)</td>
+    <td>Versie 2 van de Hardware
+            <br>Dit is de hardware van de DSMR-logger die is uitgerust 
+            <br>met een ESP-01 (Black/S) bordje.
+        <br>Voor deze versie is de firmware DSMRlogger2HTTP bedoeld.
+        </td>
+</tr>
+<tr>
+    <td style="vertical-align:top">DSMR-logger v3 (of Versie 3)</td>
+    <td>Versie 3 van de Hardware
+        <br>Verder gelijk aan Versie 2.
+        </td>
+</tr>
+<tr>
+    <td style="vertical-align:top">DSMRlogger2HTTP</td>
+    <td>De firmware voor de DSMR-logger v2 en v3</td></tr>
+<tr>
+    <td style="vertical-align:top">ESP-01</td>
+    <td>Een bordje met een ESP8266 processor
+        <br>en 512KB flash geheugen
+        <br>Dit bordje is <b>niet</b> geschikt voor dit project
+    </td>
+</tr>
+<tr>
+    <td style="vertical-align:top">ESP-01 (Black)</td>
+    <td>Een ESP-01 met 1MB flash geheugen
+            <br>Dit bordje heeft een rode Power Led en een blauwe Led op GPIO-01
+        </td>
+</tr>
+<tr>
+    <td style="vertical-align:top">ESP-01S</td>
+    <td>Een ESP-01 met 1MB flash geheugen
+            <br>Dit bordje heeft alleen een blauwe Led op GPIO-02
+        </td>
+</tr>
+<tr>
+    <td style="vertical-align:top">ESP-01(Black/S)</td>
+    <td>Een ESP-01 Black of ESP-01S
+            <br>DSMR-logger v2 en v3 maken gebruik van dit bordje
+        </td>
+</tr>
+</table>
 </div>
 
-<p>Na het downloaden moet je het ontvangen bestand uitpakken (unzip of untar) 
-en installeren. Dat installeren is per OS anders maar staat duidelijk op de 
-website van Arduino aangegeven. Eenmaal geïnstalleerd kun je direct met de 
-Arduino IDE aan de slag.</p>
-<p>Om de IDE met de ESP8266 microprocessor te kunnen gebruiken moeten we nog 
-wat stappen uitvoeren.</p>
+<p>Een volledige beschrijving van dit project kun je hier:
+<a href="https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/" target="_blank">
+www.aandewiel.nl</a>
+vinden.</p>
 <p><br></p>
 <hr />
-<p><center style="font-size: 70%">[RJ12 connector]</center><br>
-<center><img alt="" src="../img/RJ12.png" /></center></p>
+<p><center  style="font-size: 70%">[DSMRlogger v2]</center><br>
+<center><img alt="" src="../img/DSMRlogger_Build2.jpg" /></center></p>
               
             </div>
           </div>
@@ -210,10 +282,10 @@ wat stappen uitvoeren.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../installatieESP8266core/" class="btn btn-neutral float-right" title="ESP8266 Core">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../installatieArduinoIDE/" class="btn btn-neutral float-right" title="ArduinoIDE">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../introductie/" class="btn btn-neutral" title="Introductie"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href=".." class="btn btn-neutral" title="Documentatie DSMRlogger2HTTP"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -241,10 +313,10 @@ wat stappen uitvoeren.</p>
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../introductie/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../installatieESP8266core/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../installatieArduinoIDE/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

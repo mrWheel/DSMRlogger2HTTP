@@ -8,7 +8,7 @@
   
   <meta name="author" content="Willem Aandewiel">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>ArduinoIDE - DSMRlogger2HTTP</title>
+  <title>Firmware Flashen naar ESP-01 - DSMRlogger2HTTP</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -18,9 +18,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "ArduinoIDE";
-    var mkdocs_page_input_path = "installatieArduinoIDE.md";
-    var mkdocs_page_url = "/index.php/2018/08/28/slimme-meter-uitlezer/installatieArduinoIDE/";
+    var mkdocs_page_name = "Firmware Flashen naar ESP-01";
+    var mkdocs_page_input_path = "uploadFirmware_ESP-01.md";
+    var mkdocs_page_url = "/index.php/2018/08/28/slimme-meter-uitlezer/uploadFirmware_ESP-01/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
@@ -64,15 +64,9 @@
 		
     <span class="caption-text">Voorbereiding</span>
     <ul class="subnav">
-                <li class=" current">
+                <li class="">
                     
-    <a class="current" href="./">ArduinoIDE</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#installatie-arduinoide">Installatie ArduinoIDE</a></li>
-    
-
-    </ul>
+    <a class="" href="../installatieArduinoIDE/">ArduinoIDE</a>
                 </li>
                 <li class="">
                     
@@ -101,9 +95,15 @@
                     
     <a class="" href="../clonenFirmware/">DSMR-Firmware</a>
                 </li>
-                <li class="">
+                <li class=" current">
                     
-    <a class="" href="../uploadFirmware_ESP-01/">Firmware Flashen naar ESP-01</a>
+    <a class="current" href="./">Firmware Flashen naar ESP-01</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#firmware-naar-esp-01-flashen">Firmware naar ESP-01 Flashen</a></li>
+    
+
+    </ul>
                 </li>
                 <li class="">
                     
@@ -169,11 +169,11 @@
     
       
         
-          <li>Voorbereiding &raquo;</li>
+          <li>Firmware &raquo;</li>
         
       
     
-    <li>ArduinoIDE</li>
+    <li>Firmware Flashen naar ESP-01</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -183,26 +183,118 @@
           <div role="main">
             <div class="section">
               
-                <h2 id="installatie-arduinoide">Installatie ArduinoIDE</h2>
-<p>Download en installeer de Arduino Integrated Development Environment (IDE) 
-voor het Operating Systeem (OS) waar jouw DeskTop of LapTop computer (er 
-zijn versies voor Windows, Linux en Mac) mee werkt.</p>
-<p><img alt="" src="../img/DownloadIDE.png" /></p>
-<div class="admonition note">
-<p class="admonition-title">Let op!</p>
-De DSMRlogger2HTTP firmware is getest met de ArduinoIDE v1.8.8 en v1.8.9
-</div>
+                <h2 id="firmware-naar-esp-01-flashen">Firmware naar ESP-01 Flashen</h2>
+<p>Om de firmware naar de ESP-01 (Black/S) te kunnen flashen moet deze eerst 
+voor deze ESP-01 geschikt worden gemaakt.</p>
+<p>Dit doen we door vóór de <code>#define HAS_NO_METER</code> twee <em>slashes</em> (<strong>//</strong>) te zetten.</p>
+<pre><code>/******************** change this for testing only **********************************/
+// #define HAS_NO_METER          // define if No &quot;Slimme Meter&quot; is attached
+/******************** don't change enything below this comment **********************/
 
-<p>Na het downloaden moet je het ontvangen bestand uitpakken (unzip of untar) 
-en installeren. Dat installeren is per OS anders maar staat duidelijk op de 
-website van Arduino aangegeven. Eenmaal geïnstalleerd kun je direct met de 
-Arduino IDE aan de slag.</p>
-<p>Om de IDE met de ESP8266 microprocessor te kunnen gebruiken moeten we nog 
-wat stappen uitvoeren.</p>
+</code></pre>
+
+<p>Vervolgens moeten de [<code>Boards</code>] settings als volgt worden ingevuld:</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="left">Instelling</th>
+<th align="left">Waarde</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center"></td>
+<td align="left">Board</td>
+<td align="left">"Generic ESP8266 Module"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Upload Speed</td>
+<td align="left">"115200"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">CPU Frequency</td>
+<td align="left">"80MHz"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Flash Frequency</td>
+<td align="left">"40MHz"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Flash Mode</td>
+<td align="left">"DOUT (compatible)"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Flash Size</td>
+<td align="left">"1M (256K SPIFFS)"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Crystal Frequency</td>
+<td align="left">"26MHz"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Reset Method</td>
+<td align="left">"None"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Debug Port</td>
+<td align="left">"Disabled"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Debug Level</td>
+<td align="left">"None"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">IwIP Variant</td>
+<td align="left">"v2 Lower Memory"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">VTables</td>
+<td align="left">"Flash"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Exeptions</td>
+<td align="left">"Disabled"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Builtin Led</td>
+<td align="left">ESP-01 (Black) "1" <br> ESP-01S "2"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Erase Flash</td>
+<td align="left">"Only Sketch" <br> First Time "All Flash Contents"</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td align="left">Port</td>
+<td align="left">Bedraad: "Serial Port" <br> OTA: "Netwerk Port"</td>
+</tr>
+</tbody>
+</table>
+<p>Stop de ESP-01 in de programmer 
+(<a href="https://willem.aandewiel.nl/index.php/2018/08/27/eenvoudige-programmer-voor-de-esp-01-esp8266/">hier</a> 
+vind je een post over hoe je van een USB to ESP-01
+Adapter zelf eenvoudig een programmer kunt maken) en sluit deze aan op je computer.
+Vergeet niet de juiste <code>Port</code> te selecteren en druk op het <em>Compile and Upload icoon</em>.</p>
+<p><img alt="" src="../img/CompileAndUploadIcon.png" /></p>
 <p><br></p>
 <hr />
-<p><center style="font-size: 70%">[RJ12 connector]</center><br>
-<center><img alt="" src="../img/RJ12.png" /></center></p>
+<p><center  style="font-size: 70%">[DSMR Onderhoud]</center><br>
+<center><img alt="" src="../img/DSMR_Onderhoud.png" /></center></p>
               
             </div>
           </div>
@@ -210,10 +302,10 @@ wat stappen uitvoeren.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../installatieESP8266core/" class="btn btn-neutral float-right" title="ESP8266 Core">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../uploadDataMap_ESP-01/" class="btn btn-neutral float-right" title="Data Flashen naar ESP-01">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../introductie/" class="btn btn-neutral" title="Introductie"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../clonenFirmware/" class="btn btn-neutral" title="DSMR-Firmware"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -241,10 +333,10 @@ wat stappen uitvoeren.</p>
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../introductie/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../clonenFirmware/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../installatieESP8266core/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../uploadDataMap_ESP-01/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
