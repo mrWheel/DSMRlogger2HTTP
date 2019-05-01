@@ -2,15 +2,17 @@
 This repository contains the software for the *Draadloze Slimme Meter Reader*.
 
 <br />
+
 You can find <i>technical</i> documentation for this project at 
-<a href="https://mrWheel.github.io/DSMRlogger2HTTP/" target="_blank">https://mrWheel.github.io/DSMRlogger2HTTP </a>
+<a href="https://mrWheel.github.io/DSMRlogger2HTTP/">https://mrWheel.github.io/DSMRlogger2HTTP </a>
     
 <br />
 
 <div style="background:#ADD8E6;">
-<br /> &nbsp;
+<br />
+    
 There is a new repository with new firmware for de DSMR-logger that you can find 
-    <a href="https://github.com/mrWheel/DSMRloggerWS">here</a>
+<a href="https://github.com/mrWheel/DSMRloggerWS">here</a>
 <br /> &nbsp;
 <br />
 </div>
