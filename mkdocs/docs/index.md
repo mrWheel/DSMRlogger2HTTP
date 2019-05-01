@@ -1,45 +1,32 @@
-# Welkom bij de DSMRlogger2HTTP Documentatie
+# Documentatie DSMRlogger2HTTP
 
-Ga voor de volledige project beschrijving naar 
+Voor de project beschrijving ga naar 
 <a href="https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/" target="_blank">
 www.aandewiel.nl</a>
 
-#### Het idee
+## Inhoudsopgave
 
-Zo langzamerhand zijn alle huizen in Nederland uitgerust met een “Slimme Meter”. 
-Deze meters beschikken over een "P1" poort, deze poort kan worden uitgelezen. 
-Dit project stelt je in staat dit zelf thuis uit te lezen en de gegevens op een 
-door jouw gewenst formaat te presenteren dmv een "DSMR logger". Er zijn 
-commerciele P1 oplossingen beschikbaar, dit project geeft je aanzienlijk meer 
-controle over de kosten en de gegevens. 
-
-<a href="https://nl.wikipedia.org/wiki/Slimme_meter" target="_blank">DSMR</a> 
-is een acroniem voor *Dutch Smart Meter Requirements*
-
-De doelstellingen van de DSMR logger:
-
-- Moet eenvoudig en goedkoop gemaakt kunnen worden.
-- Moet “Over The Air” ge-update kunnen worden.
-- Moet een beperkte historie hebben die intern opgeslagen word.
-- Moet via een externe terminal benaderd kunnen worden (telnet).
-- Moet via een browser de gegevens kunnen presenteren.
-- Moet via een REST API de gegevens kunnen leveren.
-- Moet gegevens eenvoudig verder laten verwerken.
-
-
-# Inhoudsopgave
-
-* [Bouwbeschrijving](bouwbeschrijvingV3.md)
-
-* [Installatie ArduinoIDE](installatieArduinoIDE.md)
-
-* [Installatie Bibliotheken](installatieBibliotheken.md)
-
+* [Introductie](introductie.md)
+* Voorbereiding
+    *  [ArduinoIDE](installatieArduinoIDE.md)
+    *  [ESP8266 core](installatieESP8266core.md)
+    *  [Data Upload Tool](installatieDataUploadTool.md)
 * Firmware
-    * [Clonen van Github](clonenFirmware.md)
-    * [Uploaden Firmware naar ESP-01](uploadenFirmware.md)
-    * [Uploaden Data naar ESP-01](uploadenDataMap.md)
-    * [Eerste keer opstarten](eersteKeerOpstarten.md)
+    *  [Benodigd Bibliotheken](benodigdeBibliotheken.md)
+    *  [Installeren Bibliotheken](installatieBibliotheken.md)
+    *  [DSMR Firmware van Github](clonenFirmware.md)
+    *  [Firmware Flashen ESP-01](uploadFirmware_ESP-01.md)
+    *  [Data Flashen naar ESP-01](uploadDataMap_ESP-01.md)
+* Hardware
+    *  [DSMR-logger Versie 3](hardware_V3.md)
+    *  [Programmer voor de ESP-01](hardware_ESP01_Programmer.md)
+* Overigen
+    * [Eeste keer opstarten](eersteKeerOpstarten.md)
+    * [Verschillen ESP-01 modules](verschillenESP-01.md)
 
-* [Verschillen ESP-01 modules](verschillenESP01ESP01S.md)
 
+<br>
+
+---
+<center  style="font-size: 70%">[ScreenShot DSMR-Actueel]</center><br>
+![](img/DSMRactual.png)

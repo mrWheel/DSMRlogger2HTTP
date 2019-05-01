@@ -2,6 +2,10 @@ site_name: DSMRlogger2HTTP
 site_url: https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/
 site_description: Project documentation with mkdocs.
 site_author: Willem Aandewiel
+copyright: 'copyright &copy; 2018 - 2019 <a href="https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/ target="_blank"">Willem Aandewiel</a>'
+
+extra_css: 
+    - extra.css
 
 theme:
     name: readthedocs
@@ -10,15 +14,30 @@ theme:
         - yaml
 
 nav:
-    - Introductie: 'index.md'
-    - bouwbeschrijving: 'bouwbeschrijvingV3.md'
-    - Installatie ArduinoIDE: 'installatieArduinoIDE.md'
-    - Installatie Bibliotheken: 'installatieBibliotheken.md'
+    - 'index.md'
+    - 'introductie.md'
+
+    - Voorbereiding:
+       - 'ArduinoIDE': 'installatieArduinoIDE.md'
+       - 'ESP8266 Core': 'installatieESP8266core.md'
+       - 'Data Upload Tool': 'installatieDataUploadTool.md'
 
     - Firmware:
-       - Clonen van github: 'clonenFirmware.md'
-       - Uploaden naar ESP-01: 'uploadenFirmware.md'
-       - Upload Data ESP-01: 'uploadenDataMap.md'
+       - 'Benodigd Bibliotheken': 'benodigdeBibliotheken.md'
+       - 'Installeren Bibliotheken': 'installatieBibliotheken.md'
+       - 'DSMR-Firmware': 'clonenFirmware.md'
+       - 'Firmware Flashen naar ESP-01': 'uploadFirmware_ESP-01.md'
+       - 'Data Flashen naar ESP-01': 'uploadDataMap_ESP-01.md'
+
+    - Hardware:
+       - 'DSMRlogger v3': 'hardware_V3.md'
+       - 'Programmer ESP-01': 'hardware_ESP01_Programmer.md'
+
+
+    - Overigen:
        - Eerste keer opstarten: 'eersteKeerOpstarten.md'
-    - Verschillen ESP-01 modules: 'verschillenESP01ESP01S.md'
+       - Verschillen ESP-01 modules: 'verschillenESP-01.md'
+
+    - License: 'MITlicense.md'
+
 

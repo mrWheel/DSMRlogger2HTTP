@@ -1,14 +1,25 @@
-# installatie ArduinoIDE
+## Installatie ArduinoIDE
+Download en installeer de Arduino Integrated Development Environment (IDE) 
+voor het Operating Systeem (OS) waar jouw DeskTop of LapTop computer (er 
+zijn versies voor Windows, Linux en Mac) mee werkt.
 
-1. Download en installeer [Arduino IDE](https://www.arduino.cc/en/main/software)
-2. Open Arduino
-3. Ga naar `preferences` > `Additional Boards Manager URL’s` 
-4. Voer in: `http://arduino.esp8266.com/stable/package_esp8266com_index.json`
-5. Sluit Arduino af. 
-6. Download [Arduino ESP8266 filesystem uploader](https://github.com/esp8266/arduino-esp8266fs-plugin) 
-en volg de installatie instructies. Dit voegt een menu item toe aan ArduinoIDE wat we nodig hebben 
-om de *Data*-map die bij de sketch hoort te uploaden.
+![](img/DownloadIDE.png)
 
-![](img/ESP8266SketchDataUploadTool.png)
+<div class="admonition note">
+<p class="admonition-title">Let op!</p>
+De DSMRlogger2HTTP firmware is getest met de ArduinoIDE v1.8.8 en v1.8.9
+</div>
 
+Na het downloaden moet je het ontvangen bestand uitpakken (unzip of untar) 
+en installeren. Dat installeren is per OS anders maar staat duidelijk op de 
+website van Arduino aangegeven. Eenmaal geïnstalleerd kun je direct met de 
+Arduino IDE aan de slag.
 
+Om de IDE met de ESP8266 microprocessor te kunnen gebruiken moeten we nog 
+wat stappen uitvoeren.
+
+<br>
+
+---
+<center style="font-size: 70%">[RJ12 connector]</center><br>
+<center>![](img/RJ12.png)</center>

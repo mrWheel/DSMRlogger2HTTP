@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Willem Aandewiel">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>DSMRlogger v3 - DSMRlogger2HTTP</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link href="../extra.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "DSMRlogger v3";
+    var mkdocs_page_input_path = "hardware_V3.md";
+    var mkdocs_page_url = "/index.php/2018/08/28/slimme-meter-uitlezer/hardware_V3/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> DSMRlogger2HTTP</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Documentatie DSMRlogger2HTTP</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../introductie/">Introductie</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Voorbereiding</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../installatieArduinoIDE/">ArduinoIDE</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../installatieESP8266core/">ESP8266 Core</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../installatieDataUploadTool/">Data Upload Tool</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Firmware</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../benodigdeBibliotheken/">Benodigd Bibliotheken</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../installatieBibliotheken/">Installeren Bibliotheken</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../clonenFirmware/">DSMR-Firmware</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../uploadFirmware_ESP-01/">Firmware Flashen naar ESP-01</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../uploadDataMap_ESP-01/">Data Flashen naar ESP-01</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Hardware</span>
+    <ul class="subnav">
+                <li class=" current">
+                    
+    <a class="current" href="./">DSMRlogger v3</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#dsmr-logger-versie-3">DSMR-logger Versie 3</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#inhoud-opencircuit-bouwpakket">Inhoud Opencircuit bouwpakket</a></li>
+        
+            <li><a class="toctree-l4" href="#solderen">Solderen</a></li>
+        
+        </ul>
+    
+
+    </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../hardware_ESP01_Programmer/">Programmer ESP-01</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Overigen</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../eersteKeerOpstarten/">Eerste keer opstarten</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../verschillenESP-01/">Verschillen ESP-01 modules</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../MITlicense/">License</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">DSMRlogger2HTTP</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Hardware &raquo;</li>
+        
+      
+    
+    <li>DSMRlogger v3</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h2 id="dsmr-logger-versie-3">DSMR-logger Versie 3</h2>
+<p>Hoe je een DSMRlogger Versie 2 kunt bouwen staat 
+<a href="https://github.com/mrWheel/DSMRlogger2HTTP/blob/master/Bouwbeschrijving.pdf" target="_blank">
+hier</a>
+uitvoerig beschreven.</p>
+<p>Versie 3 is gelijk aan Versie 2 met dit verschil dat de transistor en voltage regulator
+eenvoudiger zijn te solderen omdat de pad's verder uit elkaar staan.</p>
+<p>Versie 3 heeft ook een RJ12 connector waardoor de draadbreuken die met Versie 2
+nog wel eens voorkwamen verleden tijd zijn.</p>
+<p>Een bouwpakket voor Versie 3 kun je 
+<a href="https://opencircuit.nl/Product/13859/Slimme-meter-uitlezer-V3-bouwpakket-met-ESP-01" target="_blank">
+hier</a> bestellen.</p>
+<h3 id="inhoud-opencircuit-bouwpakket">Inhoud Opencircuit bouwpakket</h3>
+<table>
+<thead>
+<tr>
+<th>Aantal</th>
+<th>Itemi</th>
+<th>PCB label</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1x</td>
+<td>PCB</td>
+<td>-</td>
+</tr>
+<tr>
+<td>1x</td>
+<td>ESP8266 ESP-01S</td>
+<td>-</td>
+</tr>
+<tr>
+<td>1x</td>
+<td>BC547</td>
+<td>Q1</td>
+</tr>
+<tr>
+<td>1x</td>
+<td>MCP1700-3v3</td>
+<td>U1</td>
+</tr>
+<tr>
+<td>1x</td>
+<td>1K Ω weerstand (bruin,zwart,rood)</td>
+<td>R1</td>
+</tr>
+<tr>
+<td>2x</td>
+<td>2K2 Ω weerstand (rood,rood,rood)</td>
+<td>R2,R3</td>
+</tr>
+<tr>
+<td>3x</td>
+<td>10K Ω weerstand (bruin,zwart,oranje)</td>
+<td>R4,R5,R6</td>
+</tr>
+<tr>
+<td>1x</td>
+<td>Elco 1µF</td>
+<td>C1</td>
+</tr>
+<tr>
+<td>1x</td>
+<td>Elco 2.2µF</td>
+<td>C2</td>
+</tr>
+<tr>
+<td>1x</td>
+<td>Elco 1000µF</td>
+<td>C3</td>
+</tr>
+<tr>
+<td>1x</td>
+<td>Socket connector 4x2</td>
+<td>J2</td>
+</tr>
+<tr>
+<td>1x</td>
+<td>RJ12 Socket connector</td>
+<td>J1</td>
+</tr>
+<tr>
+<td>1x</td>
+<td>RJ12 kabel</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="solderen">Solderen</h3>
+<p>Begin met de laagste componenten: </p>
+<ul>
+<li>Plaats: R4, R5 en R6, plaats deze plat. Weerstanden hebben geen polariteit, de richting 
+maakt dus niet uit.</li>
+<li>Plaats R1, R2, R3 rechtop. </li>
+<li>Plaats Q1 en U1 - de soldeer pads zijn klein en liggen dicht bij elkaar, wees 
+zorgvuldig en neem de tijd. </li>
+</ul>
+<p>De Elco's hebben wel polariteit, de negatieve pool is herkenbaar aan de lichtere streep op de 
+zijkant. Op de PCB is deze kant aangegeven met een witte helft. Daar moet de negatieve pool 
+op worden aangesloten.</p>
+<ul>
+<li>Plaats C1, C2 en C3 met de juiste negatieve pool en de correcte Elco.</li>
+<li>Plaats J2 en J1 </li>
+</ul>
+<p>Controleer je werk op slechte soldeerverbindingen (het tin droogt dan <em>mat</em> op) en
+kortsluiting (tin-bruggen tussen twee pad's).</p>
+<p>De ESP01 word uiteindelijk in de socket geplaatst, maar moet eerst nog worden geflashed met 
+de <code>DSMRlogger2HTTP</code> firmware en de <code>data</code>-map moet naar SPIFFS worden ge-upload voordat 
+hij kan gaan loggen. Hoe dat moet staat <a href="../uploadFirmware_ESP-01">hier</a> en 
+<a href="../uploadDataMap_ESP-01">hier</a> beschreven.</p>
+<h2 id="_1"><br></h2>
+<p><center style="font-size: 70%;">[PCB Versie 2]</center><br></p>
+<p><img alt="" src="../img/KiCAD_PCBnew.png" /></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../hardware_ESP01_Programmer/" class="btn btn-neutral float-right" title="Programmer ESP-01">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../uploadDataMap_ESP-01/" class="btn btn-neutral" title="Data Flashen naar ESP-01"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+      <p>copyright &copy; 2018 - 2019 <a href="https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/ target="_blank"">Willem Aandewiel</a></p>
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../uploadDataMap_ESP-01/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../hardware_ESP01_Programmer/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

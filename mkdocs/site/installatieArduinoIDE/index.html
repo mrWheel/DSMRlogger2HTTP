@@ -8,16 +8,17 @@
   
   <meta name="author" content="Willem Aandewiel">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Installatie ArduinoIDE - DSMRlogger2HTTP</title>
+  <title>ArduinoIDE - DSMRlogger2HTTP</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link href="../extra.css" rel="stylesheet">
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Installatie ArduinoIDE";
+    var mkdocs_page_name = "ArduinoIDE";
     var mkdocs_page_input_path = "installatieArduinoIDE.md";
     var mkdocs_page_url = "/index.php/2018/08/28/slimme-meter-uitlezer/installatieArduinoIDE/";
   </script>
@@ -51,28 +52,37 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="..">Welkom bij de DSMRlogger2HTTP Documentatie</a>
+    <a class="" href="..">Documentatie DSMRlogger2HTTP</a>
 	    </li>
           
             <li class="toctree-l1">
 		
-    <a class="" href="../bouwbeschrijvingV3/">bouwbeschrijving</a>
+    <a class="" href="../introductie/">Introductie</a>
 	    </li>
           
-            <li class="toctree-l1 current">
+            <li class="toctree-l1">
 		
-    <a class="current" href="./">Installatie ArduinoIDE</a>
+    <span class="caption-text">Voorbereiding</span>
+    <ul class="subnav">
+                <li class=" current">
+                    
+    <a class="current" href="./">ArduinoIDE</a>
     <ul class="subnav">
             
-    <li class="toctree-l2"><a href="#installatie-arduinoide">installatie ArduinoIDE</a></li>
+    <li class="toctree-l3"><a href="#installatie-arduinoide">Installatie ArduinoIDE</a></li>
     
 
     </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../installatieBibliotheken/">Installatie Bibliotheken</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../installatieESP8266core/">ESP8266 Core</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../installatieDataUploadTool/">Data Upload Tool</a>
+                </li>
+    </ul>
 	    </li>
           
             <li class="toctree-l1">
@@ -81,22 +91,60 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../clonenFirmware/">Clonen van github</a>
+    <a class="" href="../benodigdeBibliotheken/">Benodigd Bibliotheken</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../uploadenFirmware/">Uploaden naar ESP-01</a>
+    <a class="" href="../installatieBibliotheken/">Installeren Bibliotheken</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../uploadenDataMap/">Upload Data ESP-01</a>
+    <a class="" href="../clonenFirmware/">DSMR-Firmware</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../uploadFirmware_ESP-01/">Firmware Flashen naar ESP-01</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../uploadDataMap_ESP-01/">Data Flashen naar ESP-01</a>
                 </li>
     </ul>
 	    </li>
           
             <li class="toctree-l1">
 		
-    <a class="" href="../verschillenESP01ESP01S/">Verschillen ESP-01 modules'</a>
+    <span class="caption-text">Hardware</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../hardware_V3/">DSMRlogger v3</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../hardware_ESP01_Programmer/">Programmer ESP-01</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Overigen</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../eersteKeerOpstarten/">Eerste keer opstarten</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../verschillenESP-01/">Verschillen ESP-01 modules</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../MITlicense/">License</a>
 	    </li>
           
         </ul>
@@ -120,8 +168,12 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
+        
+          <li>Voorbereiding &raquo;</li>
+        
+      
     
-    <li>Installatie ArduinoIDE</li>
+    <li>ArduinoIDE</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -131,18 +183,26 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="installatie-arduinoide">installatie ArduinoIDE</h1>
-<ol>
-<li>Download en installeer <a href="https://www.arduino.cc/en/main/software">Arduino IDE</a></li>
-<li>Open Arduino</li>
-<li>Ga naar <code>preferences</code> &gt; <code>Additional Boards Manager URL’s</code> </li>
-<li>Voer in: <code>http://arduino.esp8266.com/stable/package_esp8266com_index.json</code></li>
-<li>Sluit Arduino af. </li>
-<li>Download <a href="https://github.com/esp8266/arduino-esp8266fs-plugin">Arduino ESP8266 filesystem uploader</a> 
-en volg de installatie instructies. Dit voegt een menu item toe aan ArduinoIDE wat we nodig hebben 
-om de <em>Data</em>-map die bij de sketch hoort te uploaden.</li>
-</ol>
-<p><img alt="" src="../img/ESP8266SketchDataUploadTool.png" /></p>
+                <h2 id="installatie-arduinoide">Installatie ArduinoIDE</h2>
+<p>Download en installeer de Arduino Integrated Development Environment (IDE) 
+voor het Operating Systeem (OS) waar jouw DeskTop of LapTop computer (er 
+zijn versies voor Windows, Linux en Mac) mee werkt.</p>
+<p><img alt="" src="../img/DownloadIDE.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Let op!</p>
+De DSMRlogger2HTTP firmware is getest met de ArduinoIDE v1.8.8 en v1.8.9
+</div>
+
+<p>Na het downloaden moet je het ontvangen bestand uitpakken (unzip of untar) 
+en installeren. Dat installeren is per OS anders maar staat duidelijk op de 
+website van Arduino aangegeven. Eenmaal geïnstalleerd kun je direct met de 
+Arduino IDE aan de slag.</p>
+<p>Om de IDE met de ESP8266 microprocessor te kunnen gebruiken moeten we nog 
+wat stappen uitvoeren.</p>
+<p><br></p>
+<hr />
+<p><center style="font-size: 70%">[RJ12 connector]</center><br>
+<center><img alt="" src="../img/RJ12.png" /></center></p>
               
             </div>
           </div>
@@ -150,10 +210,10 @@ om de <em>Data</em>-map die bij de sketch hoort te uploaden.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../installatieBibliotheken/" class="btn btn-neutral float-right" title="Installatie Bibliotheken">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../installatieESP8266core/" class="btn btn-neutral float-right" title="ESP8266 Core">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../bouwbeschrijvingV3/" class="btn btn-neutral" title="bouwbeschrijving"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../introductie/" class="btn btn-neutral" title="Introductie"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -162,6 +222,8 @@ om de <em>Data</em>-map die bij de sketch hoort te uploaden.</li>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
+    
+      <p>copyright &copy; 2018 - 2019 <a href="https://willem.aandewiel.nl/index.php/2018/08/28/slimme-meter-uitlezer/ target="_blank"">Willem Aandewiel</a></p>
     
   </div>
 
@@ -179,10 +241,10 @@ om de <em>Data</em>-map die bij de sketch hoort te uploaden.</li>
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../bouwbeschrijvingV3/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../introductie/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../installatieBibliotheken/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../installatieESP8266core/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
