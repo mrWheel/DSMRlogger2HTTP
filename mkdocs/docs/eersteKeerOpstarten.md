@@ -30,20 +30,28 @@ DSMR-logger geen verbinding met jouw WiFi netwerk maken en start hij weer zijn e
 AP op en zal je WiFi procedure opnieuw moeten doen.
 
 Zodra hij geconnecteerd is open een browser en ga naar:
-`http://ESP01-DSMR.local/` of `http://<ip adres van de ESP>`
+`http://ESP01-DSMR.local/` of `http://<IPadresVanDeLogger>/`
 
 Als je in de browser de tekst `FileNotFound` ziet, dan ben je waarschijnlijk vergeten 
-de Data-map te uploaden met de menu-optie `ESP8266 Sketch Data Upload` in de ArduinoIDE.
+de Data-map te uploaden met de menu-optie `ESP8266 Sketch Data Upload` in de ArduinoIDE
+([kijk hier](uploadDataMap_ESP-01.md) hoe dat moet).
 
 Als alles goed is gegaan zie je in de browser de hoofd-pagina van de DSMR-logger met 
 daarin de actuele data uit de Slimme Meter.
 
-Je kunt met `telnet ESP01-DSMR.local` of met `telnet <IP adres>` inloggen op je DSMR-logger
-en volgen waar de DSMR-logger mee bezig is.
+Je kunt met `telnet ESP01-DSMR.local` of met `telnet <IPadresVanDeLogger>` inloggen 
+op je DSMR-logger en volgen waar de DSMR-logger mee bezig is.
 
 Om te bepalen welk IP is uitgegeven aan de ESP door de DHCP server, kun je in je router 
 kijken, of met bijv de Fing app of met `nmap`.
 
+Een andere manier om achter het IP-adres van je DSMR-logger te komen is door de  
+ArduinoIDE op te starten. 
+
+<center>![](img/IDE_DSMR-HTTP.png)</center>
+
+Onder `Network Ports` staat de `ESP01-DSMR` als optie, met daarachter het IP adres (in dit 
+voorbeeld is dat `192.168.12.142`).
 
 
 

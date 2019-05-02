@@ -4,6 +4,8 @@
 - ESP-01 (Black Edition)
 - ESP-01S
 
+<center>![](img/ESP-01.jpg)</center>
+
 ### ESP-01
 De ESP-01 heeft slechts 512MB flash geheugen en is **niet** geschikt voor de DSMR-logger
 

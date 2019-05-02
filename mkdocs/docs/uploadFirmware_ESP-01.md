@@ -28,15 +28,16 @@ Vervolgens moeten de [`Boards`] settings als volgt worden ingevuld:
 |   | IwIP Variant      | "v2 Lower Memory" |
 |   | VTables           | "Flash" |
 |   | Exeptions         | "Disabled" |
-|   | Builtin Led       | ESP-01 (Black) "1" <br> ESP-01S "2" |
-|   | Erase Flash       | "Only Sketch" <br> First Time "All Flash Contents" |
+|   | Builtin Led       | ESP-01 (Black): "1" <br> ESP-01S: "2" |
+|   | Erase Flash       | "Only Sketch"<br>(First Time: "All Flash Contents") |
 |   | Port              | Bedraad: "Serial Port" <br> OTA: "Netwerk Port" |
 
 
 Stop de ESP-01 in de programmer 
-([hier](https://willem.aandewiel.nl/index.php/2018/08/27/eenvoudige-programmer-voor-de-esp-01-esp8266/) 
-vind je een post over hoe je van een USB to ESP-01
-Adapter zelf eenvoudig een programmer kunt maken) en sluit deze aan op je computer.
+(<a href="https://willem.aandewiel.nl/index.php/2018/08/27/eenvoudige-programmer-voor-de-esp-01-esp8266/" target="_blank">
+hier</a>
+vind je een post over hoe je van een `USB to ESP-01
+Adapter` zelf eenvoudig een programmer kunt maken) en sluit deze aan op je computer.
 Vergeet niet de juiste `Port` te selecteren en druk op het *Compile and Upload icoon*.
 
 ![](img/CompileAndUploadIcon.png)

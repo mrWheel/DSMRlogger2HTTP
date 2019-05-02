@@ -1,7 +1,10 @@
 ## Installatie ArduinoIDE
 Download en installeer de Arduino Integrated Development Environment (IDE) 
 voor het Operating Systeem (OS) waar jouw DeskTop of LapTop computer (er 
-zijn versies voor Windows, Linux en Mac) mee werkt.
+zijn versies voor Windows, Linux en Mac) mee werkt.   
+Je kunt de Software 
+<a href="https://www.arduino.cc/en/Main/Software" target="_blank">
+hier</a> downloaden.
 
 ![](img/DownloadIDE.png)
 
