@@ -17,7 +17,7 @@ Bijvoorbeeld een bibliotheek om je ESP8266 van een telnet server te voorzien (me
 een telnet server kun je via een telnet-client op je DeskTop of LapTop inloggen op 
 je ESP8266). Er blijken hier een aantal bibliotheken voor te bestaan. 
 
-Als voorbeeld nemen we *TelnetStream* van *Jan Drassy*. Na wat Googelen vinden we de 
+Als voorbeeld nemen we *TelnetStream* van *Juraj Andrassy*. Na wat Googelen vinden we de 
 software op deze
 <a href="https://github.com/jandrassy/TelnetStream/" target="_blank">
 https://github.com/jandrassy/TelnetStream/</a>
@@ -48,7 +48,7 @@ De bibliotheek is nu geïnstalleerd en klaar om gebruikt te worden. De meeste
 bibliotheken komen met een aantal voorbeeld programma’s waarmee je kunt leren 
 hoe je de bibliotheek kunt gebruiken.
 
-Jan Drassy is erg summier met zijn uitleg maar gelukkig is 
+*Juraj Andrassy* is erg summier met zijn uitleg maar gelukkig is 
 er een map met voorbeelden (nou ja, één voorbeeld). 
 
 ![](img/TelnetExample.png)
